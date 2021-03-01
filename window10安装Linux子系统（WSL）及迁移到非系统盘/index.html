@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="window10安装Linux子系统（WSL）及迁移到非系统盘痛点：在电脑上想要使用linux又想使用windows系统只能安装双系统，因为虚拟机的性能差且使用麻烦，双系统使用起来倒是也还行，ubuntu的桌面系统现在用起来也可以，但是来回切换比较麻烦，故想尝试一下windows自带的这个WSL功能使用起来如何。记录一下安装过程。 Linux子系统WSL（Windows Subsystem for">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/window10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%EF%BC%88WSL%EF%BC%89%E5%8F%8A%E8%BF%81%E7%A7%BB%E5%88%B0%E9%9D%9E%E7%B3%BB%E7%BB%9F%E7%9B%98/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="window10安装Linux子系统（WSL）及迁移到非系统盘痛点：在电脑上想要使用linux又想使用windows系统只能安装双系统，因为虚拟机的性能差且使用麻烦，双系统使用起来倒是也还行，ubuntu的桌面系统现在用起来也可以，但是来回切换比较麻烦，故想尝试一下windows自带的这个WSL功能使用起来如何。记录一下安装过程。 Linux子系统WSL（Windows Subsystem for">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124007253.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124124472.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2019120812415755.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124303915.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124325318.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124400308.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124452334.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124534741.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124623690.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124651439.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124720435.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124741715.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124802141.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124816278.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124831623.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20191208124907360.png">
+<meta property="article:published_time" content="2021-03-01T09:46:50.938Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.038Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20191208124007253.png">
+
+<link rel="canonical" href="http://luyanan.com/window10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%EF%BC%88WSL%EF%BC%89%E5%8F%8A%E8%BF%81%E7%A7%BB%E5%88%B0%E9%9D%9E%E7%B3%BB%E7%BB%9F%E7%9B%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/window10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%EF%BC%88WSL%EF%BC%89%E5%8F%8A%E8%BF%81%E7%A7%BB%E5%88%B0%E9%9D%9E%E7%B3%BB%E7%BB%9F%E7%9B%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:50" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:50+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="window10安装Linux子系统（WSL）及迁移到非系统盘"><a href="#window10安装Linux子系统（WSL）及迁移到非系统盘" class="headerlink" title="window10安装Linux子系统（WSL）及迁移到非系统盘"></a>window10安装Linux子系统（WSL）及迁移到非系统盘</h1><h2 id="痛点："><a href="#痛点：" class="headerlink" title="痛点："></a>痛点：</h2><p>在电脑上想要使用linux又想使用windows系统只能安装双系统，因为虚拟机的性能差且使用麻烦，双系统使用起来倒是也还行，ubuntu的桌面系统现在用起来也可以，但是来回切换比较麻烦，故想尝试一下windows自带的这个WSL功能使用起来如何。<br>记录一下安装过程。</p>
+<h2 id="Linux子系统"><a href="#Linux子系统" class="headerlink" title="Linux子系统"></a>Linux子系统</h2><p>WSL（Windows Subsystem for Linux）详细介绍见官网：<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-au/windows/wsl/about">https://docs.microsoft.com/en-au/windows/wsl/about</a></p>
+<p>安装<br>安装过程很简单，也不占什么空间：</p>
+<p>1.打开控制面板中的程序和功能，打开启用或关闭Windows功能</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124007253.png" alt="img"></p>
+<p>2 向下拉 勾选适用于Linux的Windows子系统，确定</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124124472.png" alt="img"></p>
+<p>3 打开win10带的Microsoft Store 搜索 LINUX</p>
+<p><img src="https://img-blog.csdnimg.cn/2019120812415755.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>4 选择在Windos上运行Linux,推荐安装ubuntu或debian，其他的都没见过，根据需求自行选择就行</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124303915.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>5 点击获取安装</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124325318.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>6 启动即可，初次启动会要求键入用户名和密码，根据需求输入即可，这样就算是安装完成</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>1 右键开始图标打开power shell</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124400308.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>2 输了bash即可启动, 可以使用 wsl -l查询子系统安装列表</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124452334.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>3 子系统默认安装在系统系统盘，其他盘在子系统中的mnt文件夹中</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124534741.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>4 tips:你也可以在指定路径的文件夹中shift+右键打开Linux shell</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124623690.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>5 字体大小啥的，右键窗口上端进入 默认值进行更改</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124651439.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<h2 id="迁移到非系统盘"><a href="#迁移到非系统盘" class="headerlink" title="迁移到非系统盘"></a>迁移到非系统盘</h2><p>一般大家在安装系统的时候都喜欢把系统盘能的比较小，如果子系统要安装很多东西，比如我要安装docker，会有很多镜像，很占空间在系统盘不是很合适，于是有了迁出系统盘的需求，可以使用LxRunOffline进行迁移</p>
+<p>1 下载 LxRunOffline ，<a target="_blank" rel="noopener" href="https://github.com/DDoSolitary/LxRunOffline/releases%EF%BC%8C%E9%80%89%E6%8B%A9%E6%9C%80%E6%96%B0%E7%89%88%E4%B8%8B%E8%BD%BD%E5%8D%B3%E5%8F%AF">https://github.com/DDoSolitary/LxRunOffline/releases，选择最新版下载即可</a></p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124720435.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>2 解压后，在软件目录打开power shell ，上面交的方法shift + 右键</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124741715.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>3 使用<code>LxRunOffline.exe list</code>命令查看你可以使用子系统名称</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124802141.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>4 使用 lxrunoffline move 进行迁移 ， -n 指定你要迁移的系统名 ，-d 指定你新系统的迁移路径</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124816278.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>5 迁移过程会出现WARNING 不用管， 等待一段时间结束就算迁移完成了</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124831623.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>6 使用LxRunOffline.exe get-dir 查询系统目录，可见已经更改成功</p>
+<p><img src="https://img-blog.csdnimg.cn/20191208124907360.png" alt="å¨è¿éæå¥å¾çæè¿°"></p>
+<p>备注：<br>还有个下载系统包的安装方法，由于下载速度感人没有尝试，方法官网有，链接如下：<br><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-au/windows/wsl/install-on-server">https://docs.microsoft.com/en-au/windows/wsl/install-on-server</a><br>————————————————</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/window10%E4%B8%8B%E5%AD%90%E7%B3%BB%E7%BB%9Fubuntu%E5%AE%89%E8%A3%85Docker/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/linux%20%20%20maven%20%E5%AE%89%E8%A3%85/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#window10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%EF%BC%88WSL%EF%BC%89%E5%8F%8A%E8%BF%81%E7%A7%BB%E5%88%B0%E9%9D%9E%E7%B3%BB%E7%BB%9F%E7%9B%98"><span class="nav-number">1.</span> <span class="nav-text">window10安装Linux子系统（WSL）及迁移到非系统盘</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%97%9B%E7%82%B9%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">痛点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux%E5%AD%90%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.2.</span> <span class="nav-text">Linux子系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">1.3.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E5%88%B0%E9%9D%9E%E7%B3%BB%E7%BB%9F%E7%9B%98"><span class="nav-number">1.4.</span> <span class="nav-text">迁移到非系统盘</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

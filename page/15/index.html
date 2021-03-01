@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="程序员报社">
+<meta property="og:type" content="website">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/page/15/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="程序员报社">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://luyanan.com/page/15/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content index posts-expand">
+            
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="分布式系统认证方案"><a href="#分布式系统认证方案" class="headerlink" title="分布式系统认证方案"></a>分布式系统认证方案</h1><h2 id="1-什么是分布式系统"><a href="#1-什么是分布式系统" class="headerlink" title="1. 什么是分布式系统"></a>1. 什么是分布式系统</h2><p>随着软件环境和需求的变化,软件的架构由单体结构演变为分布式架构,具有分布式架构的系统叫做分布式系统, 分布式系统的运行通常依靠网络, 他将单体结构的系统分为若干服务, 服务之间通过网络交互来完成用户的业务处理, 当前流行的微服务架构就是分布式系统的结构,如下图:</p>
+<p><img src="6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729092813897.png" alt="image-20200729092813897"></p>
+<p>分布式系统具体如下基本特点:</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/5.Spring%20Security%20%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83%E9%AB%98%E7%BA%A7%E7%AF%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/5.Spring%20Security%20%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83%E9%AB%98%E7%BA%A7%E7%AF%87/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Spring-Security-认证授权高级篇"><a href="#Spring-Security-认证授权高级篇" class="headerlink" title="Spring Security 认证授权高级篇"></a>Spring Security 认证授权高级篇</h1><h2 id="1-自定义认证"><a href="#1-自定义认证" class="headerlink" title="1. 自定义认证"></a>1. 自定义认证</h2><p><code>Spring Security</code> 提供了非常好的认证方法, 比如: 快速上手将用户信息保存到内存中,实际开发中用户信息通常是放到数据库中,<code>Spring Security</code>   可以实现从数据库中读取用户信息,<code>Spring Security</code> 还支持多种授权方法.</p>
+<h3 id="1-1-自定义登陆页面"><a href="#1-1-自定义登陆页面" class="headerlink" title="1.1  自定义登陆页面"></a>1.1  自定义登陆页面</h3><p><code>Spring Security</code> 会根据启用的功能自动生成一个登录页面URL, 并使用默认<code>URL</code> 处理登陆的提交内容,登录i后跳转到默认的<code>URL</code>等,尽管自动生成的登陆页面很方便快速启动和运行,但大多数应用程序都希望定义自己的登录页面.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/5.Spring%20Security%20%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83%E9%AB%98%E7%BA%A7%E7%AF%87/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/4.Spring%20Security%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/4.Spring%20Security%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Spring-Security的工作原理"><a href="#Spring-Security的工作原理" class="headerlink" title="Spring Security的工作原理"></a>Spring Security的工作原理</h1><h2 id="1-结构总览"><a href="#1-结构总览" class="headerlink" title="1 结构总览"></a>1 结构总览</h2><p><code>Spring Security</code> 所解决的问题就是<code>安全访问控制</code>, 而安全访问控制其实就是对所有进入系统的请求进行拦截,校验每个请求是否能够访问它所期望的资源,我们可以通过<code>Filter</code> 或者<code>AOP</code> 等技术进行实现,<code>Spring Security</code> 对<code>Web</code> 资源的保护是通过<code>Filter</code> 实现的,所以从这个<code>Filter</code> 来入手,逐步深入<code>Spring Security</code> 的原理.</p>
+<p>当初始化<code>Spring Security</code>的时候, 会创建一个名为<code>org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration#springSecurityFilterChain</code>的<code>Servlet</code> 过滤器, 类型为<code>org.springframework.security.web.FilterChainProxy</code>,它实现了<code>javax.servlet.Filter</code>, 因此外部的请求会经过此类,下图是<code>Spring Security</code> 的过滤器链结构图</p>
+<p><img src="4.Spring%20Security%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.assets/image-20200724150042320.png" alt="image-20200724150042320"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/4.Spring%20Security%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/3.%20%E5%9F%BA%E4%BA%8ESpring%20Security%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/3.%20%E5%9F%BA%E4%BA%8ESpring%20Security%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:49" itemprop="dateModified" datetime="2020-12-24T17:34:49+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="基于Spring-Security-认证授权"><a href="#基于Spring-Security-认证授权" class="headerlink" title="基于Spring Security 认证授权"></a>基于Spring Security 认证授权</h1><h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p><code>Spring Security</code> 是一个能够为基于<code>Spring</code>的企业应用系统提升声明式的安全访问控制解决方案的安全框架.由于他是<code>Spring</code> 生态系统中的一员,因为他伴随着整个<code>Spring</code> 生态系统的不断修正、升级,在<code>Spring Boot</code> 项目中加入<code>Spring Security</code> 更是十分简单,使用<code>Spring Security</code> 减少了为企业系统安全控制编写了大量重复代码的工作. </p>
+<h2 id="2-实战"><a href="#2-实战" class="headerlink" title="2. 实战"></a>2. 实战</h2><h3 id="2-1-pom依赖"><a href="#2-1-pom依赖" class="headerlink" title="2.1 pom依赖"></a>2.1 <code>pom依赖</code></h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/3.%20%E5%9F%BA%E4%BA%8ESpring%20Security%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/2.%20%E5%9F%BA%E4%BA%8ESession%E8%BF%9B%E8%A1%8C%E8%AE%A4%E8%AF%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2.%20%E5%9F%BA%E4%BA%8ESession%E8%BF%9B%E8%A1%8C%E8%AE%A4%E8%AF%81/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:49" itemprop="dateModified" datetime="2020-12-24T17:34:49+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="基于Session进行认证"><a href="#基于Session进行认证" class="headerlink" title="基于Session进行认证"></a>基于Session进行认证</h1><h2 id="1-认证流程"><a href="#1-认证流程" class="headerlink" title="1. 认证流程"></a>1. 认证流程</h2><p>用户认证成功后,在服务端生成用户相关的数据, 并保存在<code>session</code> 会话中,而发给客户端的<code>session_id</code> 保存在浏览器的<code>cookie</code>中, 当客户端请求的时候带上<code>session_id</code> ,服务端就可以通过验证<code>session_id</code>是否存在和<code>session</code> 数据来完成用户的合法性校验了. 当用户退出系统或者<code>session</code> 销毁的时候, 只需要清空会话的<code>session</code> 即可. 这样客户端的<code>session_id</code>也就无效了. </p>
+<p>基于<code>session</code>的认证机制是由<code>Servlet</code> 规范定制的,<code>servlet</code>已经实现,用户可以通过<code>HttpSession</code> 的操作方法就可以实现,如下是<code>HttpSession</code> 相关的操作API</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>HttpSession getSession(Boolean create)</code></td>
+<td>获取当前的<code>session</code>对象</td>
+</tr>
+<tr>
+<td><code>void setAttribute(String name,Object value)</code></td>
+<td>往<code>session</code> 中存放数据</td>
+</tr>
+<tr>
+<td><code>object getAttribute(String name)</code></td>
+<td>从<code>session</code>中获取数据</td>
+</tr>
+<tr>
+<td><code>void removeAttribute(String name);</code></td>
+<td>移除<code>session</code>对象</td>
+</tr>
+<tr>
+<td><code>void invalidate()</code></td>
+<td>使得<code>HttpSession</code>失效</td>
+</tr>
+</tbody></table>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2.%20%E5%9F%BA%E4%BA%8ESession%E8%BF%9B%E8%A1%8C%E8%AE%A4%E8%AF%81/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/1.Spring%20Security%20Oauth2%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/1.Spring%20Security%20Oauth2%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:49" itemprop="dateModified" datetime="2020-12-24T17:34:49+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Spring-Security-Oauth2的基本概念"><a href="#Spring-Security-Oauth2的基本概念" class="headerlink" title="Spring Security Oauth2的基本概念"></a>Spring Security Oauth2的基本概念</h1><h2 id="1-什么是认证"><a href="#1-什么是认证" class="headerlink" title="1. 什么是认证"></a>1. 什么是认证</h2><p>在移动互联网时代,我们经常要登陆各种各样的软件, 比如微信、支付宝、淘宝等,我们拿登陆淘宝来举例子来说明一下认证的基本概念, 当我们在初次使用淘宝的时候, 需要注册为淘宝的会员,然后输入账号密码登录淘宝,这个使用账号密码登陆淘宝的过程就是认证. </p>
+<p>系统 为什么要认证呢? </p>
+<p>认证是为了保护系统的隐私数据与资源, 用户的身份合法才可以访问该系统的资源. </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/1.Spring%20Security%20Oauth2%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/9.redis%E4%B9%8B%E4%BA%8B%E5%8A%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/9.redis%E4%B9%8B%E4%BA%8B%E5%8A%A1/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="redis之事务"><a href="#redis之事务" class="headerlink" title="redis之事务"></a>redis之事务</h1><h2 id="1-官网介绍"><a href="#1-官网介绍" class="headerlink" title="1. 官网介绍"></a>1. 官网介绍</h2><p><a target="_blank" rel="noopener" href="https://redis.io/topics/transactions/">https://redis.io/topics/transactions/</a><br><a target="_blank" rel="noopener" href="http://redisdoc.com/topic/transaction.html">http://redisdoc.com/topic/transaction.html</a></p>
+<h2 id="2-为什么要使用事务"><a href="#2-为什么要使用事务" class="headerlink" title="2. 为什么要使用事务"></a>2. 为什么要使用事务</h2><p>我们知道Redis的单个命令是原子性的(比如<code>get</code>,<code>set</code>,<code>mget</code>,<code>mset</code>),如果涉及到多个命令的时候, 需要把多个命令作为一个不可分割的处理序列, 就需要用到事务. </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/9.redis%E4%B9%8B%E4%BA%8B%E5%8A%A1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/8.redis%E4%B9%8B%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/8.redis%E4%B9%8B%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="redis之发布订阅"><a href="#redis之发布订阅" class="headerlink" title="redis之发布订阅"></a>redis之发布订阅</h1><h2 id="1-列表的局限"><a href="#1-列表的局限" class="headerlink" title="1 列表的局限"></a>1 列表的局限</h2><p>我们知道, redis的队列可以通过<code>rpush</code>和<code>lpop</code> 来实现消息队列(队尾进,队头出),但是消费者需要不断的调用<code>lpop</code>查看list中是否有等待处理的任务(比如写一个<code>while</code>循环).为了减少通信的消耗, 可以<code>sleep</code>一段时间后再进行消费, 但是这样会有两个问题: </p>
+<ol>
+<li><p>如果生产者生产消息的速度远大于消费者消费消息的速度, List会占用大量的内存. </p>
+</li>
+<li><p>消息的实时性降低. </p>
+<p> <code>list</code> 还提供了一个阻塞的命令, <code>blpop</code>, 没有任何元素可以弹出的时候 , 连接会被阻塞. </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">blpop queue 5</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>基于<code>list</code> 实现的消息队列, 不支持一对多的消息分发. </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/8.redis%E4%B9%8B%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/7.redis%E7%9A%84%E5%85%B6%E4%BB%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/7.redis%E7%9A%84%E5%85%B6%E4%BB%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="其他数据结构"><a href="#其他数据结构" class="headerlink" title="其他数据结构"></a>其他数据结构</h1><h2 id="1-BitMaps"><a href="#1-BitMaps" class="headerlink" title="1. BitMaps"></a>1. BitMaps</h2><p><code>BitMaps</code> 是在字符串类型上面定义的操作. 一个字节由8个二进制组成</p>
+<p><img src="http://files.luyanan.com//img/20200328161334.png" alt="image-20200328161332775"></p>
+<blockquote>
+<p> set k1 a </p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/7.redis%E7%9A%84%E5%85%B6%E4%BB%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E6%80%BB%E7%BB%93/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/6.redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bzset/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/6.redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bzset/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="redis基本类型之zset"><a href="#redis基本类型之zset" class="headerlink" title="redis基本类型之zset"></a>redis基本类型之zset</h1><p>zset是一个有序的不重复集合</p>
+<h2 id="1操作命令"><a href="#1操作命令" class="headerlink" title="1操作命令"></a>1操作命令</h2><p>| <code>zadd key [NX|XX] [CH] [INCR] score member [score member…]</code> | ZADD 参数（options） (&gt;= Redis 3.0.2)<br>ZADD 命令在key后面分数/成员（score/member）对前面支持一些参数，他们是：<br>XX: 仅仅更新存在的成员，不添加新成员。<br>NX: 不更新存在的成员。只添加新成员。<br>CH: 修改返回值为发生变化的成员总数，原始是返回新添加成员的总数 (CH 是 changed 的意 思)。 | 在通常情况下，ZADD返回值只计算新添加成员的数量。 |<br>| ————– | ——————————————– | —- |<br>| ZINCRBY key increment member | 对有序集合中指定成员的分数加上增量 increment<br>可以通过传递一个负数值 increment ，让分数减去相应的值，比如 ZINCRBY key -5 member ，就是让 member 的 score 值减去 5<br>当 key 不存在，或分数不是 key 的成员时， ZINCRBY key increment member 等同于 ZADD key increment member 。<br>分数值可以是整数值或双精度浮点数。 |      |<br>| zrange key start stop [WITHSCORES] | 查询有序集合，指定区间的内的元素。集合成员按 score 值从小到大来排序。<br>start，stop 都是 从 0 开始。0 是第一个元素，1 是第二个元素，依次类推。<br>以 -1 表示最后一个成员，-2 表示倒数第二 个成员。WITHSCORES 选项让 score 和 value 一同返回。 | 自定区间的成员集合 |<br>| <code>zrevrange key start stop [WITHSCORES]</code> | 返回有序集 key 中，指定区间内的成员。<br>其中成员的位置按 score 值递减(从大到小)来排列。 其它同 zrange 命令。 | 自定区间的成员集合                               |<br>| <code>zrem key member [member…]</code>                                  | 删除有序集合 key 中的一个或多个成员，不存在的成员被忽略      | 被成功删除的成员数量，不包括被忽略的成员。 |<br>| zcard key | 获取有序集 key 的元素成员的个数                              | key 存在返回集合元素的个数， key 不存在，返回 0 |<br>| zrangebyscore key min max [WITHSCORES ] [LIMIT offset count] | 获取有序集 key 中，所有 score 值介于 min 和 max 之间（包括 min 和 max）的成员，有序 成员是按递增（从小到大）排序。<br>min ,max 是包括在内 ， 使用符号 ( 表示不包括。<br>min ， max 可以使用 -inf ，+inf 表示 最小和最大 limit 用来限制返回结果的数量和区间。<br>withscores 显示 score 和 value | 指定区间的集合数据 |<br>| zrevrangebyscore key max min [WITHSCORES ] [LIMIT offset count] | 返回有序集 key 中， score 值介于 max 和 min 之间(默认包括等于 max 或 min )的所有的成 员。<br>有序集成员按 score 值递减(从大到小)的次序排列。其他同 zrangebyscore |      |<br>| zcount key min max | 返回有序集 key 中， score 值在 min 和 max 之间(默认包括 score 值等于 min 或 max ) 的成员的数量 |      |</p>
+<h2 id="2存储类型"><a href="#2存储类型" class="headerlink" title="2存储类型"></a>2存储类型</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/6.redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bzset/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/14/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/16/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

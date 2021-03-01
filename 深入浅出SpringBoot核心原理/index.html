@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="深入浅出SpringBoot核心原理1. SpringBoot 的基本认识不管是不是Spring Cloud Netflix  还是Spring Cloud Alibaba, 都是基于SpringBoot 这个框架来构建的. 1. 什么是SpringBoot对于Sping框架,我们接触的比较多的应该是Spring MVC和Spring. 而Spring 的核心在于IOC(控制反转)和ID(依赖注入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BASpringBoot%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="深入浅出SpringBoot核心原理1. SpringBoot 的基本认识不管是不是Spring Cloud Netflix  还是Spring Cloud Alibaba, 都是基于SpringBoot 这个框架来构建的. 1. 什么是SpringBoot对于Sping框架,我们接触的比较多的应该是Spring MVC和Spring. 而Spring 的核心在于IOC(控制反转)和ID(依赖注入">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com//img/20191102114815.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20191102115501.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20191102115715.png">
+<meta property="article:published_time" content="2021-03-01T09:46:51.830Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.029Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com//img/20191102114815.png">
+
+<link rel="canonical" href="http://luyanan.com/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BASpringBoot%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BASpringBoot%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="深入浅出SpringBoot核心原理"><a href="#深入浅出SpringBoot核心原理" class="headerlink" title="深入浅出SpringBoot核心原理"></a>深入浅出SpringBoot核心原理</h1><h2 id="1-SpringBoot-的基本认识"><a href="#1-SpringBoot-的基本认识" class="headerlink" title="1. SpringBoot 的基本认识"></a>1. SpringBoot 的基本认识</h2><p>不管是不是Spring Cloud Netflix  还是Spring Cloud Alibaba, 都是基于SpringBoot 这个框架来构建的.</p>
+<h3 id="1-什么是SpringBoot"><a href="#1-什么是SpringBoot" class="headerlink" title="1. 什么是SpringBoot"></a>1. 什么是SpringBoot</h3><p>对于Sping框架,我们接触的比较多的应该是Spring MVC和Spring. 而Spring 的核心在于IOC(控制反转)和ID(依赖注入). 而这些框架在使用的过程中需要配置大量的XML，或者需要做很多繁琐的配置. </p>
+<p> SpringBoot 框架是为了能够帮助使用Spring框架的开发者快速高效的构建一个基于Spring 框架以及Spring生态体系的应用解决方案. 它是对”约定优于配置” 这个理念下的一个最佳实践. 因为它是一个服务于框架的框架, 服务的范围是简化配置文件. </p>
+<h4 id="约定优于配置的体现"><a href="#约定优于配置的体现" class="headerlink" title="约定优于配置的体现"></a>约定优于配置的体现</h4><p>约定优于配置的体现主要是:</p>
+<ol>
+<li>Maven 的目录结构<ol>
+<li>默认有resources 文件夹存放配置文件</li>
+<li>默认打包方式为jar</li>
+</ol>
+</li>
+<li>spring-boot-starter-web 中默认包含Spring MVC 相关的依赖以及内置的tomcat 容器,使得构建一个web应用更加简单</li>
+<li>默认提供 <code>application.properties/yml</code> 配置文件</li>
+<li>默认通过<code>spring.profiles.active</code> 属性来解决运行环境时读取的配置文件</li>
+<li> EnableAutoConfiguration  默认对于依赖的starter 进行自动装载.</li>
+</ol>
+<h4 id="从-SpringBootApplication-注解入手"><a href="#从-SpringBootApplication-注解入手" class="headerlink" title="从 SpringBootApplication 注解入手"></a>从 SpringBootApplication 注解入手</h4><p>为了解开SpringBoot 的奥秘,我们直接从Annotation 入手, 看看@SpringBootApplication 里面, 做了什么呢? 打开SpringBootApplication 这个注解, 可以看到它实际上是一个复合注解. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Target(&#123;ElementType.TYPE&#125;)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@SpringBootConfiguration</span></span><br><span class="line"><span class="meta">@EnableAutoConfiguration</span></span><br><span class="line"><span class="meta">@ComponentScan(</span></span><br><span class="line"><span class="meta">    excludeFilters = &#123;@Filter(</span></span><br><span class="line"><span class="meta">    type = FilterType.CUSTOM,</span></span><br><span class="line"><span class="meta">    classes = &#123;TypeExcludeFilter.class&#125;</span></span><br><span class="line"><span class="meta">), @Filter(</span></span><br><span class="line"><span class="meta">    type = FilterType.CUSTOM,</span></span><br><span class="line"><span class="meta">    classes = &#123;AutoConfigurationExcludeFilter.class&#125;</span></span><br><span class="line"><span class="meta">)&#125;</span></span><br><span class="line"><span class="meta">)</span></span><br><span class="line"><span class="meta">@ConfigurationPropertiesScan</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SpringBootApplication &#123;</span><br><span class="line">    <span class="meta">@AliasFor(</span></span><br><span class="line"><span class="meta">        annotation = EnableAutoConfiguration.class</span></span><br><span class="line"><span class="meta">    )</span></span><br><span class="line">    Class&lt;?&gt;[] exclude() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@AliasFor(</span></span><br><span class="line"><span class="meta">        annotation = EnableAutoConfiguration.class</span></span><br><span class="line"><span class="meta">    )</span></span><br><span class="line">    String[] excludeName() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@AliasFor(</span></span><br><span class="line"><span class="meta">        annotation = ComponentScan.class,</span></span><br><span class="line"><span class="meta">        attribute = &quot;basePackages&quot;</span></span><br><span class="line"><span class="meta">    )</span></span><br><span class="line">    String[] scanBasePackages() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@AliasFor(</span></span><br><span class="line"><span class="meta">        annotation = ComponentScan.class,</span></span><br><span class="line"><span class="meta">        attribute = &quot;basePackageClasses&quot;</span></span><br><span class="line"><span class="meta">    )</span></span><br><span class="line">    Class&lt;?&gt;[] scanBasePackageClasses() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@AliasFor(</span></span><br><span class="line"><span class="meta">        annotation = Configuration.class</span></span><br><span class="line"><span class="meta">    )</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">proxyBeanMethods</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">true</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p> SpringBootApplication  本质上是由三个注解组成, 分别是:</p>
+<ul>
+<li><p>@Configuration</p>
+</li>
+<li><p>@EnableAutoConfiguration</p>
+</li>
+<li><p>@ComponentScan </p>
+<p>我们可以直接使用这三个注解也可以启动SpringBoot 应用,只是每次配置这三个注解比较繁琐, 所以直接用一个复合注解更方便些. </p>
+<p>然后仔细观察这三个注解, 除了 @EnableAutoConfiguration 可以稍微陌生些, 其他两个注解使用的都比较多. </p>
+</li>
+</ul>
+<h5 id="简单分析-Configuration"><a href="#简单分析-Configuration" class="headerlink" title="简单分析@Configuration"></a>简单分析@Configuration</h5><p>@Configuration 这个注解大家应该有用到过, 它是JavaConfig 形式的基于Spring IOC 容器的配置类使用的一种注解. 因为SpringBoot 本质上就是一个Spring 应用, 所以通过这个注解来加载IOC 容器的配置是很正常的. 所以在启动类里面标注了@Configuration,意味着它其实也是一个IOC容器里面的配置类. </p>
+<p>传统意义上的Spring 应用 都是基于XML 形式来配置bean 的依赖关系, 然后通过Spring 应用在启动的时候, 把Bean 进行初始化并且如果bean 还存在依赖关系,则分析这些已经在IOC容器中的bean 根据依赖关系进行组装. 直到Java 5中, 引入了Annotation 这个特性, Spring 框架也进随大流并且推出了基于Java 代码和Annotation 元信息的依赖关系绑定描述的方式. 也就是JavaConfig. 从Spring3开始,Spring 就支持了两种Bean 的配置方式, 一种下基于XML的方式, 另一种就是JavaConfig. 任何一个标注了@Configuration 的Java 类定义都是一个JavaConfig 配置类. 而在这个配置类中, 任何标注了Bean 注解的方法, 他的返回值都会作为Bean 定义注册到Spring 的IOC容器中, 方法名默认为这个bean 的id</p>
+<h5 id="简单分析-ComponentScan"><a href="#简单分析-ComponentScan" class="headerlink" title="简单分析 ComponentScan"></a>简单分析 ComponentScan</h5><p>ComponentScan  这个注解是大家接触的最多的, 相当于xml配置中的 <code>&lt;context:component-scan&gt;</code>, 他的主要作用就是扫描指定路径下的标识了需要装配的类, 自动装配到Spring 的IOC容器中。</p>
+<p>标识需要装配的类的主要形式是: @Component、@Repositiory、@Service、@Controller 这类的注解标识类. </p>
+<p>ComponentScan 默认会扫描当前 package 下的所有加了相关注解标识的类到IOC 容器中. </p>
+<h5 id="简单分析-EnableAutoConfiguration"><a href="#简单分析-EnableAutoConfiguration" class="headerlink" title="简单分析  EnableAutoConfiguration"></a>简单分析  EnableAutoConfiguration</h5><h6 id="Enable-并不是新鲜玩意儿"><a href="#Enable-并不是新鲜玩意儿" class="headerlink" title="Enable 并不是新鲜玩意儿"></a>Enable 并不是新鲜玩意儿</h6><p>仍然是在Spring 3.1 版本中, 提供了一系列的@Enable 开头的注解，Enable 注解应该是在JavaConfig 框架上的更进一步的完善, 使得用户在使用Spring 相关的框架的时候, 避免配置大量的代码从而降低使用的难度. </p>
+<p>比如常见的一些Enable 注解: </p>
+<ul>
+<li>EnableWebMvc 这个注解是引入MVC 框架在Spring 应用中需要用到的所有bean</li>
+<li>EnableScheduling 开启计划任务的支持</li>
+</ul>
+<p>找到EnableAutoConfiguration , 我们可以看到每一个涉及到Enable 开头的注解,都会带有一个 @Import 的注解, </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(&#123;ElementType.TYPE&#125;)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@AutoConfigurationPackage</span></span><br><span class="line"><span class="meta">@Import(&#123;AutoConfigurationImportSelector.class&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> EnableAutoConfiguration &#123;</span><br><span class="line">    String ENABLED_OVERRIDE_PROPERTY = <span class="string">&quot;spring.boot.enableautoconfiguration&quot;</span>;</span><br><span class="line"></span><br><span class="line">    Class&lt;?&gt;[] exclude() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    String[] excludeName() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h6 id="Import-注解"><a href="#Import-注解" class="headerlink" title="Import 注解"></a>Import 注解</h6><p>Import 注解是什么意思呢? 联想到XML形式下有一个<import resource/>    形式的注解, 就明白它的作用了. Import  就是把多个分开的容器配置合并在一起，在JavaConfig 中所表达的意义是一样的. </p>
+<h5 id="深入分析EnableAutoConfiguration"><a href="#深入分析EnableAutoConfiguration" class="headerlink" title="深入分析EnableAutoConfiguration"></a>深入分析EnableAutoConfiguration</h5><p>EnableAutoConfiguration  的主要作用其实是帮助SpringBoot 应用所有符合条件的@Configuration 配置都加载到当前SpringBoot 创建并使用的IOC容器中, 再回到EnableAutoConfiguration  这个注解中,我们发现它的Import 是这样</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Import(&#123;AutoConfigurationImportSelector.class&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> EnableAutoConfiguration &#123;</span><br></pre></td></tr></table></figure>
+
+<h6 id="AutoConfigurationImportSelector-是什么呢"><a href="#AutoConfigurationImportSelector-是什么呢" class="headerlink" title="AutoConfigurationImportSelector 是什么呢?"></a>AutoConfigurationImportSelector 是什么呢?</h6><p>Enable 注解不仅仅可以实现多个Configuration 的整合, 还可以实现一些复杂的场景，比如可以根据上下文来激活不同类型的bean, @Import 注解可以配置三种不同的class</p>
+<ol>
+<li>第一种 基于普通的bean 或者带有@Configuration 的bean 进行注入</li>
+<li>实现ImportSelector 接口进行动态注入</li>
+<li>实现ImportBeanDefinitionRegistrar 接口进行动态注入</li>
+</ol>
+<h4 id="EnableAutoConfiguration-注解的实现原理"><a href="#EnableAutoConfiguration-注解的实现原理" class="headerlink" title="@EnableAutoConfiguration  注解的实现原理"></a>@EnableAutoConfiguration  注解的实现原理</h4><p>了解 ImportSelector  和ImportBeanDefinitionRegistrar  之后, 对于EnableAutoConfiguration   的理解就容易一些了, 他会通过Import 导入第三方提供的Bean 的配置类. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Import(&#123;AutoConfigurationImportSelector.class&#125;)</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>从名字来看, 可以猜到它的基于 ImportSelector   来实现基于Bean 的动态加载功能, SpringBoot 的@Enable* 注解的工作原理. 实现ImportSelector 接口selectImports 返回的数组(类的全名) 都会被纳入到Spring 容器中. </p>
+<p>那么可以猜想到这里的实现原理也是一样的, 定位到AutoConfigurationImportSelector 这个类中的selectImports  方法,本质上来说, 其实EnableAutoConfiguration 会帮助SpringBoot 应用把所有符合@Configuration 配置都加载到当前SpringBoot 创建的IOC 容器, 而这里面借助了Spring 框架提供了一个工具类SpringFactoriesLoader的支持，以及用到了Spring 提供了条件注解@Conditional,选择性的针对需要加载的bean 进行条件过滤. </p>
+<h4 id="SpringFactoriesLoader"><a href="#SpringFactoriesLoader" class="headerlink" title="SpringFactoriesLoader"></a>SpringFactoriesLoader</h4><p>这里简单分析一下SpringFactoriesLoader 这个工具类的使用,  他其实和Java 中的SPI 机制的原理是一样的. 不过它比SPI更好的点在于不会一次性的加载所有的类, 而是根据key 进行加载. </p>
+<p>首先,SpringFactoriesLoader的作用是从classpath/META-INF/spring.factories 文件夹中根据key来加载对应的类到Spring IOC 容器中. </p>
+<h4 id="深入理解过滤条件"><a href="#深入理解过滤条件" class="headerlink" title="深入理解过滤条件"></a>深入理解过滤条件</h4><p>在分析 AutoConfigurationImportSelector 的源码时, 会先扫描spring-autoconfiguration-metadata.properties  文件, 最后再扫描spring.factories 对应的类, 会结合前面的元数据进行过滤. 为什么要进行过滤? 原因是很多的@Configuration  其实是依托其他的框架来加载的, 如果当前的classpath 环境下没有相关联的依赖, 则意味着这些类没必要加载, 所以, 通过这种条件过滤可以有效的减少@configuration 类的数量从而减低SpringBoot 的启动时间</p>
+<h6 id="Conditional-中的其他注解"><a href="#Conditional-中的其他注解" class="headerlink" title="Conditional 中的其他注解"></a>Conditional 中的其他注解</h6><table>
+<thead>
+<tr>
+<th>Conditions</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@ConditionalOnBean</td>
+<td>在存在某个Bean 的时候</td>
+</tr>
+<tr>
+<td>@ConditionalOnMissingBean</td>
+<td>不存在某个Bean 的时候</td>
+</tr>
+<tr>
+<td>@ConditionalOnClass</td>
+<td>当前classpath 可以找到某个类型的类时</td>
+</tr>
+<tr>
+<td>@ConditionalOnMissingClass</td>
+<td>当前classpath 不可以找到某个类型的类的时候</td>
+</tr>
+<tr>
+<td>@ConditionalOnResource</td>
+<td>当前classpath 是否存在某个资源文件</td>
+</tr>
+<tr>
+<td>@ConditionalOnProperty</td>
+<td>当前jvm 是否包含某个系统属性为某个值</td>
+</tr>
+<tr>
+<td>@ConditionalOnWebApplication</td>
+<td>当前Spring context 是否是web 应用程序</td>
+</tr>
+</tbody></table>
+<h3 id="代码演示"><a href="#代码演示" class="headerlink" title="代码演示"></a>代码演示</h3><h4 id="使用ComponentScan-注解"><a href="#使用ComponentScan-注解" class="headerlink" title="使用ComponentScan 注解"></a>使用ComponentScan 注解</h4><p>我们先准备一个需要托管的类 ComponentScanDemo,加上@Configuration 注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ComponentScanDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>DemoClass 类加上 @Service 注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoClass</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ComponentScan(basePackages = &quot;com.springboot.basic.configuration.componentscan&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ComponentScanMain</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        AnnotationConfigApplicationContext applicationContext = <span class="keyword">new</span> AnnotationConfigApplicationContext(ComponentScanMain.class);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; applicationContext.getBeanDefinitionNames().length; i++) &#123;</span><br><span class="line">            System.out.println(applicationContext.getBeanDefinitionNames()[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">17</span>:<span class="number">32</span>:<span class="number">50.342</span> [main] DEBUG org.springframework.context.annotation.AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@2a33fae0</span><br><span class="line"><span class="number">17</span>:<span class="number">32</span>:<span class="number">50.374</span> [main] DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean <span class="string">&#x27;org.springframework.context.annotation.internalConfigurationAnnotationProcessor&#x27;</span></span><br><span class="line">17:32:50.452 [main] DEBUG org.springframework.context.annotation.ClassPathBeanDefinitionScanner - Identified candidate component class: file [D:\workspace\lyn\lyn-project\javaNotes\SpringBoot\spring-boot-basic\target\classes\com\springboot\basic\configuration\componentscan\ComponentScanDemo.class]</span><br><span class="line">17:32:50.455 [main] DEBUG org.springframework.context.annotation.ClassPathBeanDefinitionScanner - Identified candidate component class: file [D:\workspace\lyn\lyn-project\javaNotes\SpringBoot\spring-boot-basic\target\classes\com\springboot\basic\configuration\componentscan\DemoClass.class]</span><br><span class="line"><span class="number">17</span>:<span class="number">32</span>:<span class="number">50.609</span> [main] DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean <span class="string">&#x27;org.springframework.context.event.internalEventListenerProcessor&#x27;</span></span><br><span class="line"><span class="number">17</span>:<span class="number">32</span>:<span class="number">50.612</span> [main] DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean <span class="string">&#x27;org.springframework.context.event.internalEventListenerFactory&#x27;</span></span><br><span class="line"><span class="number">17</span>:<span class="number">32</span>:<span class="number">50.616</span> [main] DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean <span class="string">&#x27;org.springframework.context.annotation.internalAutowiredAnnotationProcessor&#x27;</span></span><br><span class="line"><span class="number">17</span>:<span class="number">32</span>:<span class="number">50.624</span> [main] DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean <span class="string">&#x27;org.springframework.context.annotation.internalCommonAnnotationProcessor&#x27;</span></span><br><span class="line"><span class="number">17</span>:<span class="number">32</span>:<span class="number">50.638</span> [main] DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean <span class="string">&#x27;componentScanMain&#x27;</span></span><br><span class="line"><span class="number">17</span>:<span class="number">32</span>:<span class="number">50.645</span> [main] DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean <span class="string">&#x27;componentScanDemo&#x27;</span></span><br><span class="line"><span class="number">17</span>:<span class="number">32</span>:<span class="number">50.647</span> [main] DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean <span class="string">&#x27;demoClass&#x27;</span></span><br><span class="line">org.springframework.context.annotation.internalConfigurationAnnotationProcessor</span><br><span class="line">org.springframework.context.annotation.internalAutowiredAnnotationProcessor</span><br><span class="line">org.springframework.context.annotation.internalCommonAnnotationProcessor</span><br><span class="line">org.springframework.context.event.internalEventListenerProcessor</span><br><span class="line">org.springframework.context.event.internalEventListenerFactory</span><br><span class="line">componentScanMain</span><br><span class="line">componentScanDemo</span><br><span class="line">demoClass</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>结果能看到我们想要托管的类</p>
+<h4 id="使用Import-注解和Bean注解进行注入"><a href="#使用Import-注解和Bean注解进行注入" class="headerlink" title="使用Import 注解和Bean注解进行注入"></a>使用Import 注解和Bean注解进行注入</h4><p>先准备一个需要被托管的类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OtherBean</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>再准备一个配置类,使用bean 注解将这个类注入到IOC容器中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OtherConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> OtherBean <span class="title">otherBean</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> OtherBean();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>再准备一个想被托管的类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultBean</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>准备一个总的配置文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@Import(OtherConfig.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> DefaultBean <span class="title">defaultBean</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DefaultBean();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>编写测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SecondMain</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        AnnotationConfigApplicationContext applicationContext = <span class="keyword">new</span> AnnotationConfigApplicationContext(SpringConfig.class);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; applicationContext.getBeanDefinitionNames().length; i++) &#123;</span><br><span class="line">            System.out.println(applicationContext.getBeanDefinitionNames()[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行结果就能看到我们想要托管的类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">springConfig</span><br><span class="line">com.springboot.basic.configuration.imports.other.OtherConfig</span><br><span class="line">otherBean</span><br><span class="line">defaultBean</span><br></pre></td></tr></table></figure>
+
+<h4 id="使用Import-注解中使用-ImportSelector接口和ImportBeanDefinitionRegistrar-接口进行动态注入"><a href="#使用Import-注解中使用-ImportSelector接口和ImportBeanDefinitionRegistrar-接口进行动态注入" class="headerlink" title="使用Import 注解中使用 ImportSelector接口和ImportBeanDefinitionRegistrar 接口进行动态注入"></a>使用Import 注解中使用 ImportSelector接口和ImportBeanDefinitionRegistrar 接口进行动态注入</h4><p>先准备两个类 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CacheService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoggerService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>再创建两个类, 分别实现ImportSelector接口和ImportBeanDefinitionRegistrar 接口返回上面两个类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CacheImportSelector</span> <span class="keyword">implements</span> <span class="title">ImportSelector</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String[] selectImports(AnnotationMetadata annotationMetadata) &#123;</span><br><span class="line"></span><br><span class="line">        Map&lt;String, Object&gt; annotationAttributes = annotationMetadata.getAnnotationAttributes(EnableDefineService.class.getName());</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> String[]&#123;CacheService.class.getName()&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoggerDefinitionRegistrar</span> <span class="keyword">implements</span> <span class="title">ImportBeanDefinitionRegistrar</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerBeanDefinitions</span><span class="params">(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry)</span> </span>&#123;</span><br><span class="line">        Class beanClass = LoggerService.class;</span><br><span class="line">        RootBeanDefinition beanDefinition = <span class="keyword">new</span> RootBeanDefinition(beanClass);</span><br><span class="line">        String beanName = StringUtils.uncapitalize(beanClass.getSimpleName());</span><br><span class="line">        registry.registerBeanDefinition(beanName, beanDefinition);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建Enable 注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@Import(&#123;LoggerDefinitionRegistrar.class, CacheImportSelector.class&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> EnableDefineService &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//配置一些方法</span></span><br><span class="line">    Class&lt;?&gt;[] exclude() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>编写测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableDefineService</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EnableDemoMain</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ConfigurableApplicationContext ca= SpringApplication.run(EnableDemoMain.class,args);</span><br><span class="line"></span><br><span class="line">        System.out.println(ca.getBean(CacheService.class));</span><br><span class="line">        System.out.println(ca.getBean(LoggerService.class));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行则能打印出来两个类的实例信息</p>
+<h4 id="EnableAutoConfiguration-注入"><a href="#EnableAutoConfiguration-注入" class="headerlink" title="EnableAutoConfiguration  注入"></a>EnableAutoConfiguration  注入</h4><p>新建一个项目springboot-core</p>
+<p>创建HelloService</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">say</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Hello World&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>再创建配置类 HelloConfig</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> HelloService <span class="title">helloService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> HelloService();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在 resources 下创建META-INF 目录</p>
+<p>新建spring.factories 配置文件,EnableAutoConfiguration   会自动注入这配置文件里配置类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.springboot.core.HelloConfig</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>创建 spring-autoconfigure-metadata.properties 配置文件, 注入配置文件的时候  会按照这个配置文件中的配置进行条件筛选</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">com.springboot.core.GupaoConfig.ConditionalOnClass=com.springboot.core.TestClass</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在另外一个项目里面加入 springboot-core 项目的依赖</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">      &lt;groupId&gt;com.springboot.core&lt;/groupId&gt;</span><br><span class="line">      &lt;artifactId&gt;springboot-core&lt;/artifactId&gt;</span><br><span class="line">      &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;</span><br><span class="line">  &lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>修改主启动类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringBootBasicApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootBasicApplication.class, args);</span><br><span class="line">        HelloService helloService = applicationContext.getBean(HelloService.class);</span><br><span class="line">        System.out.println(helloService.say());;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行成功后打印出<code>Hello World</code></p>
+<h2 id="2-什么是starter"><a href="#2-什么是starter" class="headerlink" title="2. 什么是starter"></a>2. 什么是starter</h2><p>Starter 是SpringBoot 中的一个非常重要的概念, Starter相当于模块,它能将模块所需的依赖整个起来并对模块内的Bean 根据环境(条件) 进行自动装配.使用者还需要依赖相应功能的Statrer ,无需做过多的配置和依赖, SpringBoot 就能自动扫描并加载相应的模块.</p>
+<p>SpringBoot中存在很多开箱即用的Starter 依赖,使得我们在开发业务代码时能够非常方便、不需要过多关注框架的配置,只需要关注业务即可.</p>
+<h3 id="spring-boot-starter-logger"><a href="#spring-boot-starter-logger" class="headerlink" title="spring-boot-starter-logger"></a>spring-boot-starter-logger</h3><p>在实际应用中, 日志其实是最重要的一个组件.</p>
+<ol>
+<li>他可以作为系统提供错误以及日常 的定位.</li>
+<li>也可以对访问的记录进行追踪</li>
+<li>当然,在很多大型的互联网应用中, 基于日志的手机以及分析可以了解用户的用户画像,比如兴趣爱好、点击行为.</li>
+</ol>
+<h4 id="常见的日志框架"><a href="#常见的日志框架" class="headerlink" title="常见的日志框架"></a>常见的日志框架</h4><p>可能是太常见了,所以使得大家很少关注,只是要用的时候复制粘贴一份就可以了,甚至连配置文件中的配置都不清楚.另一方面,Java 中提供了日志组件太多了,一会儿log4j,一会儿logback,一会儿又是log4j4,不清楚其中的关联.</p>
+<p>Java 中常用的日志框架: Log4j、Log4j2、Commons Logging、Slf4j、Logback、JUL(Java Util Logging).</p>
+<h4 id="简单介绍日志的发展历史"><a href="#简单介绍日志的发展历史" class="headerlink" title="简单介绍日志的发展历史"></a>简单介绍日志的发展历史</h4><p>最早的日志组件是Apache 基金会提供的Log4j, Log4j 能够通过配置文件轻松的实现日志系统的管理和多样化配置, 所以很快被广泛运用. 也就我们接触的比较早和比较多的日志组件. 它几乎成了Java 社区的日志标准.</p>
+<p>据说Apache 基金会还曾经建议SUN 引入Log4j 到Java 的标准库中, 但SUN 拒绝了. 所以SUN 公司 在Java 1.4 版本中,增加了日志库(Java Util Logger). 其实现基本模仿了Log4j的技术. 在JUL 出来之前, Log4j 就已经成为一项成熟的技术, 使得Log4j 在选择上占据了一定的优势.</p>
+<p>Apache 推出JUL 之后, 有一些项目使用JUL, 也有一些项目使用Log4j.  这样就造成了开发者的混乱, 因为这两个日志组件没有关联, 所以想实现统一管理或者替换就非常困难. 怎么办呢?</p>
+<p>这个时候又轮到Apache 出手了, 他推出一个Apache Commons Logging 组件, 只是定义了一套日志接口(其内部也提供了一个Simple Log的简易实现),支持运行时动态加载日志组件的实现,也就是说, 在你的应用代码中, 只需要调用Common Logger  的接口, 底层实现可以是Log4j,  也可以是Java Util Logging.</p>
+<p> 由于它很出色的完成了主流日志的兼容, 所以基本上在后面的很长一段时间, 是无敌的存在. 连Spring 也都是依赖JCL 进行日志管理.</p>
+<p>但是故事还没有结束.</p>
+<p>原Log4j 的作者, 它觉得 Apache Commons Logging  不够优秀, 所以它也行搞一套更优雅的方案, 于是slf4j 日志体系诞生了, slf4j  实际上及就是一个日志门面接口,它的作用类似于Commons Logging. 并且它还为slf4j 提供了一个日志的实现 logback.</p>
+<p>因为大家可以发现Java 的日志领域被划分为两个大营:Commons Logging 和slf4j</p>
+<p>另外还有一个log4j2 是怎么回事? 因为 slf4j 以及它的实现 logback 出来以后,很快就超赶了原本的 apache 的 log4j 体系,所以 apache 在2012 年重写了 log4j, 成立了新的项目 log4j2.</p>
+<p> 总的来说,日志的整个体系分为日志框架和日志系统:</p>
+<ul>
+<li>日志框架: JCL/ slf4j</li>
+<li>日志系统: Log4j、Log4j2、Logback、JUL。</li>
+</ul>
+<p>而我们现在的应用中,绝大部分都是使用 slf4j 作为门面, 然后搭配 logback 或者 log4j 日志系统的. </p>
+<h2 id="3-SpringBoot-的另一大神器-Actuator"><a href="#3-SpringBoot-的另一大神器-Actuator" class="headerlink" title="3.SpringBoot 的另一大神器 - Actuator"></a>3.SpringBoot 的另一大神器 - Actuator</h2><p>微服务应用开发完成后, 最终目的是为了发布到生产环境上给用户使用,开发结束并不意味着研发的生命周期结束,很多的时候只是一个开始, 因为服务在本地测试完成以后, 并不一定能够非常完善的考虑到各种场景. 所以需要通过运维来保障服务的稳定.</p>
+<p>在以前的传统应用中,我们可以靠人工来监控. 但是微服务中,几千上万个服务, 我们需要了解各个服务的健康状态, 就必须依赖监控平台来实现.</p>
+<p>所以在SpringBoot 框架中提供了 <code>spring-boot-starter-actuator</code> 自动配置模块来支持对于SpringBoot 应用的监控.</p>
+<h3 id="Actuator"><a href="#Actuator" class="headerlink" title="Actuator"></a>Actuator</h3><p>SpringBoot Acyuator 的关键特性是在应用程序里提供众多WEB 端点, 通过他们了解应用程序运行时的内部状态. 有了Actuator ,你可以知道Bean 在Spring 应用程序上下文里是如何组装在一起的, 掌握应用程序可以获取的环境属性信息.</p>
+<p>在SpringBoot 项目中, 添加 actuator 的一个starter</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Actuator-提供的-endpoint"><a href="#Actuator-提供的-endpoint" class="headerlink" title="Actuator 提供的 endpoint"></a>Actuator 提供的 endpoint</h3><p> 启动服务后, 可以通过下面这个地址看到 actuator 提供的所有endoint 地址</p>
+<p> <a target="_blank" rel="noopener" href="http://localhost:8080/actuator">http://localhost:8080/actuator</a> </p>
+<p>可以看到非常多的endpoint. 有一些Endpiont 是不能访问的, 涉及到安全问题. </p>
+<p>如果想开启访问的那些安全相关的url, 可以在 appliaction.propertie/yml 中配置, 开启所有的 endpoint</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">management.endpoints.web.exposure.include&#x3D;*</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="health"><a href="#health" class="headerlink" title="health"></a>health</h4><p> 针对当前SpringBoot 的健康检查, 默认情况下, 会通过 “up” 或者”down” , 可以基于下面这个配置, 来打印health 更加详细的信息</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">## 打印health 更信息的监控信息</span><br><span class="line">management.endpoint.health.show-details&#x3D;always</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="loggers"><a href="#loggers" class="headerlink" title="loggers"></a>loggers</h4><p>显示当前SpringBoot 应用中的日志配置信心, 针对每个package 对应的日志级别</p>
+<h4 id="beans"><a href="#beans" class="headerlink" title="beans"></a>beans</h4><p>获取当前SpringBoot 应用中IOC 容器中的所有的bean</p>
+<h4 id="Dump"><a href="#Dump" class="headerlink" title="Dump"></a>Dump</h4><p>获取活动线程的快照.</p>
+<h4 id="Mappings"><a href="#Mappings" class="headerlink" title="Mappings"></a>Mappings</h4><p>返回全部的url 路径, 以及和控制器的映射关系.</p>
+<h4 id="conditions"><a href="#conditions" class="headerlink" title="conditions"></a>conditions</h4><p>显示当前所有的条件注解, 提供一份自动配置生效的条件情况, 记录哪些自动配置条件通过了, 哪些没通过. </p>
+<h4 id="shuwdown"><a href="#shuwdown" class="headerlink" title="shuwdown"></a>shuwdown</h4><p>关闭应用程序,需要添加以下这个配置</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">## 使用 shutdowm 关闭应用程序</span><br><span class="line">management.endpoint.shutdown.enabled&#x3D;true</span><br></pre></td></tr></table></figure>
+
+</blockquote>
+<p>这个Endpoint 是比较危险的, 如果没有一定的安全保证,不要开启. </p>
+<h4 id="Env"><a href="#Env" class="headerlink" title="Env"></a>Env</h4><p>获取全部的环境信息</p>
+<h3 id="关于Health-的原理"><a href="#关于Health-的原理" class="headerlink" title="关于Health 的原理"></a>关于Health 的原理</h3><p>应用健康状态检查应该是监控系统中最基本的要求, 所以我们基于health 来分析一下它是如何实现的.SpringBoot 预先通过org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration   这个就是基于Springboot 的自动装配来载入的. 所以可以在spring-boot-actuator-autoconfigure 这个包下找到spring.factories </p>
+<p><img src="http://files.luyanan.com//img/20191102114815.png"></p>
+<p>Actuator 中提供了非常多的扩展点, 默认情况下提供了一些常见的服务的监控检查和支持。</p>
+<ul>
+<li> DataSourceHealthIndicator </li>
+<li> DiskSpaceHealthIndicator </li>
+<li> RedisHealthIndicator </li>
+<li>…</li>
+</ul>
+<p>其中, 有一些服务的检查, 需要依赖于当前应用是否集成了对应的组件, 比如redis,如果没有集成, 那么 RedisHealthIndicatorAutoConfiguration  就不会被装载. 因为它有condition 的条件判断. </p>
+<h3 id="Actuator-对于JMX-支持"><a href="#Actuator-对于JMX-支持" class="headerlink" title="Actuator 对于JMX 支持"></a>Actuator 对于JMX 支持</h3><p>除了REST 方式发布的Endpoint,Actuator  还把它的端点以JMX MBean 的方式发布出来, 可以通过JMX 来查看和管理</p>
+<h4 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h4><p>在CMD中输入 jconsole,连接到springboot  应用</p>
+<p><img src="http://files.luyanan.com//img/20191102115501.png"></p>
+<p>就可以看到JBean 的信息以及相应的操作,  比如可以在操作菜单中访问shutdown 的endpiont 来关闭服务.</p>
+<p><img src="http://files.luyanan.com//img/20191102115715.png"></p>
+<h4 id="什么是JMX"><a href="#什么是JMX" class="headerlink" title="什么是JMX"></a>什么是JMX</h4><p>JMX 全称是 Java Management Extensions , Java 管理扩展,它提供了对java 应用程序和JVM 的监控和管理功能. 通过JMX，我们可以监控:</p>
+<ol>
+<li>服务器中的各种资源的使用情况, 比如CPU、内存</li>
+<li>JVM 的内存的使用情况</li>
+<li>JVM线程的使用情况</li>
+</ol>
+<p>比如前面讲的Actuator ,就是基于JMX技术来实现对endpoint 的访问的. </p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%BE%85%E8%A1%A5%E5%85%85/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/1.tomcat%E5%9F%BA%E7%A1%80%E8%AE%A4%E7%9F%A5/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BASpringBoot%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">深入浅出SpringBoot核心原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-SpringBoot-%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86"><span class="nav-number">1.1.</span> <span class="nav-text">1. SpringBoot 的基本认识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFSpringBoot"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. 什么是SpringBoot</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%A6%E5%AE%9A%E4%BC%98%E4%BA%8E%E9%85%8D%E7%BD%AE%E7%9A%84%E4%BD%93%E7%8E%B0"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">约定优于配置的体现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E-SpringBootApplication-%E6%B3%A8%E8%A7%A3%E5%85%A5%E6%89%8B"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">从 SpringBootApplication 注解入手</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%88%86%E6%9E%90-Configuration"><span class="nav-number">1.1.1.2.1.</span> <span class="nav-text">简单分析@Configuration</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%88%86%E6%9E%90-ComponentScan"><span class="nav-number">1.1.1.2.2.</span> <span class="nav-text">简单分析 ComponentScan</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%88%86%E6%9E%90-EnableAutoConfiguration"><span class="nav-number">1.1.1.2.3.</span> <span class="nav-text">简单分析  EnableAutoConfiguration</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#Enable-%E5%B9%B6%E4%B8%8D%E6%98%AF%E6%96%B0%E9%B2%9C%E7%8E%A9%E6%84%8F%E5%84%BF"><span class="nav-number">1.1.1.2.3.1.</span> <span class="nav-text">Enable 并不是新鲜玩意儿</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#Import-%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.1.1.2.3.2.</span> <span class="nav-text">Import 注解</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90EnableAutoConfiguration"><span class="nav-number">1.1.1.2.4.</span> <span class="nav-text">深入分析EnableAutoConfiguration</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#AutoConfigurationImportSelector-%E6%98%AF%E4%BB%80%E4%B9%88%E5%91%A2"><span class="nav-number">1.1.1.2.4.1.</span> <span class="nav-text">AutoConfigurationImportSelector 是什么呢?</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#EnableAutoConfiguration-%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">@EnableAutoConfiguration  注解的实现原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SpringFactoriesLoader"><span class="nav-number">1.1.1.4.</span> <span class="nav-text">SpringFactoriesLoader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%BF%87%E6%BB%A4%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.1.1.5.</span> <span class="nav-text">深入理解过滤条件</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#Conditional-%E4%B8%AD%E7%9A%84%E5%85%B6%E4%BB%96%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.1.1.5.0.1.</span> <span class="nav-text">Conditional 中的其他注解</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E6%BC%94%E7%A4%BA"><span class="nav-number">1.1.2.</span> <span class="nav-text">代码演示</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8ComponentScan-%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">使用ComponentScan 注解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Import-%E6%B3%A8%E8%A7%A3%E5%92%8CBean%E6%B3%A8%E8%A7%A3%E8%BF%9B%E8%A1%8C%E6%B3%A8%E5%85%A5"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">使用Import 注解和Bean注解进行注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Import-%E6%B3%A8%E8%A7%A3%E4%B8%AD%E4%BD%BF%E7%94%A8-ImportSelector%E6%8E%A5%E5%8F%A3%E5%92%8CImportBeanDefinitionRegistrar-%E6%8E%A5%E5%8F%A3%E8%BF%9B%E8%A1%8C%E5%8A%A8%E6%80%81%E6%B3%A8%E5%85%A5"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">使用Import 注解中使用 ImportSelector接口和ImportBeanDefinitionRegistrar 接口进行动态注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#EnableAutoConfiguration-%E6%B3%A8%E5%85%A5"><span class="nav-number">1.1.2.4.</span> <span class="nav-text">EnableAutoConfiguration  注入</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AFstarter"><span class="nav-number">1.2.</span> <span class="nav-text">2. 什么是starter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#spring-boot-starter-logger"><span class="nav-number">1.2.1.</span> <span class="nav-text">spring-boot-starter-logger</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E6%97%A5%E5%BF%97%E6%A1%86%E6%9E%B6"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">常见的日志框架</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D%E6%97%A5%E5%BF%97%E7%9A%84%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">简单介绍日志的发展历史</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-SpringBoot-%E7%9A%84%E5%8F%A6%E4%B8%80%E5%A4%A7%E7%A5%9E%E5%99%A8-Actuator"><span class="nav-number">1.3.</span> <span class="nav-text">3.SpringBoot 的另一大神器 - Actuator</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Actuator"><span class="nav-number">1.3.1.</span> <span class="nav-text">Actuator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Actuator-%E6%8F%90%E4%BE%9B%E7%9A%84-endpoint"><span class="nav-number">1.3.2.</span> <span class="nav-text">Actuator 提供的 endpoint</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#health"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">health</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#loggers"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">loggers</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#beans"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">beans</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Dump"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">Dump</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Mappings"><span class="nav-number">1.3.2.5.</span> <span class="nav-text">Mappings</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#conditions"><span class="nav-number">1.3.2.6.</span> <span class="nav-text">conditions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shuwdown"><span class="nav-number">1.3.2.7.</span> <span class="nav-text">shuwdown</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Env"><span class="nav-number">1.3.2.8.</span> <span class="nav-text">Env</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EHealth-%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-number">1.3.3.</span> <span class="nav-text">关于Health 的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Actuator-%E5%AF%B9%E4%BA%8EJMX-%E6%94%AF%E6%8C%81"><span class="nav-number">1.3.4.</span> <span class="nav-text">Actuator 对于JMX 支持</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.4.1.</span> <span class="nav-text">操作步骤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFJMX"><span class="nav-number">1.3.4.2.</span> <span class="nav-text">什么是JMX</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="MySql查询性能优化避免向数据库请求不需要的数据在访问数据库时，应该只请求需要的行和列。请求多余的行和列会消耗MySql服务器的CPU和内存资源，并增加网络开销。例如在处理分页时，应该使用LIMIT限制MySql只返回一页的数据，而不是向应用程序返回全部数据后，再由应用程序过滤不需要的行。当一行数据被多次使用时可以考虑将数据行缓存起来，避免每次使用都要到MySql查询。避免使用SELECT *这">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/MySql%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="MySql查询性能优化避免向数据库请求不需要的数据在访问数据库时，应该只请求需要的行和列。请求多余的行和列会消耗MySql服务器的CPU和内存资源，并增加网络开销。例如在处理分页时，应该使用LIMIT限制MySql只返回一页的数据，而不是向应用程序返回全部数据后，再由应用程序过滤不需要的行。当一行数据被多次使用时可以考虑将数据行缓存起来，避免每次使用都要到MySql查询。避免使用SELECT *这">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-01T09:46:52.238Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.113Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://luyanan.com/MySql%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/MySql%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="MySql查询性能优化"><a href="#MySql查询性能优化" class="headerlink" title="MySql查询性能优化"></a>MySql查询性能优化</h1><h2 id="避免向数据库请求不需要的数据"><a href="#避免向数据库请求不需要的数据" class="headerlink" title="避免向数据库请求不需要的数据"></a>避免向数据库请求不需要的数据</h2><p>在访问数据库时，应该只请求需要的行和列。请求多余的行和列会消耗MySql服务器的CPU和内存资源，并增加网络开销。<br>例如在处理分页时，应该使用LIMIT限制MySql只返回一页的数据，而不是向应用程序返回全部数据后，再由应用程序过滤不需要的行。<br>当一行数据被多次使用时可以考虑将数据行缓存起来，避免每次使用都要到MySql查询。<br>避免使用SELECT *这种方式进行查询，应该只返回需要的列。</p>
+<h2 id="查询数据的方式"><a href="#查询数据的方式" class="headerlink" title="查询数据的方式"></a>查询数据的方式</h2><p>查询数据的方式有全表扫描、索引扫描、范围扫描、唯一索引查询、常数引用等。这些查询方式，速度从慢到快，扫描的行数也是从多到少。可以通过EXPLAIN语句中的type列反应查询采用的是哪种方式。<br>通常可以通过添加合适的索引改善查询数据的方式，使其尽可能减少扫描的数据行，加快查询速度。<br>例如，当发现查询需要扫描大量的数据行但只返回少数的行，那么可以考虑使用覆盖索引，即把所有需要用到的列都放到索引中。这样存储引擎无须回表获取对应行就可以返回结果了。</p>
+<h2 id="分解大的查询"><a href="#分解大的查询" class="headerlink" title="分解大的查询"></a>分解大的查询</h2><p>可以将一个大查询切分成多个小查询执行，每个小查询只完成整个查询任务的一小部分，每次只返回一小部分结果<br>删除旧的数据是一个很好的例子。如果只用一条语句一次性执行一个大的删除操作，则可能需要一次锁住很多数据，占满整个事务日志，耗尽系统资源、阻塞很多小的但重要的查询。将一个大的删除操作分解成多个较小的删除操作可以将服务器上原本一次性的压力分散到多次操作上，尽可能小地影响MySql性能，减少删除时锁的等待时间。同时也减少了MySql主从复制的延迟。<br>另一个例子是分解关联查询，即对每个要关联的表进行单表查询，然后将结果在应用程序中进行关联。下面的这个查询：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM tag</span><br><span class="line">    JOIN tag_post ON tag_post.tag_id&#x3D;tag.id</span><br><span class="line">    JOIN post ON tag_post.post_id&#x3D;post.id</span><br><span class="line">WHERE tag.tag &#x3D; &#39;mysql&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>可以分解成下面这些查询来代替：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM tag WHERE tag &#x3D; &#39;mysql&#39;;</span><br><span class="line">SELECT * FROM tag_post WHERE tag_id &#x3D; 1234;</span><br><span class="line">SELECT * FROM post WHERE post.id in (123,456,567,9098,8904);</span><br></pre></td></tr></table></figure>
+
+<p>将一个关联查询拆解成多个单表查询有如下有点：</p>
+<ol>
+<li>让缓存的效率更高。如果缓存的是关联查询的结果，那么其中的一个表发生变化，整个缓存就失效了。而拆分后，如果只是某个表很少的改动，并不会破坏所有的缓存。</li>
+<li>可以减少锁的竞争</li>
+<li>更容易对数据库进行拆分，更容易做到高性能和可扩展。</li>
+<li>查询本身的效率也有可能会有所提升。例如上面用IN()代替关联查询比随机的关联更加高效。</li>
+</ol>
+<h2 id="优化MIN-和MAX"><a href="#优化MIN-和MAX" class="headerlink" title="优化MIN()和MAX()"></a>优化MIN()和MAX()</h2><p>添加索引可以优化MIN()和MAX()表达式。例如，要找到某一列的最小值，只需要查询对应B-Tree索引的最左端的记录即可。类似的，如果要查询列中的最大值，也只需要读取B-Tree索引的最后一条记录。对于这种查询，EXPLAIN中可以看到”Select tables optimized away”,表示优化器已经从执行计划中移除了该表，并以一个常数取而代之。</p>
+<h2 id="用IN-取代OR"><a href="#用IN-取代OR" class="headerlink" title="用IN()取代OR"></a>用IN()取代OR</h2><p>在MySql中，IN()先将自己列表中的数据进行排序，然后通过二分查找的方式确定列的值是否在IN()的列表中，这个时间复杂度是O(logn)。如果换成OR操作，则时间复杂度是O(n)。所以，对于IN()的列表中有大量取值的时候，用IN()替换OR操作将会更快。</p>
+<h2 id="优化关联查询"><a href="#优化关联查询" class="headerlink" title="优化关联查询"></a>优化关联查询</h2><p>在MySql中，任何一个查询都可以看成是一个关联查询，即使只有一个表的查询也是如此。<br>MySql对任何关联都执行嵌套循环的关联操作，例如对于下面的SQL语句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT tbl1.col1,tbl2.col2</span><br><span class="line">FROM tbl1 INNER JOIN tbl2 USING(col3)</span><br><span class="line">WHERE tbl1.col1 IN(5,6);</span><br></pre></td></tr></table></figure>
+
+<p>下面的伪代码表示MySql将如何执行这个查询：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;先从第一个表中取出符合条件的所有行</span><br><span class="line">out_iter &#x3D; iterator over tbl1 where col1 IN(5,6)</span><br><span class="line">outer_row &#x3D; out_iter.next</span><br><span class="line">&#x2F;&#x2F;在while循环中遍历第一个表结果集的每一行</span><br><span class="line">while outer_row</span><br><span class="line">    &#x2F;&#x2F;对于第一个表结果集中的每一行，在第二个表中找出符合条件的所有行</span><br><span class="line">    inner_iter &#x3D; iterator over tbl2 where col3 &#x3D; outer_row.col3</span><br><span class="line">    inner_row &#x3D; inner_iter.next</span><br><span class="line">    while inner_row</span><br><span class="line">        &#x2F;&#x2F;将第一个表的结果列和第二个表的结果列拼装在一起作为结果输出</span><br><span class="line">        output[outer_row.col1, inner_row.col2]</span><br><span class="line">        inner_row &#x3D; inner_iter.next</span><br><span class="line">    end</span><br><span class="line">    &#x2F;&#x2F;回溯，再根据第一个表结果集的下一行，继续上面的过程</span><br><span class="line">    outer_row &#x3D; outer_iter.next</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>对于单表查询，那么只需要完成上面外层的基本操作。<br>优化关联查询，要确保ON或者USING子句中的列上有索引，并且在建立索引时需要考虑到关联的顺序。通常来说，只需要在关联顺序中的第二个表的相应列上创建索引。例如，当表A和表B用列c关联的时候，假设关联的顺序是B、A，那么就不需要在B表的c列上建立索引。没有用到的索引只会带来额外的负担。<br>此外，确保任何的GROUP BY和ORDER BY中的表达式只涉及到一个表中的列，这样才能使用索引来优化这个过程。</p>
+<h2 id="临时表的概念"><a href="#临时表的概念" class="headerlink" title="临时表的概念"></a>临时表的概念</h2><p>上面提到在MySql中，任何一个查询实质上都是一个关联查询。那么对于子查询或UNION查询是如何实现关联操作的呢。<br>对于UNION查询，MySql先将每一个单表查询结果放到一个临时表中，然后再重新读出临时表数据来完成UNION查询。MySql读取结果临时表和普通表一样，也是采用的关联方式。<br>当遇到子查询时，先执行子查询并将结果放到一个临时表中，然后再将这个临时表当做一个普通表对待。<br>MySql的临时表是没有任何索引的，在编写复杂的子查询和关联查询的时候需要注意这一点。<br>临时表也叫派生表。</p>
+<h2 id="排序优化"><a href="#排序优化" class="headerlink" title="排序优化"></a>排序优化</h2><p>应该尽量让MySql使用索引进行排序。当不能使用索引生成排序结果的时候，MySql需要自己进行排序。如果数据量小于“排序缓冲区”的大小，则MySql使用内存进行“快速排序”操作。如果数据量太大超过“排序缓冲区”的大小，那么MySql只能采用文件排序，而文件排序的算法非常复杂，会消耗很多资源。<br>无论如何排序都是一个成本很高的操作，所以从性能角度考虑，应尽可能避免排序。所以让MySql根据索引构造排序结果非常的重要。</p>
+<h2 id="子查询优化"><a href="#子查询优化" class="headerlink" title="子查询优化"></a>子查询优化</h2><p>MySql的子查询实现的非常糟糕。最糟糕的一类查询是WHERE条件中包含IN()的子查询语句。<br>应该尽可能用关联替换子查询，可以提高查询效率。</p>
+<h2 id="优化COUNT-查询"><a href="#优化COUNT-查询" class="headerlink" title="优化COUNT()查询"></a>优化COUNT()查询</h2><p>COUNT()有两个不同的作用：</p>
+<ol>
+<li>统计某个列值的数量，即统计某列值不为NULL的个数。</li>
+<li>统计行数。</li>
+</ol>
+<p>当使用COUNT(*)时，统计的是行数，它会忽略所有的列而直接统计所有的行数。而在括号中指定了一个列的话，则统计的是这个列上值不为NULL的个数。<br>可以考虑使用索引覆盖扫描或增加汇总表对COUNT()进行优化。</p>
+<h2 id="优化LIMIT分页"><a href="#优化LIMIT分页" class="headerlink" title="优化LIMIT分页"></a>优化LIMIT分页</h2><p>处理分页会使用到LIMIT，当翻页到非常靠后的页面的时候，偏移量会非常大，这时LIMIT的效率会非常差。例如对于*<strong>LIMIT 10000，20*</strong>这样的查询，MySql需要查询10020条记录，将前面10000条记录抛弃，只返回最后的20条。这样的代价非常高，如果所有的页面被访问的频率都相同，那么这样的查询平均需要访问半个表的数据。<br>优化此类分页查询的一个最简单的办法就是尽可能地使用索引覆盖扫描，而不是查询所有的列。然后根据需要与原表做一次关联操作返回所需的列。对于偏移量很大的时候，这样的效率会提升非常大。考虑下面的查询：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT film_id, description FROM sakila.film ORDER BY title LIMIT 50, 5;</span><br></pre></td></tr></table></figure>
+
+<p>如果这个表非常大，那么这个查询最好改写成下面的这样子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT film.film_id, film.description FROM sakila.film</span><br><span class="line">INNER JOIN </span><br><span class="line">(SELECT film_id FROM sakila.film ORDER BY title LIMIT 50,5) AS lim</span><br><span class="line">USING(film_id);</span><br></pre></td></tr></table></figure>
+
+<p>注意优化中关联的子查询，因为只查询film_id一个列，数据量小，使得一个内存页可以容纳更多的数据，这让MySQL扫描尽可能少的页面。在获取到所需要的所有行之后再与原表进行关联以获得需要的全部列。<br>LIMIT的优化问题，其实是OFFSET的问题，它会导致MySql扫描大量不需要的行然后再抛弃掉。可以借助书签的思想记录上次取数据的位置，那么下次就可以直接从该书签记录的位置开始扫描，这样就避免了使用OFFSET。可以把主键当做书签使用，例如下面的查询：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM sakila.rental ORDER BY rental_id DESC LIMIT 20;</span><br></pre></td></tr></table></figure>
+
+<p>假设上面的查询返回的是主键为16049到16030的租借记录，那么下一页查询就可以直接从16030这个点开始：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM sakila.rental WHERE rental_id &lt; 16030</span><br><span class="line">ORDER BY rental_id DESC LIMIT 20;</span><br></pre></td></tr></table></figure>
+
+<p>该技术的好处是无论翻页到多么后面，其性能都会很好。<br>此外，也可以用关联到一个冗余表的方式提高LIMIT的性能，冗余表只包含主键列和需要做排序的数据列。</p>
+<h2 id="优化UNION查询"><a href="#优化UNION查询" class="headerlink" title="优化UNION查询"></a>优化UNION查询</h2><p>除非确实需要服务器消除重复的行，否则一定要使用UNION ALL。如果没有ALL关键字，MySql会给临时表加上DISTINCT选项，这会导致对整个临时表的数据做唯一性检查。这样做的代价非常高。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/mysql%E4%B8%BB%E4%BB%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/MySQL%E7%B4%A2%E5%BC%95%E5%8E%9F%E7%90%86%E5%92%8C%E5%AE%9E%E7%8E%B0/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MySql%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">MySql查询性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%BF%E5%85%8D%E5%90%91%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AF%B7%E6%B1%82%E4%B8%8D%E9%9C%80%E8%A6%81%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="nav-number">1.1.</span> <span class="nav-text">避免向数据库请求不需要的数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">1.2.</span> <span class="nav-text">查询数据的方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E8%A7%A3%E5%A4%A7%E7%9A%84%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.3.</span> <span class="nav-text">分解大的查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E5%8C%96MIN-%E5%92%8CMAX"><span class="nav-number">1.4.</span> <span class="nav-text">优化MIN()和MAX()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8IN-%E5%8F%96%E4%BB%A3OR"><span class="nav-number">1.5.</span> <span class="nav-text">用IN()取代OR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E5%85%B3%E8%81%94%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.6.</span> <span class="nav-text">优化关联查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%B4%E6%97%B6%E8%A1%A8%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.7.</span> <span class="nav-text">临时表的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%92%E5%BA%8F%E4%BC%98%E5%8C%96"><span class="nav-number">1.8.</span> <span class="nav-text">排序优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="nav-number">1.9.</span> <span class="nav-text">子查询优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E5%8C%96COUNT-%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.10.</span> <span class="nav-text">优化COUNT()查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E5%8C%96LIMIT%E5%88%86%E9%A1%B5"><span class="nav-number">1.11.</span> <span class="nav-text">优化LIMIT分页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E5%8C%96UNION%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.12.</span> <span class="nav-text">优化UNION查询</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

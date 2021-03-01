@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="RocketMQ 基本原理分析1. 思考一下消息中间件的设计1.1 可以先从基本的需求开始考虑 最基本的是要能支持消息的发送和接收, 需要涉及网络通信就一定就会涉及到NIO. 消息中心的消息存储(持久化&#x2F;非持久化) 消息的序列化和非序列化 是否跨语言 消息的确认机制,如何避免消息重发.   1.2 高级功能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/RocketMQ%20%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="RocketMQ 基本原理分析1. 思考一下消息中间件的设计1.1 可以先从基本的需求开始考虑 最基本的是要能支持消息的发送和接收, 需要涉及网络通信就一定就会涉及到NIO. 消息中心的消息存储(持久化&#x2F;非持久化) 消息的序列化和非序列化 是否跨语言 消息的确认机制,如何避免消息重发.   1.2 高级功能">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com//img/20200113111049.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200114093613.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200114093628.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200114094305.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200114094904.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200114095934.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200114103512.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200114103713.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200114104339.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200114112938.png">
+<meta property="article:published_time" content="2021-03-01T09:46:52.851Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.084Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com//img/20200113111049.png">
+
+<link rel="canonical" href="http://luyanan.com/RocketMQ%20%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RocketMQ%20%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="RocketMQ-基本原理分析"><a href="#RocketMQ-基本原理分析" class="headerlink" title="RocketMQ 基本原理分析"></a>RocketMQ 基本原理分析</h1><h2 id="1-思考一下消息中间件的设计"><a href="#1-思考一下消息中间件的设计" class="headerlink" title="1. 思考一下消息中间件的设计"></a>1. 思考一下消息中间件的设计</h2><h3 id="1-1-可以先从基本的需求开始考虑"><a href="#1-1-可以先从基本的需求开始考虑" class="headerlink" title="1.1 可以先从基本的需求开始考虑"></a>1.1 可以先从基本的需求开始考虑</h3><ul>
+<li>最基本的是要能支持消息的发送和接收, 需要涉及网络通信就一定就会涉及到NIO.</li>
+<li>消息中心的消息存储(持久化/非持久化)</li>
+<li>消息的序列化和非序列化</li>
+<li>是否跨语言</li>
+<li>消息的确认机制,如何避免消息重发. </li>
+</ul>
+<h3 id="1-2-高级功能"><a href="#1-2-高级功能" class="headerlink" title="1.2 高级功能"></a>1.2 高级功能</h3><ul>
+<li>消息的有序性</li>
+<li>是否支持事务消息</li>
+<li>消息收发的性能,对高并发大数据量的支持</li>
+<li>是否支持集群</li>
+<li>消息的可靠性存储</li>
+<li>是否支持多协议</li>
+</ul>
+<h2 id="2-MQ消息存储选择"><a href="#2-MQ消息存储选择" class="headerlink" title="2. MQ消息存储选择"></a>2. MQ消息存储选择</h2><p>从主流的几种MQ 消息队列采用的存储方式来看,主要会有三种:</p>
+<ol>
+<li>分布式KV存储, 比如ActiviteMQ 中采用的是lebelDB、Redis 这种存储方式对于消息读写能力要求不高的情况下可以使用. </li>
+<li>文件系统存储,常见的kafka、RocketMQ、RabbitMQ 都是采用消息刷盘到所部署的机器上的文件系统来做持久化, 这种方案适用于对于有高吞吐量的消息中间件,因为消息刷盘是一种高效率、高可靠、高性能的持久化方式, 除非磁盘出现故障,否则一般是不会出现无法持久化的问题. </li>
+<li>关系型数据库,比如ActiviteMQ 可以采用mysql作为消息存储,关系型数据库在单表数据量达到千万级的情况下IO性能会出现瓶颈,所以ActiviteMQ 并不适合高吞吐量的消息队列场景. </li>
+</ol>
+<p>总的来说, 对于存储效率,文件系统要优于分布式LV存储,分布式LV存储要优于关系型数据库. </p>
+<h2 id="3-RocketMQ的发展历史"><a href="#3-RocketMQ的发展历史" class="headerlink" title="3. RocketMQ的发展历史"></a>3. RocketMQ的发展历史</h2><p>RocketMQ 是一个由阿里巴巴开源的消息中间件, 2012年开源, 2017年成为apache 顶级项目. </p>
+<p>​    它的核心设计借鉴了kafka,所以我们在了解RocketMQ 的时候, 会发现很多和kafka 相同的特性。 同时, RocketMQ 在某些功能上和kafka 又有较大的差异,接下来我们就去了解RocketMQ.</p>
+<pre><code>1. 支持集群模式、负载均衡、水平扩展能力. 
+   2. 亿级别消息堆积能力.
+   3. 采用零拷贝的原理、顺序写盘,随机读
+   4. 底层通信框架采用Netty NIO
+   5. NameServer 代替zookeeper,实现服务寻址和服务协调
+   6. 消息失败重试机制, 消息可查询. 
+   7. 强调集群无节点, 可扩展,任意一点高可用, 水平可扩展 . 
+   8. 经过多次双11的考验. 
+</code></pre>
+<h2 id="4-RocketMQ-的架构"><a href="#4-RocketMQ-的架构" class="headerlink" title="4. RocketMQ 的架构"></a>4. RocketMQ 的架构</h2><p><img src="http://files.luyanan.com//img/20200113111049.png"></p>
+<p>集群本身没有什么特殊之处,和kafka 的整体结构相比,其中zookeeper 替换成了NameServer. </p>
+<blockquote>
+<p>在rocketMQ 的早版本(2.X) 的时候, 是没有namespace 组件的, 用的是zookeeper 做分布式协调和服务发现, 但是后期阿里数据根据实际业务需求进行改进和优化,自己研发了轻量级的namesrv,用于注册Client 服务和Broker 的请求路由,namesrv 上不做任何消息的位置存储,频繁才做zookeeper 的位置存储数据会影响整体集群性能. </p>
+</blockquote>
+<p>RocketMQ 由四部分组成:</p>
+<ol>
+<li><p>Name Server 可集群部署, 节点之间无任何信息同步,提供轻量级的服务发现和路由. </p>
+</li>
+<li><p>Broker(消息中间角色、负责存储消息, 转发消息). 部署相对复杂，Broker 分为Master 和Slave. 一个Master 可以对应多个Slave,但是一个Slave 只能对应一个Master. Master和Slave 的对应关系通过指定相同的BrokerName,不同的BroklerId 来定义,BrokerId0 表示Master,非0表示Slave. </p>
+</li>
+<li><p>Producer: 生产者, 拥有相同的Producer Group 的Producer 组成一个集群, 与Name Server 集群中的其中一个节点(随机选择)建立长连接,定期 从Name Server 取Topic 路由信息, 并向提供Topic 服务的Master 建立长连接,且定时向Master 发送心跳. Producer 完全无状态,可集群部署. </p>
+</li>
+<li><p>Consumer: 消费者,接受消息进行消费的实例,拥有相同Consumer Group 的Consumer 组成一个集群,与Name Server 集群中的其中一个节点(随机选择) 建立长连接,定期从Name Server 取Topic 路由信息,并向提供Topic 服务的Master、Slave 建立长连接,且定时向Master、Slave 发送心跳。Consumer 既可以从Master 订阅消息, 也可以从Slave 订阅消息,订阅规则由Broker 配置决定. </p>
+<p>要使用RockerMQ, 至少需要启动两个进程,Name Server 、Broker , 前者是各种Topic 注册中心, 后者是真正的Broker. </p>
+</li>
+</ol>
+<h2 id="5-单机环境下的RocketMQ-的安装"><a href="#5-单机环境下的RocketMQ-的安装" class="headerlink" title="5.单机环境下的RocketMQ 的安装"></a>5.单机环境下的RocketMQ 的安装</h2><h3 id="5-1-下载并解压安装"><a href="#5-1-下载并解压安装" class="headerlink" title="5.1 下载并解压安装"></a>5.1 下载并解压安装</h3><ol>
+<li><p>下载RocketMQ的安装文件  <a target="_blank" rel="noopener" href="https://rocketmq.apache.org/">https://rocketmq.apache.org/</a></p>
+</li>
+<li><blockquote>
+<p>unzip  rocketmq-all-4.6.0-bin-release.zip</p>
+</blockquote>
+<p>解压压缩包</p>
+</li>
+</ol>
+<h3 id="5-2-启动Name-Server"><a href="#5-2-启动Name-Server" class="headerlink" title="5.2 启动Name Server"></a>5.2 启动Name Server</h3><ol>
+<li><p>进入bin目录,运行namesrv, 启动NameServer </p>
+<blockquote>
+<p> nohup sh mqnamesrv &amp;</p>
+</blockquote>
+</li>
+<li><p>默认情况下,Name Server 监听的是9876 端口</p>
+</li>
+<li><p>查看启动日志</p>
+<blockquote>
+<p>tail -1000f /root/logs/rocketmqlogs/namesrv.log</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="5-3-启动Broker"><a href="#5-3-启动Broker" class="headerlink" title="5.3  启动Broker"></a>5.3  启动Broker</h3><blockquote>
+<p>nohup sh bin/mqbroker -n ${namesrvIp}:9876 -c /conf/broker.conf &amp; -&gt;[-c可以指定broker.conf配 置文件]。</p>
+</blockquote>
+<p>默认情况下会加载 config/broker/conf</p>
+<ol>
+<li><p>启动Broker,其中-n 表示指定当前broker 对应的命名服务地址: <code>默认情况下,Broker 监听的是10911端口</code></p>
+<blockquote>
+<p>nohup sh mqbroker -n localhost:9876 &amp;</p>
+</blockquote>
+</li>
+<li><p>查看日志</p>
+<blockquote>
+<p>tail -100f  /root/logs/rocketmqlogs/broker.log</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="5-4内存不足的问题"><a href="#5-4内存不足的问题" class="headerlink" title="5.4内存不足的问题"></a>5.4内存不足的问题</h3><p>这是因为bin 目录下启动namesrv 和broker 的 <code>runbroker.sh</code>和<code>runserver.sh</code> 文件中默认分配的内存太大,rocketmq 比较耗内存,所以默认分配的内存比较大,而系统实际内存太小导致启动失败, 通常像虚拟机上安装的Centos 服务器内存可能是没有高的,只能调小. 实际中应该根据服务器内存情况, 配置一个合适的值. </p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># There is insufficient memory for the Java Runtime Environment to continue.</span><br><span class="line"># Native memory allocation (mmap) failed to map 8589934592 bytes for committing</span><br><span class="line">reserved memory.</span><br><span class="line"># An error report file with more information is saved as:</span><br><span class="line"># /data/program/rocketmq-all-4.6.0-bin-release/bin/hs_err_pid6465.log</span><br></pre></td></tr></table></figure>
+
+<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><p>修改 runbroker.sh和 runserver,sh</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">JAVA_OPT=<span class="string">&quot;<span class="variable">$&#123;JAVA_OPT&#125;</span> -server -Xms1g -Xmx1g -Xmn512g&quot;</span></span><br><span class="line">Xms 是指设定程序启动时占用内存大小。一般来讲，大点，程序会启动的快一点，但是也可能会导致机器暂时</span><br><span class="line">间变慢。</span><br><span class="line">Xmx 是指设定程序运行期间最大可占用的内存大小。如果程序运行需要占用更多的内存，超出了这个设置值，</span><br><span class="line">就会抛出OutOfMemory异常。</span><br><span class="line">xmn 年轻代的heap大小，一般设置为Xmx的3、4分之一</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-5-停止服务"><a href="#5-5-停止服务" class="headerlink" title="5.5 停止服务"></a>5.5 停止服务</h3><p>【sh bin/mqshutdown broker】 //停止 brokersh </p>
+<p>【bin/mqshutdown namesrv】 //停止 nameserver </p>
+<p>停止服务的时候需要注意，要先停止broker，其次停止nameserver。</p>
+<h3 id="5-6-broker-conf-文件"><a href="#5-6-broker-conf-文件" class="headerlink" title="5.6 broker.conf 文件"></a>5.6 broker.conf 文件</h3><p>默认情况下,启动broker 会加载 <code>conf/broker.conf</code> 这个文件,这个文件里面就是一些常规的配置信息</p>
+<p><strong>namesrvAddr</strong>: NameServer 的地址</p>
+<p><strong>brokerClusterName</strong>: Cluster 的名称, 如果集群机器比较多, 可以分为多个cluster,每个cluster 提供给不同的业务场景使用. </p>
+<p><strong>brokerName</strong>: broker 名称, 如果配置主从模式, master和slave 需要配置相同的名称来表明关系. </p>
+<p><strong>brokerId=0</strong>: 在主从模式中,一个master broker 可以有多个slave,0 表示master, 大于0表示不同slave 的id</p>
+<p><strong>brokerRole=SYNC_MASTER/ASYNC_MASTER/SLAVE</strong>: 同步表示slave 和master 消息同步完成后再返回信息给客户端. </p>
+<p><strong>autoCreateTopicEnable=true</strong>: topic 不存在的情况下自动创建</p>
+<h2 id="6-消息发送和接收基本应用"><a href="#6-消息发送和接收基本应用" class="headerlink" title="6. 消息发送和接收基本应用"></a>6. 消息发送和接收基本应用</h2><h3 id="6-1-添加jar-依赖"><a href="#6-1-添加jar-依赖" class="headerlink" title="6.1 添加jar 依赖"></a>6.1 添加jar 依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.rocketmq<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>rocketmq-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.5.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-生产者"><a href="#6-2-生产者" class="headerlink" title="6.2 生产者"></a>6.2 生产者</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.mq;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.exception.MQBrokerException;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.exception.MQClientException;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.producer.DefaultMQProducer;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.producer.SendResult;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.common.message.Message;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.remoting.common.RemotingHelper;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.remoting.exception.RemotingException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.UnsupportedEncodingException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2020/1/13</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;生产者&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> MQClientException </span>&#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 生产者组,简单来说就是多个发送用一类消息的生产者称之为一个生产者组</span></span><br><span class="line"><span class="comment">         * RocketMQ 支持事务消息,在发送事务消息时, 如果事务消息异常(producer 挂了),</span></span><br><span class="line"><span class="comment">         * broker 端会来回查事务的状态,这个时候会根据group 名称来查找对应的producer 来</span></span><br><span class="line"><span class="comment">         * 执行相应的回查逻辑,相当于实现了producer 的高可用.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        DefaultMQProducer producer = <span class="keyword">new</span> DefaultMQProducer(<span class="string">&quot;producer_group&quot;</span>);</span><br><span class="line">        <span class="comment">// 执行namesrv 服务地址, 获取broker 的相关信息</span></span><br><span class="line">        producer.setNamesrvAddr(<span class="string">&quot;192.168.86.128:9876&quot;</span>);</span><br><span class="line">        producer.setVipChannelEnabled(<span class="keyword">false</span>);</span><br><span class="line">        producer.start();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 创建一个消息实例,指定topic、tag、消息内容</span></span><br><span class="line">                Message message = <span class="keyword">new</span> Message(<span class="string">&quot;TopicTest&quot;</span>,<span class="comment">// topic</span></span><br><span class="line">                        <span class="string">&quot;TagA&quot;</span>, <span class="comment">// tag</span></span><br><span class="line">                        (<span class="string">&quot;Hello World&quot;</span> + i).getBytes(RemotingHelper.DEFAULT_CHARSET)<span class="comment">// message Body</span></span><br><span class="line">                );</span><br><span class="line">                <span class="comment">// 发送消息并且发送结果</span></span><br><span class="line">                SendResult sendResult = producer.send(message);</span><br><span class="line">                System.out.println(sendResult);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException ex) &#123;</span><br><span class="line">                    ex.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        producer.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>SendResult</code> 中有一个sendStatus状态, 表示消息的发送状态, 一共有四种状态. </p>
+<ol>
+<li><code>FLUSH_DISK_TIMEOUT</code>: 表示没有在规定的时间内完成刷盘(需要Broker的刷新策略设置成<code>SYNC_FLUSH</code> 才会报这个错)</li>
+<li><code>FLUSH_SLAVE_TIMEOUT</code>: 表示在主备方式下, 并且Broker 设置成<code>成SYNC_MASTER</code> 方式,没有在设定时间内完成主从同步. </li>
+<li><code>SLAVE_NOT_AVAILABLE</code>: 这个状态产生的场景和<code>FLUSH_SLAVE_TIMEOUT</code> 类似,表示在主备方式下, 并且Broker 被设置为<code>SYNC_MASTER</code> , 并且没有找到被配置为Slave 的Broker. </li>
+<li><code>SEND OK</code>: 表示发送成功,发送成功的具体含义, 比如消息是否已经被存储到磁盘? 消息是否被同步到了Slave 上？消息在Slave 是否被写入磁盘? 需要结合所配置的刷盘策略,主从策略来定. 这个状态还可以简单理解为, 没有发生上面累出的三个问题状态就是<code>SEND OK</code>.</li>
+</ol>
+<h3 id="消费者"><a href="#消费者" class="headerlink" title="消费者"></a>消费者</h3><p><code>consumerGroup</code>:位于同一个<code>consumerGroup</code> 中的consumer 实例和<code>producerGroup</code> 中的各个producer 实例承担的角色类似,同一个group 中可以配置多个consumer, 可以体改消费端的并发消费能力以及容灾. </p>
+<p>​    和Kafka 一样,多个consumer 会对消息做负载均衡, 意味着同一个topic 下的不同messageQueue 会分发给同一个group中的不同 consumer. </p>
+<p>​    同时, 如果我们希望消息能够达到广播的目的, 只需要把consumer 加入到不同的group就行. </p>
+<p>​    RocketMQ 提供了两种消息消费模式,一种是pull主动去拉, 另一种是push,被动接收. 但是实际上,RocketMQ 都是pull模式,只是push在pull模式上做了一层封装,也就是pull到消息以后触发业务消息. </p>
+<p> nameServer 的地址: nameserver 地址,用于或者broker、topic. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.mq;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.DefaultMQPullConsumer;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.exception.MQClientException;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.common.consumer.ConsumeFromWhere;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.common.message.MessageExt;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2020/1/13</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;消费者&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> MQClientException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 消费者的组名, 这个和kafka 的一样的, 需要特别注意</span></span><br><span class="line">        DefaultMQPushConsumer consumer = <span class="keyword">new</span> DefaultMQPushConsumer(<span class="string">&quot;consumer_group&quot;</span>);</span><br><span class="line">        <span class="comment">// 指定NameServer 的地址, 多个地址用, 隔开</span></span><br><span class="line">        consumer.setNamesrvAddr(<span class="string">&quot;192.168.86.128:9876&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//  设置consumer 第一次启动是从队列头部开始还是从队尾开始消费</span></span><br><span class="line">        <span class="comment">// 如果非第一次启动,则按照上次消费的位置继续消费</span></span><br><span class="line">        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);</span><br><span class="line">        <span class="comment">// 订阅TopicTest 下的所有tag的消息</span></span><br><span class="line">        <span class="comment">// * 表示不过滤,可以通过tag来过滤</span></span><br><span class="line">        consumer.subscribe(<span class="string">&quot;TopicTest&quot;</span>, <span class="string">&quot;*&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 注册消息监听,这里有两种监听 MessageListenerConcurrently以及MessageListenerOrderly, 前者是普通监听, 后者是顺序监听.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        consumer.registerMessageListener(<span class="keyword">new</span> MessageListenerConcurrently() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> ConsumeConcurrentlyStatus <span class="title">consumeMessage</span><span class="params">(List&lt;MessageExt&gt; list, ConsumeConcurrentlyContext consumeConcurrentlyContext)</span> </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;receive Message : &quot;</span> + list);</span><br><span class="line">                <span class="keyword">return</span> ConsumeConcurrentlyStatus.CONSUME_SUCCESS;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        consumer.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="7-RocketMQ-控制台安装"><a href="#7-RocketMQ-控制台安装" class="headerlink" title="7. RocketMQ 控制台安装"></a>7. RocketMQ 控制台安装</h2><p>​    启动好服务之后, 总得有一个可视化节界面来看看我们配置的节点把, Rocket 官方提供了一个可视化控制台,大家可以在这个地址下载. </p>
+<p><a target="_blank" rel="noopener" href="https://github.com/apache/rocketmq-externals">https://github.com/apache/rocketmq-externals</a></p>
+<p>这个是RocketMQ的扩展,里面不仅包含控制台的扩展,也包含了对大数据 flume、hbase 等组件的对接和扩展. </p>
+<h3 id="7-1-下载源码包"><a href="#7-1-下载源码包" class="headerlink" title="7.1  下载源码包"></a>7.1  下载源码包</h3><p><a target="_blank" rel="noopener" href="https://github.com/apache/rocketmq-externals/archive/master.zip">https://github.com/apache/rocketmq-externals/archive/master.zip</a></p>
+<h3 id="7-2-解压并修改配置"><a href="#7-2-解压并修改配置" class="headerlink" title="7.2 解压并修改配置"></a>7.2 解压并修改配置</h3><ul>
+<li><p><code>cd /$&#123;rocketmq-externals-home&#125;/rocket-console/</code></p>
+</li>
+<li><p>修改<code>application.properties</code> 文件</p>
+</li>
+<li><p>配置namesrvAddr地址，指向目标服务的ip和端口:</p>
+<p><code>rocketmq.config.namesrvAddr=192.168.86.128:9876</code></p>
+</li>
+</ul>
+<h3 id="7-3-运行"><a href="#7-3-运行" class="headerlink" title="7.3  运行"></a>7.3  运行</h3><ol>
+<li><code> cd /$&#123;rocketmq-externals-home&#125;/rocket-console/</code></li>
+<li><code>mvn spring-boot:run</code></li>
+</ol>
+<h3 id="7-4-通过控制台创建消息"><a href="#7-4-通过控制台创建消息" class="headerlink" title="7.4  通过控制台创建消息"></a>7.4  通过控制台创建消息</h3><p>要能够发送和接受消息,需要先创建Topic, 这里的topic 和kafka 的topic 的概念是一样的.<br>进入到控制台,选择Topic</p>
+<p><img src="http://files.luyanan.com//img/20200114093613.png"></p>
+<p><img src="http://files.luyanan.com//img/20200114093628.png"></p>
+<p>readQueueNums和writeQueueNums分别表示读队列数和写队列数</p>
+<p>writeQueueNums表示producer发送到的MessageQueue的队列个数</p>
+<p>readQueueNumbs表示Consumer读取消息的MessageQueue队列个数，其实类似于kafka的分区的概 念 </p>
+<p>这两个值需要相等，在集群模式下如果不相等，假如说writeQueueNums=6,readQueueNums=3, 那 么每个broker上会有3个queue的消息是无法消费的。</p>
+<h2 id="8-RocketMQ消息支持的模式"><a href="#8-RocketMQ消息支持的模式" class="headerlink" title="8. RocketMQ消息支持的模式"></a>8. RocketMQ消息支持的模式</h2><h3 id="8-1-NormalProducer（普通）"><a href="#8-1-NormalProducer（普通）" class="headerlink" title="8.1 NormalProducer（普通）"></a>8.1 NormalProducer（普通）</h3><h4 id="8-1-1-消息同步发送"><a href="#8-1-1-消息同步发送" class="headerlink" title="8.1.1 消息同步发送"></a>8.1.1 消息同步发送</h4><p>​    普通消息的发送和接收已经前面演示过了,在上面的案例中是基于同步消息发送模式,也就是说 消息发送出去后, producer 会等到broker 回应后才能继续发送下一个消息. </p>
+<p><img src="http://files.luyanan.com//img/20200114094305.png"></p>
+<h4 id="8-1-2-消息异步发送"><a href="#8-1-2-消息异步发送" class="headerlink" title="8.1.2 消息异步发送"></a>8.1.2 消息异步发送</h4><p>​    异步发送是指发送方发送数据后,不等接收方发回响应,接着发送下个数据包的通讯方式.MQ的异步发送, 需要用户实现异步发送回调接口(SendCalllable).消息发送方在发送了一条消息后,不需要等待服务器响应即可返回,进行第二条消息发送。发送方通过回调接口接受服务器响应, 并对响应结果进行处理. </p>
+<p><img src="http://files.luyanan.com//img/20200114094904.png"></p>
+<blockquote>
+<p>异步代码改造</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 异步发送</span></span><br><span class="line">             producer.send(message, <span class="keyword">new</span> SendCallback() &#123;</span><br><span class="line">                 <span class="meta">@Override</span></span><br><span class="line">                 <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSuccess</span><span class="params">(SendResult sendResult)</span> </span>&#123;</span><br><span class="line">                     System.out.println(sendResult);</span><br><span class="line">                 &#125;</span><br><span class="line"></span><br><span class="line">                 <span class="meta">@Override</span></span><br><span class="line">                 <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onException</span><span class="params">(Throwable throwable)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">                     throwable.printStackTrace();</span><br><span class="line">                 &#125;</span><br><span class="line">             &#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="8-2-OneWay"><a href="#8-2-OneWay" class="headerlink" title="8.2 OneWay"></a>8.2 OneWay</h3><p>单向(OneWay) 发送特点为发送方只负责发送消息, 不等待服务器且没有回调函数触发,即只发送请求不等待应发, 效率最高. </p>
+<p><img src="http://files.luyanan.com//img/20200114095934.png"></p>
+<blockquote>
+<p>producer.sendOneway(msg);</p>
+</blockquote>
+<h3 id="8-3-OrderProducer（顺序）"><a href="#8-3-OrderProducer（顺序）" class="headerlink" title="8.3  OrderProducer（顺序）"></a>8.3  OrderProducer（顺序）</h3><p>​     在kafka 中, 消息可以通过自定义分区策略来实现消息的顺序发送,实现原理就是把同一类消息发送到相同的分区上. </p>
+<p>​    在RocketMQ中,是基于多个Message Queue 来实现类似于Kafka 的分区效果的. 如果一个Topic 要发送和接收的数据量非常大,需要能支持增加并行处理的机器来提高处理速度,这时候一个Topic 可以根据需求设置一个或者多个Message Queue . Topic 有了多个Message Queue 后, 消息可以并行的向各个Message Queue 发送, 消息者也可以从多个Message Queue 读取消息并消费. </p>
+<blockquote>
+<p>要了解RocketMQ消息的顺序消费, 还的对RocketMQ的整体架构有一定的了解 </p>
+</blockquote>
+<h4 id="8-3-1-RocketMQ-消息发送和消费的基本原理"><a href="#8-3-1-RocketMQ-消息发送和消费的基本原理" class="headerlink" title="8.3.1 RocketMQ 消息发送和消费的基本原理"></a>8.3.1 RocketMQ 消息发送和消费的基本原理</h4><p>​    这是一个比较宏观的部署架构图,Rocketmq 天然支持高可用,它可以支持多主多从的架构部署,这也是和kafka 最大的区别. </p>
+<p>​    原因是RocketMQ 中并没有master 选举功能,所以通过配置多个Master 节点来保证RocketMQ 的高可用, 和所有的集群角色定位一样,Master 节点负责接收事务请求,slave 节点只负责接收读请求,并且接收master 同步过来的数据和slave 保持一致. 当master 挂了以后,如果当前rocketmq 是一主多从, 就意味着无法接收发送端的消息,但是消费者仍然能够继续消费. </p>
+<p>​    所以配置多个主节点后, 可以保证其中一个master节点挂了之后, 另外一个master 节点仍然能够堆外提供消息发送服务. </p>
+<p>​    当存在多个主节点时, 一条消息只会发送到其中一个主节点, rocketmq 对于多个master节点的消息发送, 会做负载均衡,使得消息可以平衡的发送到多个master 节点上. </p>
+<p>​    一个消费者可以同时消费多个master 节点上的消息,在下面的这个架构图中, 两个master 节点恰好可以平均分发到两个消费者上,如果此时只有一个消费者,那么这个消费者会同时消费两个master 节点的数据. </p>
+<p>​    由于每个master 可以配置多个slave, 所以如果其中一个master 挂了, 消息仍然可以被消费者从slave 节点消费到,可以完美的实现rocketmq 消息的高可用. </p>
+<p>​    <img src="http://files.luyanan.com//img/20200114103512.png"></p>
+<p>接下来,站在topic 的角度来看看消息是如何分发和处理的, 假设有两个master 节点的集群, 创建了一个TestTopic, 并且对这个topic 创建了两个队列,也就是分区. </p>
+<p>​    消费者定义了两个分组, 分组的概念也是跟kafka 一样, 通过分区可以实现消息的广播. </p>
+<p><img src="http://files.luyanan.com//img/20200114103713.png"></p>
+<p>​    将下来, 站在topic 的角度来看看消息是如何分发和处理的,假设有两个master节点的集群, 创建了一个TestTopic,并且对这个topic 创建了两个队列,也就是分区. </p>
+<p>​    消费者定义了两个分组,分组的概念也是和kafka 一样, 通过分组可以实现消息的广播. </p>
+<p><img src="http://files.luyanan.com//img/20200114104339.png"></p>
+<h4 id="8-3-2-集群支持"><a href="#8-3-2-集群支持" class="headerlink" title="8.3.2 集群支持"></a>8.3.2 集群支持</h4><p>RocketMQ 天生对集群的支持非常友好. </p>
+<h5 id="1-单Master"><a href="#1-单Master" class="headerlink" title="1. 单Master"></a>1. 单Master</h5><p>优点: 除了配置简单没有什么优点</p>
+<p>缺点: 不可靠, 该集群重启或者宕机,将导致 整个服务不可用</p>
+<h5 id="2-多Master"><a href="#2-多Master" class="headerlink" title="2. 多Master"></a>2. 多Master</h5><p>优点: 配置简单, 性能最高</p>
+<p>缺点: 可能会有少量消息丢失(配置相关), 单台机器重启或者宕机期间,该机器下未被消费的消息将在机器恢复前不可订阅, 影响消息实时性. </p>
+<h5 id="3-多Master-多Slave-异步复制"><a href="#3-多Master-多Slave-异步复制" class="headerlink" title="3. 多Master,多Slave(异步复制)"></a>3. 多Master,多Slave(异步复制)</h5><p>每个master 配置一个slave, 有多对master-slave, 集群采用异步复制的方式, 主备有短暂的消息延迟,毫秒级</p>
+<p>优点: 性能同多master 一样,实时性高, 主备间切换应用透明, 不需要人工干预. </p>
+<p>缺点: Master 宕机或者磁盘损坏时会有少量的消息丢失. </p>
+<h5 id="4-多Master-多Slave-同步双写"><a href="#4-多Master-多Slave-同步双写" class="headerlink" title="4.  多Master,多Slave(同步双写)"></a>4.  多Master,多Slave(同步双写)</h5><p>每个Master 配一个Slave, 有多对Master-slave, 集群采用同步双写方式, 主备都写成功, 向应用返回成功. </p>
+<p>优点: 服务可用性与数据可用性非常高. </p>
+<p>缺点: 性能比异步集群略低, 当前版本主宕机备不能自动切换为主. </p>
+<p>需要注意的是:在RocketMQ 中, 1台机器只能要么是Master, 要么是slave, 这个在初始化的机器配置里面, 就定死了. 不会像kafka 那样存在master 动态选举的功能. 其中Master 的<code>brokerId=0,Slaved的brokerId&gt;0</code></p>
+<p>有点类似于mysql的主从的概念,master 挂了以后, Slave仍然可以提供读服务,但是由于有多主的存在, 当一个master 挂了以后,可以写到其他的master上. </p>
+<h3 id="8-4-消息发送到topic-多个MessageQueue"><a href="#8-4-消息发送到topic-多个MessageQueue" class="headerlink" title="8.4 消息发送到topic 多个MessageQueue"></a>8.4 消息发送到topic 多个MessageQueue</h3><p>接下来演示一下 topic 创建多个MessageQueue </p>
+<ol>
+<li><p>创建一个队列,设置2个写队列和2个读队列,如果读和写的队列不一样,会存在消息无法消费的问题. </p>
+<p> <img src="http://files.luyanan.com//img/20200114112938.png"></p>
+<ol start="2">
+<li><p>构建生产者和消费者, 参考上面写的生产者和消费者的代码</p>
+</li>
+<li><p>消费者数量控制对于队列的消费情况</p>
+</li>
+<li><p>如果消费队列为2,启动一个消费者,那么这个消费者会消费两个队列</p>
+</li>
+<li><p>如果两个消费者消费这个队列,那么意味着消费会均衡平摊到这两个消费者</p>
+</li>
+<li><p>如果消费者数大于<code>readQueueNumbs</code>, 那么会有一些消费者消费不到消息,浪费资源. </p>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="8-5-消息的顺序消费"><a href="#8-5-消息的顺序消费" class="headerlink" title="8.5 消息的顺序消费"></a>8.5 消息的顺序消费</h3><p>​    首先需要保证顺序的消息要发送到用一个MessageQueue;其次, 一个MessageQueue 只能被一个消费者消费,这点是消息队列的分配机制来保证的; 最后, 一个消费者内部对一个mq 的消费者要保证是有序的. </p>
+<p>​    我们要做到生产者- messagequeue - 消费者,是一对一的关系.</p>
+<h3 id="8-6-自定义消息发送负责"><a href="#8-6-自定义消息发送负责" class="headerlink" title="8.6 自定义消息发送负责"></a>8.6 自定义消息发送负责</h3><p>​    通过自定义发送策略来实现消息只发送到同一个队列. </p>
+<p>​    因为同一个Topic 会有多个MessageQueue, 如果使用Producer 会轮流向各个Message Queue 发送消息. Consumer 在消费消息的时候, 会根据负载均衡策略, 消费被分配到Message Queue. </p>
+<p>​    如果不经过特定的设置, 某条消息被发往哪个Message Queue, 被哪个Consumer 消费是未知的. </p>
+<p>​      如果业务需要我们把消息发送到指定的Message Queue 里面, 比如把某一类型的消息都发往相同的Message Queue, 那是不是可以实现顺序消息的功能呢？ </p>
+<p>​     和kafka 一样,rocketMQ 也实现了消息的路由功能,我们可以自定义消息分发策略,可以实现<code>MessageQueueSelector</code> , 来实现自己的消息分发策略. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自定义消息发送规则</span></span><br><span class="line">producer.send(message, <span class="keyword">new</span> MessageQueueSelector() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MessageQueue <span class="title">select</span><span class="params">(List&lt;MessageQueue&gt; list, Message message, Object o)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> key = o.hashCode();</span><br><span class="line">        <span class="keyword">int</span> size = list.size();</span><br><span class="line">        <span class="keyword">int</span> index = key % size;</span><br><span class="line">        <span class="keyword">return</span> list.get(index);<span class="comment">// list.get(0);</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;, <span class="string">&quot;key_&quot;</span> + i);</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="8-7-如何保证消息消费顺序呢"><a href="#8-7-如何保证消息消费顺序呢" class="headerlink" title="8.7 如何保证消息消费顺序呢?"></a>8.7 如何保证消息消费顺序呢?</h3><p>​    通过分区规则可以实现同类消息在rocketmq 上的顺序存储,但是对于消费端来说,如何保证消费的顺序?</p>
+<p>​    我们前面写的消息消费代码使用的是<code>MessageListenerConcurrently</code> 并发监听, 也就是基于多个线程并行来消费消息,这个无法保证消息消费的顺序. </p>
+<p>​    RocketMQ 中提供了<code>MessageListenerOrderly</code> 一个类来实现顺序消费. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 顺序消费</span></span><br><span class="line">     consumer.registerMessageListener(<span class="keyword">new</span> MessageListenerOrderly() &#123;</span><br><span class="line">         <span class="meta">@Override</span></span><br><span class="line">         <span class="function"><span class="keyword">public</span> ConsumeOrderlyStatus <span class="title">consumeMessage</span><span class="params">(List&lt;MessageExt&gt; list, ConsumeOrderlyContext consumeOrderlyContext)</span> </span>&#123;</span><br><span class="line">             list.stream().forEach(m -&gt; System.out.println(<span class="keyword">new</span> String(m.getBody())));</span><br><span class="line">             <span class="keyword">return</span> ConsumeOrderlyStatus.SUCCESS;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>顺序消费会带来一些问题： </p>
+<ol>
+<li>遇到消息失败的消息, 无法跳过,当前队列消费暂停. </li>
+<li>降低了消息处理的性能. </li>
+</ol>
+<h3 id="8-8-消费端的负载均衡"><a href="#8-8-消费端的负载均衡" class="headerlink" title="8.8 消费端的负载均衡"></a>8.8 消费端的负载均衡</h3><p>​    和kafka 一样,消费端也会针对Message Queue 做负载均衡,使得每个消费者能够合理的消费多个分区的消息. </p>
+<h5 id="8-8-1-消费端会通过RebalanceService-线程-10秒做一次机遇topic下的所有队列负载"><a href="#8-8-1-消费端会通过RebalanceService-线程-10秒做一次机遇topic下的所有队列负载" class="headerlink" title="8.8.1 消费端会通过RebalanceService 线程, 10秒做一次机遇topic下的所有队列负载"></a>8.8.1 消费端会通过<code>RebalanceService</code> 线程, 10秒做一次机遇topic下的所有队列负载</h5><ul>
+<li>消费者遍历自己所有的topic, 依次调用<code>rebalanceByTopic</code>. </li>
+<li>根据topic 获取此topic 下的所有queue</li>
+<li>选择一台broker 获取机遇group 的所有消费端(有心跳向所有broker 注册客户端信息)</li>
+<li>选择队列分配策略实例 <code>AllocateMessageQueueStrategy</code> 执行分配算法</li>
+</ul>
+<h5 id="8-8-2-什么时候触发负载均衡"><a href="#8-8-2-什么时候触发负载均衡" class="headerlink" title="8.8.2 什么时候触发负载均衡"></a>8.8.2 什么时候触发负载均衡</h5><ul>
+<li>消费者启动之后</li>
+<li>消费者数量发生变更</li>
+<li>每10秒会触发检查一次<code>rebalance</code></li>
+</ul>
+<h5 id="8-8-3-分配算法"><a href="#8-8-3-分配算法" class="headerlink" title="8.8.3 分配算法"></a>8.8.3 分配算法</h5><p>RocketMQ 提供了6种分区的分配算法</p>
+<ul>
+<li><code>AllocateMessageQueueAveragely</code>: 平均分配算法(默认)</li>
+<li><code>AllocateMessageQueueAveragelyByCircle</code>: 环状分配消息队列</li>
+<li><code>AllocateMessageQueueByConfig</code>: 按照配置来分配队列, 根据用户指定的配置来进行负载</li>
+<li><code>AllocateMessageQueueByMachineRoom</code>: 按照指定机房来配置队列</li>
+<li><code>AllocateMachineRoomNearby</code>: 按照就近机房来配置队列</li>
+<li><code>AllocateMessageQueueConsistentHash</code>: 一致性Hash,根据消费者的cid进行</li>
+</ul>
+<h2 id="9-消息的可靠性原则"><a href="#9-消息的可靠性原则" class="headerlink" title="9. 消息的可靠性原则"></a>9. 消息的可靠性原则</h2><p>​    在实际使用RocketMQ 的时候我们并不能保证每次发送的消息都刚好能被消费者一次性正常消费成功,可能会存在需要多次消费才能成功或者一直消费失败的情况,那作为发送者该做如何处理呢? </p>
+<h3 id="9-1-消息消费端的确认机制"><a href="#9-1-消息消费端的确认机制" class="headerlink" title="9.1 消息消费端的确认机制"></a>9.1 消息消费端的确认机制</h3><p>​    RocketMQ 提供了ack机制,以保证消息能够被正常消费. 发送方为了保证消息肯定消费成功,只有使用方明确表示消费成功,RocketMQ 才会认为消息消费成功. 中途断电、抛出异常都不会认为成功. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">consumer.registerMessageListener(<span class="keyword">new</span> MessageListenerConcurrently() &#123;</span><br><span class="line">          <span class="meta">@Override</span></span><br><span class="line">          <span class="function"><span class="keyword">public</span> ConsumeConcurrentlyStatus <span class="title">consumeMessage</span><span class="params">(List&lt;MessageExt&gt; list, ConsumeConcurrentlyContext consumeConcurrentlyContext)</span> </span>&#123;</span><br><span class="line">              System.out.println(<span class="string">&quot;receive Message : &quot;</span> + list);</span><br><span class="line">              <span class="keyword">return</span> ConsumeConcurrentlyStatus.CONSUME_SUCCESS;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>​    所有的消费者在设置监听的时候会提供一个回调,业务实现消费回调的时候, 当回调方法中返回<code>ConsumeConcurrentlyStatus.CONSUME_SUCCESS</code>, RocketMQ 才会认为这批消息(默认是1条),是消费完成的. 如果这个时候消息消费失败, 例如数据库异常、余额扣款不足等一切业务认为消息需要重试的场景,只要返回<code>回ConsumeConcurrentlyStatus.RECONSUME_LATER</code>, RocketMQ 就会认为这批消息消费失败了. </p>
+<h3 id="9-2-消息的衰减机制"><a href="#9-2-消息的衰减机制" class="headerlink" title="9.2 消息的衰减机制"></a>9.2 消息的衰减机制</h3><p>​    为了保证消息肯定至少被消费一次,RocketMQ 会把这批消息重新发回到broker,在延迟的某个时间点(默认是10s, 业务可设置)后, 再次投递到这个<code>consumerGroup</code>. 而如果一直这样重复消费都持续到一定次数(默认16次),就会投递到DLQ死信队列,应用可以监控死信队列来做人工干预. </p>
+<p> 可以修改broker-a.conf 文件</p>
+<blockquote>
+<p>messageDelayLevel = 1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h</p>
+</blockquote>
+<h3 id="9-3-重试消息的处理机制"><a href="#9-3-重试消息的处理机制" class="headerlink" title="9.3 重试消息的处理机制"></a>9.3 重试消息的处理机制</h3><p>​    一般情况下,我们在实际生产中是不需要重试16次, 这样既浪费时间又浪费性能,理论上当尝试重复次数达到我们想要的结果时如果还是消费失败, 那么我们就需要将对应的消息进行记录,并且结束重试尝试.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">consumer.registerMessageListener((MessageListenerConcurrently) (list,</span><br><span class="line">consumeOrderlyContext) -&gt; &#123;</span><br><span class="line"><span class="keyword">for</span> (MessageExt messageExt : list) &#123;</span><br><span class="line"><span class="keyword">if</span>(messageExt.getReconsumeTimes()==<span class="number">3</span>) &#123;</span><br><span class="line"><span class="comment">//可以将对应的数据保存到数据库，以便人工干预</span></span><br><span class="line">System.out.println(messageExt.getMsgId()+<span class="string">&quot;,&quot;</span>+messageExt.getBody());</span><br><span class="line"><span class="keyword">return</span> ConsumeConcurrentlyStatus.CONSUME_SUCCESS;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> ConsumeConcurrentlyStatus.CONSUME_SUCCESS;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(2)/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/RocketMQ%E4%BA%8B%E5%8A%A1%E6%80%A7%E6%B6%88%E6%81%AF/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#RocketMQ-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">RocketMQ 基本原理分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%80%9D%E8%80%83%E4%B8%80%E4%B8%8B%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.1.</span> <span class="nav-text">1. 思考一下消息中间件的设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E5%8F%AF%E4%BB%A5%E5%85%88%E4%BB%8E%E5%9F%BA%E6%9C%AC%E7%9A%84%E9%9C%80%E6%B1%82%E5%BC%80%E5%A7%8B%E8%80%83%E8%99%91"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 可以先从基本的需求开始考虑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E9%AB%98%E7%BA%A7%E5%8A%9F%E8%83%BD"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 高级功能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-MQ%E6%B6%88%E6%81%AF%E5%AD%98%E5%82%A8%E9%80%89%E6%8B%A9"><span class="nav-number">1.2.</span> <span class="nav-text">2. MQ消息存储选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-RocketMQ%E7%9A%84%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2"><span class="nav-number">1.3.</span> <span class="nav-text">3. RocketMQ的发展历史</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-RocketMQ-%E7%9A%84%E6%9E%B6%E6%9E%84"><span class="nav-number">1.4.</span> <span class="nav-text">4. RocketMQ 的架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%8D%95%E6%9C%BA%E7%8E%AF%E5%A2%83%E4%B8%8B%E7%9A%84RocketMQ-%E7%9A%84%E5%AE%89%E8%A3%85"><span class="nav-number">1.5.</span> <span class="nav-text">5.单机环境下的RocketMQ 的安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E4%B8%8B%E8%BD%BD%E5%B9%B6%E8%A7%A3%E5%8E%8B%E5%AE%89%E8%A3%85"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1 下载并解压安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E5%90%AF%E5%8A%A8Name-Server"><span class="nav-number">1.5.2.</span> <span class="nav-text">5.2 启动Name Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E5%90%AF%E5%8A%A8Broker"><span class="nav-number">1.5.3.</span> <span class="nav-text">5.3  启动Broker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4%E5%86%85%E5%AD%98%E4%B8%8D%E8%B6%B3%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.5.4.</span> <span class="nav-text">5.4内存不足的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="nav-number">1.5.4.1.</span> <span class="nav-text">解决方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-5-%E5%81%9C%E6%AD%A2%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.5.5.</span> <span class="nav-text">5.5 停止服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-6-broker-conf-%E6%96%87%E4%BB%B6"><span class="nav-number">1.5.6.</span> <span class="nav-text">5.6 broker.conf 文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%92%8C%E6%8E%A5%E6%94%B6%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8"><span class="nav-number">1.6.</span> <span class="nav-text">6. 消息发送和接收基本应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E6%B7%BB%E5%8A%A0jar-%E4%BE%9D%E8%B5%96"><span class="nav-number">1.6.1.</span> <span class="nav-text">6.1 添加jar 依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E7%94%9F%E4%BA%A7%E8%80%85"><span class="nav-number">1.6.2.</span> <span class="nav-text">6.2 生产者</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E8%80%85"><span class="nav-number">1.6.3.</span> <span class="nav-text">消费者</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-RocketMQ-%E6%8E%A7%E5%88%B6%E5%8F%B0%E5%AE%89%E8%A3%85"><span class="nav-number">1.7.</span> <span class="nav-text">7. RocketMQ 控制台安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-%E4%B8%8B%E8%BD%BD%E6%BA%90%E7%A0%81%E5%8C%85"><span class="nav-number">1.7.1.</span> <span class="nav-text">7.1  下载源码包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-%E8%A7%A3%E5%8E%8B%E5%B9%B6%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE"><span class="nav-number">1.7.2.</span> <span class="nav-text">7.2 解压并修改配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-3-%E8%BF%90%E8%A1%8C"><span class="nav-number">1.7.3.</span> <span class="nav-text">7.3  运行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-4-%E9%80%9A%E8%BF%87%E6%8E%A7%E5%88%B6%E5%8F%B0%E5%88%9B%E5%BB%BA%E6%B6%88%E6%81%AF"><span class="nav-number">1.7.4.</span> <span class="nav-text">7.4  通过控制台创建消息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-RocketMQ%E6%B6%88%E6%81%AF%E6%94%AF%E6%8C%81%E7%9A%84%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.8.</span> <span class="nav-text">8. RocketMQ消息支持的模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-NormalProducer%EF%BC%88%E6%99%AE%E9%80%9A%EF%BC%89"><span class="nav-number">1.8.1.</span> <span class="nav-text">8.1 NormalProducer（普通）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-1-%E6%B6%88%E6%81%AF%E5%90%8C%E6%AD%A5%E5%8F%91%E9%80%81"><span class="nav-number">1.8.1.1.</span> <span class="nav-text">8.1.1 消息同步发送</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-%E6%B6%88%E6%81%AF%E5%BC%82%E6%AD%A5%E5%8F%91%E9%80%81"><span class="nav-number">1.8.1.2.</span> <span class="nav-text">8.1.2 消息异步发送</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-OneWay"><span class="nav-number">1.8.2.</span> <span class="nav-text">8.2 OneWay</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-OrderProducer%EF%BC%88%E9%A1%BA%E5%BA%8F%EF%BC%89"><span class="nav-number">1.8.3.</span> <span class="nav-text">8.3  OrderProducer（顺序）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-3-1-RocketMQ-%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%92%8C%E6%B6%88%E8%B4%B9%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">1.8.3.1.</span> <span class="nav-text">8.3.1 RocketMQ 消息发送和消费的基本原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-3-2-%E9%9B%86%E7%BE%A4%E6%94%AF%E6%8C%81"><span class="nav-number">1.8.3.2.</span> <span class="nav-text">8.3.2 集群支持</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E5%8D%95Master"><span class="nav-number">1.8.3.2.1.</span> <span class="nav-text">1. 单Master</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E5%A4%9AMaster"><span class="nav-number">1.8.3.2.2.</span> <span class="nav-text">2. 多Master</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-%E5%A4%9AMaster-%E5%A4%9ASlave-%E5%BC%82%E6%AD%A5%E5%A4%8D%E5%88%B6"><span class="nav-number">1.8.3.2.3.</span> <span class="nav-text">3. 多Master,多Slave(异步复制)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%E5%A4%9AMaster-%E5%A4%9ASlave-%E5%90%8C%E6%AD%A5%E5%8F%8C%E5%86%99"><span class="nav-number">1.8.3.2.4.</span> <span class="nav-text">4.  多Master,多Slave(同步双写)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-4-%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%88%B0topic-%E5%A4%9A%E4%B8%AAMessageQueue"><span class="nav-number">1.8.4.</span> <span class="nav-text">8.4 消息发送到topic 多个MessageQueue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-5-%E6%B6%88%E6%81%AF%E7%9A%84%E9%A1%BA%E5%BA%8F%E6%B6%88%E8%B4%B9"><span class="nav-number">1.8.5.</span> <span class="nav-text">8.5 消息的顺序消费</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-6-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E8%B4%9F%E8%B4%A3"><span class="nav-number">1.8.6.</span> <span class="nav-text">8.6 自定义消息发送负责</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-7-%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E6%B6%88%E8%B4%B9%E9%A1%BA%E5%BA%8F%E5%91%A2"><span class="nav-number">1.8.7.</span> <span class="nav-text">8.7 如何保证消息消费顺序呢?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-8-%E6%B6%88%E8%B4%B9%E7%AB%AF%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">1.8.8.</span> <span class="nav-text">8.8 消费端的负载均衡</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#8-8-1-%E6%B6%88%E8%B4%B9%E7%AB%AF%E4%BC%9A%E9%80%9A%E8%BF%87RebalanceService-%E7%BA%BF%E7%A8%8B-10%E7%A7%92%E5%81%9A%E4%B8%80%E6%AC%A1%E6%9C%BA%E9%81%87topic%E4%B8%8B%E7%9A%84%E6%89%80%E6%9C%89%E9%98%9F%E5%88%97%E8%B4%9F%E8%BD%BD"><span class="nav-number">1.8.8.0.1.</span> <span class="nav-text">8.8.1 消费端会通过RebalanceService 线程, 10秒做一次机遇topic下的所有队列负载</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#8-8-2-%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E8%A7%A6%E5%8F%91%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">1.8.8.0.2.</span> <span class="nav-text">8.8.2 什么时候触发负载均衡</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#8-8-3-%E5%88%86%E9%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">1.8.8.0.3.</span> <span class="nav-text">8.8.3 分配算法</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%AF%E9%9D%A0%E6%80%A7%E5%8E%9F%E5%88%99"><span class="nav-number">1.9.</span> <span class="nav-text">9. 消息的可靠性原则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#9-1-%E6%B6%88%E6%81%AF%E6%B6%88%E8%B4%B9%E7%AB%AF%E7%9A%84%E7%A1%AE%E8%AE%A4%E6%9C%BA%E5%88%B6"><span class="nav-number">1.9.1.</span> <span class="nav-text">9.1 消息消费端的确认机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-2-%E6%B6%88%E6%81%AF%E7%9A%84%E8%A1%B0%E5%87%8F%E6%9C%BA%E5%88%B6"><span class="nav-number">1.9.2.</span> <span class="nav-text">9.2 消息的衰减机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-3-%E9%87%8D%E8%AF%95%E6%B6%88%E6%81%AF%E7%9A%84%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6"><span class="nav-number">1.9.3.</span> <span class="nav-text">9.3 重试消息的处理机制</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

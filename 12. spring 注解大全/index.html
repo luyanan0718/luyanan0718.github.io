@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Spring 注解大全核心注解   注解 介绍    @Documented 将会在被此注解注解的元素的javadoc文档中列出注解，一般都打上这个注解没坏处   @Target 注解能被应用的目标元素，比如类、方法、属性、参数等等    @Retention   @Inherited 如果子类没有定义注解的话，能自动从父类获取定义了继承属性的注解，比如Spring的@Service是没有继承特性">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/12.%20spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="Spring 注解大全核心注解   注解 介绍    @Documented 将会在被此注解注解的元素的javadoc文档中列出注解，一般都打上这个注解没坏处   @Target 注解能被应用的目标元素，比如类、方法、属性、参数等等    @Retention   @Inherited 如果子类没有定义注解的话，能自动从父类获取定义了继承属性的注解，比如Spring的@Service是没有继承特性">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-01T09:46:51.695Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.054Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://luyanan.com/12.%20spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/12.%20spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Spring-注解大全"><a href="#Spring-注解大全" class="headerlink" title="Spring 注解大全"></a>Spring 注解大全</h1><h3 id="核心注解"><a href="#核心注解" class="headerlink" title="核心注解"></a>核心注解</h3><table>
+<thead>
+<tr>
+<th>注解</th>
+<th>介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@Documented</td>
+<td>将会在被此注解注解的元素的javadoc文档中列出注解，一般都打上这个注解没坏处</td>
+</tr>
+<tr>
+<td>@Target</td>
+<td>注解能被应用的目标元素，比如类、方法、属性、参数等等</td>
+</tr>
+<tr>
+<td></td>
+<td>@Retention</td>
+</tr>
+<tr>
+<td>@Inherited</td>
+<td>如果子类没有定义注解的话，能自动从父类获取定义了继承属性的注解，比如Spring的@Service是没有继承特性的，但是@Transactional是有继承特性的，在OO继承体系中使用Spring注解的时候请特别注意这点，理所当然认为注解是能被子类继承的话可能会引起不必要的Bug，需要仔细斟酌是否开启继承</td>
+</tr>
+<tr>
+<td>@Repeatable</td>
+<td>Java 8 引入的特性，通过关联注解容器定义可重复注解，小小语法糖提高了代码可读性，对于元素有多个重复注解其实是很常见的事情，比如某方法可以是A角色可以访问也可以是B角色可以访问，某方法需要定时任务执行，要在A条件执行也需要在B条件执行</td>
+</tr>
+<tr>
+<td>@Native</td>
+<td>是否在.h头文件中生成被标记的字段，除非原生程序需要和Java程序交互，否则很少会用到这个元注解</td>
+</tr>
+</tbody></table>
+<h3 id="spring-核心注解"><a href="#spring-核心注解" class="headerlink" title="spring 核心注解"></a>spring 核心注解</h3><table>
+<thead>
+<tr>
+<th>注解</th>
+<th>介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@Controller</td>
+<td>定义表现层组件</td>
+</tr>
+<tr>
+<td>@Service</td>
+<td>定义业务逻辑层组件</td>
+</tr>
+<tr>
+<td>@Repository</td>
+<td>定义数据访问层组件</td>
+</tr>
+<tr>
+<td>@Component</td>
+<td>定义其他组件</td>
+</tr>
+<tr>
+<td>@Autowired</td>
+<td>自动装配</td>
+</tr>
+<tr>
+<td>@Required</td>
+<td>用于在setter方法标记属性值需要由Spring 进行装配,目前这个方法已经被spring 废弃,推荐使用构造方法注入</td>
+</tr>
+<tr>
+<td>@Qualifier</td>
+<td>用于给Bean定义修饰语来注入相应的bean</td>
+</tr>
+<tr>
+<td>@Value</td>
+<td>用于注入属性配置或者Spel表达式</td>
+</tr>
+<tr>
+<td>@Lookup</td>
+<td>可以实现方法的注入,如果我们的类是单例的,但是又希望Spring注入的依赖的对象是Prototype生命周期（每次new一个出来）的，这个时候可以通过此注解进行方法注入</td>
+</tr>
+<tr>
+<td>@EnableTransactionManagement</td>
+<td>用于开启事务管理，使用Spring Boot如果引入Spring Data的话不需要手动开启（不过建议大家在使用事务的时候还是通过日志来验证事务管理是否生效）</td>
+</tr>
+<tr>
+<td>@Transactional</td>
+<td>用于开启事务以及设置传播性、隔离性、回滚条件等；</td>
+</tr>
+<tr>
+<td>@TransactionalEventListener</td>
+<td>用于配置事务的回调方法，可以在事务提交前、提交后、完成后以及回滚后几个阶段接受回调事件。</td>
+</tr>
+<tr>
+<td>@Order</td>
+<td>可以设置Spring管理对象的加载顺序，在之前介绍AOP的文章中我们看到有的时候我们必须通过设置合理的@Order来合理安排切面的切入顺序避免一些问题，还有在一些业务场景中，我们往往会去定义一组类似于Filter的@Component，然后会从容器获得一组Bean，这个时候业务组件的运行顺序往往会比较重要，也可以通过这个方式进行排序</td>
+</tr>
+<tr>
+<td>@AliasFor</td>
+<td>注解可以设置一组注解属性相互作为别名，对于有歧义的时候会使代码更清晰，此外还有一个用途是创建复合注解，Spring MVC的@GetMapping注解就是基于@RequestMapping这个注解创建的复合注解，我们可以很方便得通过这种方式来实现注解的继承</td>
+</tr>
+</tbody></table>
+<h3 id="spring-上下文注解"><a href="#spring-上下文注解" class="headerlink" title="spring 上下文注解"></a>spring 上下文注解</h3><table>
+<thead>
+<tr>
+<th>注解</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@Configuration</td>
+<td>用于标注配置类，启用Java配置方式的Bean配置</td>
+</tr>
+<tr>
+<td>@Bean</td>
+<td>用于配置一个Bean</td>
+</tr>
+<tr>
+<td>@ComponentScan</td>
+<td>（@ComponentScans用于配置一组@ComponentScan，Java 8可以直接使用重复注解特性配置多个@ComponentScan）用于扫描包方式配置Bean；</td>
+</tr>
+<tr>
+<td>@PropertySource</td>
+<td>以及 @PropertySources用于导入配置文件；</td>
+</tr>
+<tr>
+<td>@Conditional</td>
+<td>用于设置关联的条件类，在合适的时候启用Bean的配置（Spring Boot自动配置根基）</td>
+</tr>
+<tr>
+<td>@Import</td>
+<td>用于导入其他配置类</td>
+</tr>
+<tr>
+<td>@ImportResource</td>
+<td>用于导入非java配置方式的XML配置</td>
+</tr>
+<tr>
+<td>@Profile</td>
+<td>用于指定在核实的Profile下启动配置</td>
+</tr>
+<tr>
+<td>@Lazy</td>
+<td>用于告知容器延迟到使用的时候实例化Bean</td>
+</tr>
+<tr>
+<td>@Description</td>
+<td>用于给Bean设置描述</td>
+</tr>
+<tr>
+<td>@Scope</td>
+<td>用于设置Bean的生命周期</td>
+</tr>
+<tr>
+<td>@Primary</td>
+<td>用于在定义多个Bean的时候指定首选的Bean</td>
+</tr>
+<tr>
+<td>@EventListener</td>
+<td>用于设置回调方法监听Spring指定的以及自定义的各种事件</td>
+</tr>
+<tr>
+<td>@EnableAspectJAutoProxy</td>
+<td>用于开启支持Aspectj的@Aspect的切面配置支持,使用Spring Boot引入了AOP启动器的话不需要显式开启</td>
+</tr>
+</tbody></table>
+<h3 id="Spring-Web-注解"><a href="#Spring-Web-注解" class="headerlink" title="Spring Web 注解"></a>Spring Web 注解</h3><table>
+<thead>
+<tr>
+<th>注解</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@RequestScope</td>
+<td>bean 跟随请求的生命周期创建</td>
+</tr>
+<tr>
+<td>@SessionScope</td>
+<td>Bean 跟随会话的生命周期创建</td>
+</tr>
+<tr>
+<td>@ApplicationScope</td>
+<td>Bean 跟谁应用程序的生命周期创建</td>
+</tr>
+<tr>
+<td>@ResponseStatus</td>
+<td>可以用到方法上,也可以用到异常上,前者会直接使请求得到指定的响应代码或者原因(可以配合@ExpectionHandler使用),后者可以实现遇到指定的异常的时候给出指定的相应代码或原因</td>
+</tr>
+<tr>
+<td>@ResponseBody</td>
+<td>将返回的内容序列化之后输出到请求体</td>
+</tr>
+<tr>
+<td>@RequestBody</td>
+<td>接受请求数据</td>
+</tr>
+<tr>
+<td>@RequestHeader</td>
+<td>从header中获取</td>
+</tr>
+<tr>
+<td>@CookieValue</td>
+<td>从cookie 获取</td>
+</tr>
+<tr>
+<td>@SessionAttribute</td>
+<td>从会话中</td>
+</tr>
+<tr>
+<td>@RequestAttribute</td>
+<td>从请求的Attribute中（比如过滤器和拦截器手动设置的一些临时数据）</td>
+</tr>
+<tr>
+<td>@RequestParam</td>
+<td>从请求参数（处理简单数据，键值对）</td>
+</tr>
+<tr>
+<td>@PathVariable</td>
+<td>从路径片段</td>
+</tr>
+<tr>
+<td>@MatrixAttribute</td>
+<td>矩阵变量允许我们采用特殊的规则在URL路径后加参数（分号区分不同参数，逗号为参数增加多个值）</td>
+</tr>
+<tr>
+<td>@ControllerAdvice</td>
+<td>允许我们在集中的地方配置控制器（有@RequestMapping的方法）相关的增强（@RestControllerAdvice也是差不多的，只是相当于为@ExceptionHandler加上了@ResponseBody）</td>
+</tr>
+<tr>
+<td>@ExceptionHandler</td>
+<td>进行统一的全局异常处理；</td>
+</tr>
+<tr>
+<td>@InitBinder</td>
+<td></td>
+</tr>
+<tr>
+<td>用来设置WebDataBinder，WebDataBinder用来自动绑定前台请求参数到Model中；第三是 @ModelAttribute让全局的@RequestMapping都能获得在此处设置的键值</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="SpringBoot-注解"><a href="#SpringBoot-注解" class="headerlink" title="SpringBoot 注解"></a>SpringBoot 注解</h3><table>
+<thead>
+<tr>
+<th>注解</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@ConfigurationProperties</td>
+<td>很常用（配合 @EnableConfigurationProperties注解来设置需要启用的配置类），用来自定义配置类和配置文件进行关联</td>
+</tr>
+<tr>
+<td>@DeprecatedConfigurationProperty</td>
+<td>用于标记废弃的配置以及设置替代配置和告知废弃原因；</td>
+</tr>
+<tr>
+<td>@ConfigurationPropertiesBinding</td>
+<td>用于指定自定义的转换器用于配置解析的时的类型转换；</td>
+</tr>
+<tr>
+<td>@NestedConfigurationProperty</td>
+<td>用于关联外部的类型作为嵌套配置类</td>
+</tr>
+<tr>
+<td>@EnableAutoConfiguration</td>
+<td>可以启用自动配置</td>
+</tr>
+<tr>
+<td>@ConditionalOnBean</td>
+<td></td>
+</tr>
+<tr>
+<td>用于仅当容器中已经包含指定的Bean类型或名称时才匹配条件</td>
+<td></td>
+</tr>
+<tr>
+<td>@ConditionalOnClass</td>
+<td>仅当classpath上存在指定类时条件匹配；</td>
+</tr>
+<tr>
+<td>@ConditionalOnCloudPlatform</td>
+<td>仅当指定的云平台处于活动状态时条件匹配；</td>
+</tr>
+<tr>
+<td>@ConditionalOnExpression</td>
+<td>依赖于SpEL表达式的值的条件元素的配置注解；</td>
+</tr>
+<tr>
+<td>@ConditionalOnJava</td>
+<td>基于应用运行的JVM版本的条件匹配；</td>
+</tr>
+<tr>
+<td>@ConditionalOnJndi</td>
+<td>基于JNDI可用和可以查找指定位置的条件匹配；</td>
+</tr>
+<tr>
+<td>@ConditionalOnMissingBean</td>
+<td>仅当容器中不包含指定的Bean类型或名称时条件匹配；</td>
+</tr>
+<tr>
+<td>@ConditionalOnMissingClass</td>
+<td>仅当classpath上不存在指定类时条件匹配；</td>
+</tr>
+<tr>
+<td>@ConditionalOnNotWebApplication</td>
+<td>仅当不是WebApplicationContext（非Web项目）时条件匹配，对应 @ConditionalOnWebApplication；@ConditionalOnProperty是检查指定的属性是否具有指定的值；</td>
+</tr>
+<tr>
+<td>@ConditionalOnResource</td>
+<td>表示仅当 classpath 上存在指定资源时条件匹配；</td>
+</tr>
+<tr>
+<td>@ConditionalOnSingleCandidate</td>
+<td>仅当容器中包含指定的Bean类并且可以判断只有单个候选者时条件匹配。其实所有这些实现原理都是扩展SpringBootCondition抽象类（实现之前提到的Condition接口），我们完全可以实现自己的条件注解（配合 @Conditional注解关联到自己实现的SpringBootCondition）</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/11.%20Spring%20%E4%B8%AD%E7%BB%8F%E5%85%B8%E7%9A%84%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/13%20.%20%E6%B5%85%E8%B0%88%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8"><span class="nav-number">1.</span> <span class="nav-text">Spring 注解大全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.0.1.</span> <span class="nav-text">核心注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spring-%E6%A0%B8%E5%BF%83%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.0.2.</span> <span class="nav-text">spring 核心注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spring-%E4%B8%8A%E4%B8%8B%E6%96%87%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.0.3.</span> <span class="nav-text">spring 上下文注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Web-%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.0.4.</span> <span class="nav-text">Spring Web 注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringBoot-%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.0.5.</span> <span class="nav-text">SpringBoot 注解</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

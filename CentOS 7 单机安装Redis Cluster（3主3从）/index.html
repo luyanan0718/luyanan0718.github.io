@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="CentOS 7 单机安装Redis Cluster（3主3从）首先，本篇要基于单实例的安装，你的机器上已经有一个Redis 为了节省机器，我们直接把6个Redis实例安装在同一台机器上（3主3从），只是使用不同的端口号。机器IP 192.168.8.207 更新：新版的cluster已经不需要通过ruby脚本创建，删掉了ruby相关依赖的安装 1234cd &#x2F;usr&#x2F;loca">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/CentOS%207%20%E5%8D%95%E6%9C%BA%E5%AE%89%E8%A3%85Redis%20Cluster%EF%BC%883%E4%B8%BB3%E4%BB%8E%EF%BC%89/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="CentOS 7 单机安装Redis Cluster（3主3从）首先，本篇要基于单实例的安装，你的机器上已经有一个Redis 为了节省机器，我们直接把6个Redis实例安装在同一台机器上（3主3从），只是使用不同的端口号。机器IP 192.168.8.207 更新：新版的cluster已经不需要通过ruby脚本创建，删掉了ruby相关依赖的安装 1234cd &#x2F;usr&#x2F;loca">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-01T09:46:51.879Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.066Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://luyanan.com/CentOS%207%20%E5%8D%95%E6%9C%BA%E5%AE%89%E8%A3%85Redis%20Cluster%EF%BC%883%E4%B8%BB3%E4%BB%8E%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/CentOS%207%20%E5%8D%95%E6%9C%BA%E5%AE%89%E8%A3%85Redis%20Cluster%EF%BC%883%E4%B8%BB3%E4%BB%8E%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="CentOS-7-单机安装Redis-Cluster（3主3从）"><a href="#CentOS-7-单机安装Redis-Cluster（3主3从）" class="headerlink" title="CentOS 7 单机安装Redis Cluster（3主3从）"></a><strong>CentOS 7 单机安装Redis Cluster（3主3从）</strong></h1><p>首先，本篇要基于单实例的安装，你的机器上已经有一个Redis</p>
+<p>为了节省机器，我们直接把6个Redis实例安装在同一台机器上（3主3从），只是使用不同的端口号。<br>机器IP 192.168.8.207</p>
+<p>更新：新版的cluster已经不需要通过ruby脚本创建，删掉了ruby相关依赖的安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;local&#x2F;soft&#x2F;redis-5.0.5</span><br><span class="line">mkdir redis-cluster</span><br><span class="line">cd redis-cluster</span><br><span class="line">mkdir 7291 7292 7293 7294 7295 7296</span><br></pre></td></tr></table></figure>
+
+<p>复制redis配置文件到7291目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp &#x2F;usr&#x2F;local&#x2F;soft&#x2F;redis-5.0.5&#x2F;redis.conf &#x2F;usr&#x2F;local&#x2F;soft&#x2F;redis-5.0.5&#x2F;redis-cluster&#x2F;7291</span><br></pre></td></tr></table></figure>
+
+<p>修改7291的redis.conf配置文件，内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;local&#x2F;soft&#x2F;redis-5.0.5&#x2F;redis-cluster&#x2F;7291</span><br><span class="line">&gt;redis.conf</span><br><span class="line">vim redis.conf</span><br><span class="line">port 7291</span><br><span class="line">daemonize yes</span><br><span class="line">protected-mode no</span><br><span class="line">dir &#x2F;usr&#x2F;local&#x2F;soft&#x2F;redis-5.0.5&#x2F;redis-cluster&#x2F;7291&#x2F;</span><br><span class="line">cluster-enabled yes</span><br><span class="line">cluster-config-file nodes-7291.conf</span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line">appendonly yes</span><br><span class="line">pidfile &#x2F;var&#x2F;run&#x2F;redis_7291.pid</span><br></pre></td></tr></table></figure>
+
+<p>把7291下的redis.conf复制到其他5个目录。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;local&#x2F;soft&#x2F;redis-5.0.5&#x2F;redis-cluster&#x2F;7291</span><br><span class="line">cp redis.conf ..&#x2F;7292</span><br><span class="line">cp redis.conf ..&#x2F;7293</span><br><span class="line">cp redis.conf ..&#x2F;7294</span><br><span class="line">cp redis.conf ..&#x2F;7295</span><br><span class="line">cp redis.conf ..&#x2F;7296</span><br></pre></td></tr></table></figure>
+
+<p>批量替换内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;local&#x2F;soft&#x2F;redis-5.0.5&#x2F;redis-cluster</span><br><span class="line">sed -i &#39;s&#x2F;7291&#x2F;7292&#x2F;g&#39; 7292&#x2F;redis.conf</span><br><span class="line">sed -i &#39;s&#x2F;7291&#x2F;7293&#x2F;g&#39; 7293&#x2F;redis.conf</span><br><span class="line">sed -i &#39;s&#x2F;7291&#x2F;7294&#x2F;g&#39; 7294&#x2F;redis.conf</span><br><span class="line">sed -i &#39;s&#x2F;7291&#x2F;7295&#x2F;g&#39; 7295&#x2F;redis.conf</span><br><span class="line">sed -i &#39;s&#x2F;7291&#x2F;7296&#x2F;g&#39; 7296&#x2F;redis.conf</span><br></pre></td></tr></table></figure>
+
+<p>启动6个Redis节点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;local&#x2F;soft&#x2F;redis-5.0.5&#x2F;</span><br><span class="line">.&#x2F;src&#x2F;redis-server redis-cluster&#x2F;7291&#x2F;redis.conf</span><br><span class="line">.&#x2F;src&#x2F;redis-server redis-cluster&#x2F;7292&#x2F;redis.conf</span><br><span class="line">.&#x2F;src&#x2F;redis-server redis-cluster&#x2F;7293&#x2F;redis.conf</span><br><span class="line">.&#x2F;src&#x2F;redis-server redis-cluster&#x2F;7294&#x2F;redis.conf</span><br><span class="line">.&#x2F;src&#x2F;redis-server redis-cluster&#x2F;7295&#x2F;redis.conf</span><br><span class="line">.&#x2F;src&#x2F;redis-server redis-cluster&#x2F;7296&#x2F;redis.conf</span><br></pre></td></tr></table></figure>
+
+<p>是否启动了6个进程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep redis</span><br></pre></td></tr></table></figure>
+
+<p>创建集群<br>旧版本中的redis-trib.rb已经废弃了，直接用–cluster命令<br>注意用绝对IP，不要用127.0.0.1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;local&#x2F;soft&#x2F;redis-5.0.5&#x2F;src&#x2F;</span><br><span class="line">redis-cli --cluster create 192.168.8.207:7291 192.168.8.207:7292 192.168.8.207:7293 192.168.8.207:7294 192.168.8.207:7295 192.168.8.207:7296 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
+
+<p>Redis会给出一个预计的方案，对6个节点分配3主3从，如果认为没有问题，输入yes确认</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; Performing hash slots allocation on 6 nodes...</span><br><span class="line">Master[0] -&gt; Slots 0 - 5460</span><br><span class="line">Master[1] -&gt; Slots 5461 - 10922</span><br><span class="line">Master[2] -&gt; Slots 10923 - 16383</span><br><span class="line">Adding replica 127.0.0.1:7295 to 127.0.0.1:7291</span><br><span class="line">Adding replica 127.0.0.1:7296 to 127.0.0.1:7292</span><br><span class="line">Adding replica 127.0.0.1:7294 to 127.0.0.1:7293</span><br><span class="line">&gt;&gt;&gt; Trying to optimize slaves allocation for anti-affinity</span><br><span class="line">[WARNING] Some slaves are in the same host as their master</span><br><span class="line">M: dfdc9c0589219f727e4fd0ad8dafaf7e0cfb4f1c 127.0.0.1:7291</span><br><span class="line">   slots:[0-5460] (5461 slots) master</span><br><span class="line">M: 8c878b45905bba3d7366c89ec51bd0cd7ce959f8 127.0.0.1:7292</span><br><span class="line">   slots:[5461-10922] (5462 slots) master</span><br><span class="line">M: aeeb7d7076d9b25a7805ac6f508497b43887e599 127.0.0.1:7293</span><br><span class="line">   slots:[10923-16383] (5461 slots) master</span><br><span class="line">S: ebc479e609ff8f6ca9283947530919c559a08f80 127.0.0.1:7294</span><br><span class="line">   replicates aeeb7d7076d9b25a7805ac6f508497b43887e599</span><br><span class="line">S: 49385ed6e58469ef900ec48e5912e5f7b7505f6e 127.0.0.1:7295</span><br><span class="line">   replicates dfdc9c0589219f727e4fd0ad8dafaf7e0cfb4f1c</span><br><span class="line">S: 8d6227aefc4830065624ff6c1dd795d2d5ad094a 127.0.0.1:7296</span><br><span class="line">   replicates 8c878b45905bba3d7366c89ec51bd0cd7ce959f8</span><br><span class="line">Can I set the above configuration? (type &#39;yes&#39; to accept): </span><br></pre></td></tr></table></figure>
+
+<p>注意看slot的分布：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">7291  [0-5460] (5461个槽) </span><br><span class="line">7292  [5461-10922] (5462个槽) </span><br><span class="line">7293  [10923-16383] (5461个槽)</span><br></pre></td></tr></table></figure>
+
+<p>集群创建完成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; Nodes configuration updated</span><br><span class="line">&gt;&gt;&gt; Assign a different config epoch to each node</span><br><span class="line">&gt;&gt;&gt; Sending CLUSTER MEET messages to join the cluster</span><br><span class="line">Waiting for the cluster to join</span><br><span class="line">....</span><br><span class="line">&gt;&gt;&gt; Performing Cluster Check (using node 127.0.0.1:7291)</span><br><span class="line">M: dfdc9c0589219f727e4fd0ad8dafaf7e0cfb4f1c 127.0.0.1:7291</span><br><span class="line">   slots:[0-5460] (5461 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">M: 8c878b45905bba3d7366c89ec51bd0cd7ce959f8 127.0.0.1:7292</span><br><span class="line">   slots:[5461-10922] (5462 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">M: aeeb7d7076d9b25a7805ac6f508497b43887e599 127.0.0.1:7293</span><br><span class="line">   slots:[10923-16383] (5461 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: 8d6227aefc4830065624ff6c1dd795d2d5ad094a 127.0.0.1:7296</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates aeeb7d7076d9b25a7805ac6f508497b43887e599</span><br><span class="line">S: ebc479e609ff8f6ca9283947530919c559a08f80 127.0.0.1:7294</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates dfdc9c0589219f727e4fd0ad8dafaf7e0cfb4f1c</span><br><span class="line">S: 49385ed6e58469ef900ec48e5912e5f7b7505f6e 127.0.0.1:7295</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 8c878b45905bba3d7366c89ec51bd0cd7ce959f8</span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line">&gt;&gt;&gt; Check for open slots...</span><br><span class="line">&gt;&gt;&gt; Check slots coverage...</span><br><span class="line">[OK] All 16384 slots covered.</span><br></pre></td></tr></table></figure>
+
+<p>重置集群的方式是在每个节点上个执行<code>cluster reset</code>，然后重新创建集群</p>
+<p>连接到客户端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -p 7291</span><br><span class="line">redis-cli -p 7292</span><br><span class="line">redis-cli -p 7293</span><br></pre></td></tr></table></figure>
+
+<p>批量写入值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;local&#x2F;soft&#x2F;redis-5.0.5&#x2F;redis-cluster&#x2F;</span><br><span class="line">vim setkey.sh</span><br></pre></td></tr></table></figure>
+
+<p>脚本内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line">for ((i&#x3D;0;i&lt;20000;i++))</span><br><span class="line">do</span><br><span class="line">echo -en &quot;helloworld&quot; | redis-cli -h 192.168.8.207 -p 7291 -c -x set name$i &gt;&gt;redis.log</span><br><span class="line">done</span><br><span class="line">chmod +x setkey.sh</span><br><span class="line">.&#x2F;setkey.sh</span><br></pre></td></tr></table></figure>
+
+<p>每个节点分布的数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:7292&gt; dbsize</span><br><span class="line">(integer) 6683</span><br><span class="line">127.0.0.1:7293&gt; dbsize</span><br><span class="line">(integer) 6665</span><br><span class="line">127.0.0.1:7291&gt; dbsize</span><br><span class="line">(integer) 6652</span><br></pre></td></tr></table></figure>
+
+<p>其他命令，比如添加节点、删除节点，重新分布数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster help</span><br><span class="line">Cluster Manager Commands:</span><br><span class="line">  create         host1:port1 ... hostN:portN</span><br><span class="line">                 --cluster-replicas &lt;arg&gt;</span><br><span class="line">  check          host:port</span><br><span class="line">                 --cluster-search-multiple-owners</span><br><span class="line">  info           host:port</span><br><span class="line">  fix            host:port</span><br><span class="line">                 --cluster-search-multiple-owners</span><br><span class="line">  reshard        host:port</span><br><span class="line">                 --cluster-from &lt;arg&gt;</span><br><span class="line">                 --cluster-to &lt;arg&gt;</span><br><span class="line">                 --cluster-slots &lt;arg&gt;</span><br><span class="line">                 --cluster-yes</span><br><span class="line">                 --cluster-timeout &lt;arg&gt;</span><br><span class="line">                 --cluster-pipeline &lt;arg&gt;</span><br><span class="line">                 --cluster-replace</span><br><span class="line">  rebalance      host:port</span><br><span class="line">                 --cluster-weight &lt;node1&#x3D;w1...nodeN&#x3D;wN&gt;</span><br><span class="line">                 --cluster-use-empty-masters</span><br><span class="line">                 --cluster-timeout &lt;arg&gt;</span><br><span class="line">                 --cluster-simulate</span><br><span class="line">                 --cluster-pipeline &lt;arg&gt;</span><br><span class="line">                 --cluster-threshold &lt;arg&gt;</span><br><span class="line">                 --cluster-replace</span><br><span class="line">  add-node       new_host:new_port existing_host:existing_port</span><br><span class="line">                 --cluster-slave</span><br><span class="line">                 --cluster-master-id &lt;arg&gt;</span><br><span class="line">  del-node       host:port node_id</span><br><span class="line">  call           host:port command arg arg .. arg</span><br><span class="line">  set-timeout    host:port milliseconds</span><br><span class="line">  import         host:port</span><br><span class="line">                 --cluster-from &lt;arg&gt;</span><br><span class="line">                 --cluster-copy</span><br><span class="line">                 --cluster-replace</span><br><span class="line">  help           </span><br><span class="line"></span><br><span class="line">For check, fix, reshard, del-node, set-timeout you can specify the host and port of any working node in the cluster.</span><br></pre></td></tr></table></figure>
+
+<p>附录：</p>
+<h3 id="集群命令"><a href="#集群命令" class="headerlink" title="集群命令"></a>集群命令</h3><ul>
+<li>cluster info ：打印集群的信息</li>
+<li>cluster nodes ：列出集群当前已知的所有节点（node），以及这些节点的相关信息。</li>
+<li>cluster meet ：将 ip 和 port 所指定的节点添加到集群当中，让它成为集群的一份子。</li>
+<li>cluster forget <node_id> ：从集群中移除 node_id 指定的节点(保证空槽道)。</li>
+<li>cluster replicate <node_id> ：将当前节点设置为 node_id 指定的节点的从节点。</li>
+<li>cluster saveconfig ：将节点的配置文件保存到硬盘里面。</li>
+</ul>
+<h3 id="槽slot命令"><a href="#槽slot命令" class="headerlink" title="槽slot命令"></a>槽slot命令</h3><ul>
+<li>cluster addslots [slot …] ：将一个或多个槽（slot）指派（assign）给当前节点。</li>
+<li>cluster delslots [slot …] ：移除一个或多个槽对当前节点的指派。</li>
+<li>cluster flushslots ：移除指派给当前节点的所有槽，让当前节点变成一个没有指派任何槽的节点。</li>
+<li>cluster setslot node <node_id> ：将槽 slot 指派给 node_id 指定的节点，如果槽已经指派给另一个节点，那么先让另一个节点删除该槽&gt;，然后再进行指派。</li>
+<li>cluster setslot migrating <node_id> ：将本节点的槽 slot 迁移到 node_id 指定的节点中。</li>
+<li>cluster setslot importing <node_id> ：从 node_id 指定的节点中导入槽 slot 到本节点。</li>
+<li>cluster setslot stable ：取消对槽 slot 的导入（import）或者迁移（migrate）。</li>
+</ul>
+<h3 id="键命令"><a href="#键命令" class="headerlink" title="键命令"></a>键命令</h3><ul>
+<li>cluster keyslot ：计算键 key 应该被放置在哪个槽上。</li>
+<li>cluster countkeysinslot ：返回槽 slot 目前包含的键值对数量。</li>
+<li>cluster getkeysinslot ：返回 count 个 slot 槽中的键</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/centos%207%20yum%E6%96%B9%E5%BC%8F%E5%AE%89%E8%A3%85Mysql5.7/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/CentOS7%E5%8D%B8%E8%BD%BDopenJDK%E5%AE%89%E8%A3%85JDK1.8/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CentOS-7-%E5%8D%95%E6%9C%BA%E5%AE%89%E8%A3%85Redis-Cluster%EF%BC%883%E4%B8%BB3%E4%BB%8E%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">CentOS 7 单机安装Redis Cluster（3主3从）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E5%91%BD%E4%BB%A4"><span class="nav-number">1.0.1.</span> <span class="nav-text">集群命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A7%BDslot%E5%91%BD%E4%BB%A4"><span class="nav-number">1.0.2.</span> <span class="nav-text">槽slot命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%AE%E5%91%BD%E4%BB%A4"><span class="nav-number">1.0.3.</span> <span class="nav-text">键命令</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

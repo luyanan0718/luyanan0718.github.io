@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="MySQL架构1. 模块详解  Connector:  用来支持各种语言和SQL的交互, 比如php、Python、Java的JDBC., Management Serveices &amp; Utilities: 系统管理和控制工具,包括备份恢复、MySQL复制、集群等等.  Connection Pool: 连接池,管理需要缓冲的资源,包括用户密码权限线程等.  SQL Interface:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/2.MySQL%E6%9E%B6%E6%9E%84/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="MySQL架构1. 模块详解  Connector:  用来支持各种语言和SQL的交互, 比如php、Python、Java的JDBC., Management Serveices &amp; Utilities: 系统管理和控制工具,包括备份恢复、MySQL复制、集群等等.  Connection Pool: 连接池,管理需要缓冲的资源,包括用户密码权限线程等.  SQL Interface:">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514171158.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514172703.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514195326.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514195845.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514200453.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514200636.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514203347.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514204647.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514205344.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514210233.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514210458.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514212138.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514215348.png">
+<meta property="article:published_time" content="2021-03-01T09:46:51.054Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.043Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com//img/20200514171158.png">
+
+<link rel="canonical" href="http://luyanan.com/2.MySQL%E6%9E%B6%E6%9E%84/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/2.MySQL%E6%9E%B6%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="MySQL架构"><a href="#MySQL架构" class="headerlink" title="MySQL架构"></a>MySQL架构</h1><h2 id="1-模块详解"><a href="#1-模块详解" class="headerlink" title="1. 模块详解"></a>1. 模块详解</h2><p><img src="http://files.luyanan.com//img/20200514171158.png" alt="image-20200514171157637"></p>
+<ol>
+<li><code>Connector</code>:  用来支持各种语言和SQL的交互, 比如<code>php</code>、<code>Python</code>、<code>Java</code>的<code>JDBC</code>.,</li>
+<li><code>Management Serveices &amp; Utilities</code>: 系统管理和控制工具,包括备份恢复、MySQL复制、集群等等. </li>
+<li><code>Connection Pool</code>: 连接池,管理需要缓冲的资源,包括用户密码权限线程等. </li>
+<li><code>SQL Interface</code>: 用来接收用户的SQL命令,返回用户需要的查询结果. </li>
+<li><code>Parser</code>:  用来解析SQL语句</li>
+<li><code>Optimizer</code>:查询优化器</li>
+<li><code>Cache and Buffer</code>: 查询缓存,除了行记录的缓存之外，还有表缓存、key缓存、权限缓存等等. </li>
+<li><code>Pluggable Storage Engines</code>:插件式引擎,它提供API给服务层使用,跟具体的文件打交道. </li>
+</ol>
+<h2 id="2-架构分层"><a href="#2-架构分层" class="headerlink" title="2. 架构分层"></a>2. 架构分层</h2><p>总体上,我们可以把MySQL 分成三层,跟客户端对接的连接层,真正执行操作的服务层,和跟硬件打交道的存储引擎层</p>
+<p><img src="http://files.luyanan.com//img/20200514172703.png" alt="image-20200514172701354"></p>
+<h3 id="2-1-连接层"><a href="#2-1-连接层" class="headerlink" title="2.1 连接层"></a>2.1 连接层</h3><p>我们的客户端要连接到MySQL服务器的3306端口, 必须要与服务端建立连接,那么管理所有的连接,验证客户端的身份和权限,这些功能就在连接层完成. </p>
+<h3 id="2-2-服务层"><a href="#2-2-服务层" class="headerlink" title="2.2 服务层"></a>2.2 服务层</h3><p>连接层会把SQL交给服务层,这里面又包含一系列的流程： </p>
+<p>比如查询缓存的依据,根据SQL 调用相应的接口,对我们的SQL 语句进行词法和语法的解析(比如关键词怎么识别, 别名怎么识别,语法有没有错误等等).</p>
+<p>然后就是优化器,MySQL底层会根据一定的规则对我们的SQL进行优化,最后再交给执行器去执行. </p>
+<h3 id="2-3-存储引擎"><a href="#2-3-存储引擎" class="headerlink" title="2.3 存储引擎"></a>2.3 存储引擎</h3><p>存储引擎就是我们的数据真正存放的地方,在MySQL里面支持不同的存储引擎,再往下就是内存或者磁盘. </p>
+<h2 id="3-一条更新SQL是如何执行的"><a href="#3-一条更新SQL是如何执行的" class="headerlink" title="3. 一条更新SQL是如何执行的?"></a>3. 一条更新SQL是如何执行的?</h2><p>讲完了查询流程,我们是不是再讲讲更新流程、插入流程和删除流程呢? </p>
+<p>在数据库中,我们说的<code>update</code> 操作其实包含了更新、插入、删除, 如果大家看过<code>Mybatis</code> 源码, 应该知道<code>Executor</code> 里面也只有<code>doQuery()</code>和<code>doUpdate()</code> 方法,没有<code>doDelete()</code>和 <code>doInsert()</code>。</p>
+<p>更新流程和查询流程有什么不同呢? </p>
+<p>基本流程也是一致的,也就是说,它也要经过解析器、优化器的处理,最后交给执行器. </p>
+<p>区别就在于拿到符合条件的数据之后的操作. </p>
+<h3 id="3-1-缓冲池-Buffer-Pool"><a href="#3-1-缓冲池-Buffer-Pool" class="headerlink" title="3.1 缓冲池(Buffer Pool)"></a>3.1 缓冲池(<code>Buffer Pool</code>)</h3><p>首先,<code>InnoDB</code> 的数据都是放在磁盘的,<code>InnoDB</code> 操作数据有一个最小的逻辑单位,叫做页(索引页和数据页). 我们对于数的操作,不是每次都直接操作磁盘,因为磁盘的速度太慢了.<code>InnoDB</code> 使用了一种缓冲池的技术,也就是把磁盘读到的页放到一块内存区域里,这个内存区域就叫做<code>Buffer Pool</code>. </p>
+<p><img src="http://files.luyanan.com//img/20200514195326.png" alt="image-20200514195317155"></p>
+<p>下一个读取相同的页,先判断是不是在缓冲池里, 如果是, 则直接读取,不用再访问磁盘. </p>
+<p>修改数据的时候, 先修改缓冲池里面的页. 内存的数据页和磁盘数据不一致的时候,我们把它叫做 <strong>脏页</strong>.<code>InnoDB</code> 里面有专门的后台线程把<code>Buffer Pool</code> 的数据写入到磁盘, 每隔一段时间就一次性把多个修改写入磁盘, 这个动作就叫做 <strong>刷脏</strong>. </p>
+<p><code>Buffer Pool</code>是<code>InnoDB</code> 里面一个非常重要的结构,它的内部又分为几块区域. 这里我们趁机来到官网来认识一下<code>InnoDB</code>的内存结构和磁盘结构. </p>
+<h3 id="3-2-InnoDB-内存结构和磁盘结构"><a href="#3-2-InnoDB-内存结构和磁盘结构" class="headerlink" title="3.2 InnoDB 内存结构和磁盘结构"></a>3.2 <code>InnoDB</code> 内存结构和磁盘结构</h3><p><img src="http://files.luyanan.com//img/20200514195845.png" alt="image-20200514195844195"></p>
+<h4 id="3-2-1-内存结构"><a href="#3-2-1-内存结构" class="headerlink" title="3.2.1 内存结构"></a>3.2.1 内存结构</h4><p><code>Buffer Pool</code> 主要分为3部分,<code>Buffer Pool</code>、<code>Change Buffer</code>、<code>Adaptive Hash Index</code>，另外还有一个<code>（redo）log buffer</code>。</p>
+<h5 id="1-Buffer-Pool"><a href="#1-Buffer-Pool" class="headerlink" title="1. Buffer Pool"></a>1. <code>Buffer Pool</code></h5><p><code>Buffer Pool</code> 缓存的是页面信息,包括数据页、索引页. </p>
+<p>查看服务器状态,里面有很多跟<code>Buffer Pool</code>相关的信息. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SHOW STATUS LIKE &#39;%innodb_buffer_pool%&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>这些状态都可以在官网中查到详细的含义.</p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/server-status-variables.html">https://dev.mysql.com/doc/refman/5.7/en/server-status-variables.html</a></p>
+<p><img src="http://files.luyanan.com//img/20200514200453.png" alt="image-20200514200452360"></p>
+<p><code>Buffer Pool</code> 默认大小为128M(134217728字节), 可以调整. </p>
+<p>查看参数(系统变量)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES like &#39;%innodb_buffer_pool%&#39;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这些参数都可以在官网中查到详细的含义.</p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html">https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html</a></p>
+<p><img src="http://files.luyanan.com//img/20200514200636.png" alt="image-20200514200634944"></p>
+<p>内存的缓冲池写满了怎么办? <code>InnoDB</code> 用<code>LRU</code> 算法来管理缓冲池(链表实现,不是传统的<code>LRU</code>, 分成了<code>young</code>和<code>old</code>),经过淘汰的数据就是热点数据. </p>
+<p>内存缓冲区对于提升读写性能有很多的作用, 思考一个问题: </p>
+<p>当需要更新一个数据页的时候,如果数据页在<code>Buffer Pool</code>中存在,那么就直接更新好了. 否则的话，就需要从磁盘加载到内存, 再对内存的数据页进行操作. 也就是说, 如果没有命中缓冲池,至少要产生一个磁盘IO, 有没有优化的方式呢? </p>
+<h5 id="2-Change-Buffer-写缓冲"><a href="#2-Change-Buffer-写缓冲" class="headerlink" title="2. Change Buffer  写缓冲"></a>2. <code>Change Buffer </code> 写缓冲</h5><p>如果这个数据页不是唯一索引,不存在数据重复的情况, 也就不需要从磁盘中加载索引页判断数据是不是重复(唯一性检查)。 这种情况下可以先把修改记录咋i内存的缓冲池中,从而提升更新语句(<code>Insert</code>、<code>Delete</code>、<code>Update</code>)的执行速度. </p>
+<p>这一块区域就是<code>Change Buffer</code>,  5.5之前叫<code>Insert Buffer</code>插入缓冲, 现在也支持<code>delete</code>和<code>update</code>.</p>
+<p>最后把<code>change Buffer</code> 记录到数据页的操作叫做<code>merge</code>, 什么时候发生<code>merge</code>呢? 有几种情况: 在访问这个数据页的时候, 或者通过后台线程、或者数据库<code>shutdown</code>、<code>redo log</code> 写满时触发. </p>
+<p>如果数据库大部分索引都是非唯一索引, 并且业务是写多读少的,不会在写数据后立即读取,就可以使用<code>Change Buffer</code>(写缓冲).写多读少的业务, 调大这个值:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES LIKE &#39;innodb_change_buffer_max_size&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>代表<code>Change Buffer</code>占<code>Buffer Pool</code>的比例, 默认是25%.</p>
+<h5 id="3-Adaptive-Hash-Index"><a href="#3-Adaptive-Hash-Index" class="headerlink" title="3. Adaptive Hash Index"></a>3. <code>Adaptive Hash Index</code></h5><p>索引应该放在磁盘的, 为什么还要专门把一种哈希的的东西放到内存? 下面再说.</p>
+<h5 id="4-（redo）Log-Buffer"><a href="#4-（redo）Log-Buffer" class="headerlink" title="4. （redo）Log Buffer"></a>4. <code>（redo）Log Buffer</code></h5><p>思考一个问题: 如果<code>Buffer Pool</code> 里面的脏页还没有刷入磁盘时, 数据库宕或者重启,这些数据丢失. 如果写操作写道一半,甚至可能会破坏数据文件导致数据库不可用.</p>
+<p>为了避免这个问题,<code>InnoDB</code> 把所有对页面的修改操作专门写入一个日志文件,并且在数据库启动时从这个文件中进行恢复操作(实现<code>crash-safe</code>)–用它来实现事务的持久性. </p>
+<p><img src="http://files.luyanan.com//img/20200514203347.png" alt="image-20200514203345320"></p>
+<p>这个文件就是磁盘的<code>redo log</code>(叫做重做日志),对应于<code>/var/lib/mysql/</code>目录下的 <code>ib_logfile0</code> 和 <code>ib_logfile1</code>，每个48M.</p>
+<p>这种日志和磁盘配合的整个过程,其实就是MySQL里的<code>WAL</code>技术<code>（Write-Ahead Logging）</code>, 它的关键点就是先写日志, 再写磁盘. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show variables like &#39;innodb_log%&#39;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>innodb_log_file_size</code></td>
+<td>指定每个文件的大小, 默认是48M</td>
+</tr>
+<tr>
+<td><code>innodb_log_files_in_group</code></td>
+<td>指定文件的数量,默认为2</td>
+</tr>
+<tr>
+<td><code>innodb_log_group_home_dir</code></td>
+<td>指定文件所在路径,相对或者绝对,如果不指定,则为<code>datadir</code> 路径.</td>
+</tr>
+</tbody></table>
+<p>问题:</p>
+<p>同样是写磁盘,为什么不直接写到<code>db file</code> 里面去呢? 为什么先写到日志再写磁盘呢?</p>
+<p>我们先来了解一下随机IO和顺序IO的概念.</p>
+<p>磁盘的最小组成单位是扇区,通常是512个字节. </p>
+<p>操作系统和内存打交道,最小的单位是页Page</p>
+<p>操作系统和磁盘打交道, 读写磁盘, 最小的单位是块<code>Block</code></p>
+<p><img src="http://files.luyanan.com//img/20200514204647.png" alt="image-20200514204646205"></p>
+<p>如果我们所需要的数据是随机分散在不同页的不同扇区中,那么找到相应的数据需要等待磁臂旋转到指定的页,然后盘片寻找到对应的扇区,才能找到我们所需要的一块数据, 依次进行此过程直到找到所有的数据,这个就是随机IO, 读取数据速度较慢.</p>
+<p>假设我们已经找到了第一块数据,并且其他所需的数据就在这一块数据后面,那么就不需要重新寻址,可以依次拿到我们所需的数据, 这个就叫做顺序IO.</p>
+<p>刷盘是随机IO, 而记录日志是顺序IO,顺序IO 效率更高, 因此先把修改写入日志,可以延迟刷盘时机,进而提升系统吞吐.</p>
+<p>当然,<code>redo log</code> 也不是每一次都直接写入磁盘,而<code>Buffer Pool</code>里面有一块内存区域(<code>Log Buffer</code>)专门用来保存即将要写入日志文件的数据,默认16M, 它一样可以节省磁盘IO.</p>
+<p><img src="http://files.luyanan.com//img/20200514205344.png" alt="image-20200514205342818"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES LIKE &#39;innodb_log_buffer_size&#39;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是,<code>redo log</code> 的内容主要是用于崩溃恢复, 磁盘的数据文件, 数据来自<code>Buffer Pool</code>.<code>redo log</code> 写入磁盘,不是写入数据文件。 </p>
+<p>那么<code>Log Buffer</code> 什么时候写入<code>log file</code>?</p>
+<p>在我们写入数据到磁盘的时候,操作系统本身是有缓存的,<code>flush</code> 就是把操作系统缓冲区写入到磁盘. </p>
+<p><code>log buffer</code>写入到磁盘的时机, 由一个参数控制, 默认是1. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES LIKE &#39;innodb_flush_log_at_trx_commit&#39;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html">https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html</a></p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0(延迟写)</td>
+<td><code>log buffer</code> 将每秒一次的写入<code>log buffer</code>, 并且<code>log file</code> 的<code>flush</code> 操作同时进行,该模式下,在事务提交的时候,不会主动触发写入磁盘的操作.</td>
+</tr>
+<tr>
+<td>1(默认, 实时写, 实时刷)</td>
+<td>每次事务提交时MySQL都会把<code>log buffer</code>的数据写入到<code>log file</code>,并且刷到磁盘中去.</td>
+</tr>
+<tr>
+<td>2(实时写, 延迟刷)</td>
+<td>每次事务提交时MySQL都会把<code>log buffer</code> 的数据写入到<code>log file</code>.但是<code>flush</code> 操作并不会同时进行,该模式下,MySQL 会每秒执行一次<code>flush</code></td>
+</tr>
+</tbody></table>
+<p><img src="http://files.luyanan.com//img/20200514210233.png" alt="image-20200514210232584"></p>
+<p>这是内存结构的第4块内容,<code>redo log</code>, 它又分为内存和磁盘两部分,<code>redo log</code> 有什么特点呢? </p>
+<ol>
+<li><code>redo log</code> 是<code>innoDB</code>存储引擎实现的, 并不是所有存储引擎都有, </li>
+<li>不是记录数据页更新之后的状态,而是记录这个页做了什么改动,属于物理日志 </li>
+<li><code>redo log</code> 的大小是固定的, 前面的内容会被覆盖.</li>
+</ol>
+<p><img src="http://files.luyanan.com//img/20200514210458.png" alt="image-20200514210451612"></p>
+<p><code>check point</code> 的当前要覆盖的位置. 如果<code>write pos</code>跟<code>check point</code>重叠,说明<code>redo  log </code> 已经写满,这时候需要同步<code>redo log</code>到磁盘中 . </p>
+<p>这是MySQL的内存结构,总结一下, 分为:</p>
+<p><code>Buffer pool</code>、<code>change buffer</code>、<code>Adaptive Hash Index</code>、 <code>log buffer</code>。</p>
+<h4 id="3-2-2-磁盘结构"><a href="#3-2-2-磁盘结构" class="headerlink" title="3.2.2 磁盘结构"></a>3.2.2 磁盘结构</h4><p>表空间可以看作是<code>InnoDB</code>存储引擎逻辑结构的最高层,所有的数据都是存放在表空间中,<code>InnoDB</code> 的表空间分为5大类. </p>
+<h5 id="系统表空间-system-tablespace"><a href="#系统表空间-system-tablespace" class="headerlink" title="系统表空间 system tablespace"></a><strong>系统表空间 <code>system tablespace</code></strong></h5><p>在默认情况下<code>InnoDB</code>存储引擎有一个共享表空间(对应文件<code>/var/lib/mysql/ ibdata1</code> ),也叫系统表空间. </p>
+<p><code>InnoDB</code>系统表空间包含<code>InoDB</code> 数据字典和双写缓冲区,<code>Change Buffer</code>和<code>Undo Logs</code>,如果没有指定<code>file-per-tables</code>,也包含用户创建的表和索引数据. </p>
+<ol>
+<li><p><code>undo</code> 在后面介绍, 因为有独立的表空间</p>
+</li>
+<li><p>数据字典: 由内部系统表组成,存储表和索引的元数据(定义信息)</p>
+</li>
+<li><p>双写缓冲(<code>InnoDB</code>的一大特性):</p>
+<p><code>InnoDB</code>的页和操作系统的页大小不一致, <code>InnoDB</code>页大小一般分为16K, 操作系统页大小为4K, <code>InnoDB</code>的页写入到磁盘中,一个页需要分4次写. </p>
+<p><img src="http://files.luyanan.com//img/20200514212138.png" alt="image-20200514212135377"></p>
+</li>
+</ol>
+<p>如果存储引擎正在写入页的数据到了磁盘的时候发生了宕机,可能出现页只写了一部分的情况,比如只写了4K,就宕机了. 这种情况叫做部分写失效(<code>partial page write</code>), 可以会导致数据丢失. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show variables like &#39;innodb_doublewrite&#39;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>我们不同有<code>redo log</code>吗? 但是有个问题, 如果这个页本身已经损坏了,用它来做崩溃恢复是没有意义的. 所以 在对于应用<code>redo log</code>之前, 需要一个页的副本. 如果出现了写入失效,就用页的副本来还原这个页, 然后再应用到<code>redo log</code>.这个页的副本就是<code>double write</code>. <code>InnoDB</code>的双写技术. 通过它来实现了数据页的可靠性. </p>
+<p>跟<code>redo log</code> 一样,<code>double write</code> 由两部分组成, 一部分是内存的<code>double write</code>,一部分是磁盘上的<code>double write</code>, 因为<code>double write</code> 是顺序写入的,不会带来很多的开销. </p>
+<p>在默认情况下, 所有的表共享一个系统表空间,这个文件会越来越大,而且它的空间不会收缩. </p>
+<h4 id="独占表空间-file-per-table-tablespaces"><a href="#独占表空间-file-per-table-tablespaces" class="headerlink" title="独占表空间  file-per-table tablespaces"></a>独占表空间  <code>file-per-table tablespaces</code></h4><p>我们可以让每张表独立一个表空间, 这个开关通过<code>innodb_file_per_table</code>  设置,默认开启. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES LIKE &#39;innodb_file_per_table&#39;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>开启后,则每张表会开辟一个表空间,这个文件就是数据目录下的<code>ibd</code> 文件, 存放表的索引和数据. </p>
+<p>但是其他类的数据, 如回滚(<code>undo</code>)信息、插入缓冲索引页、系统事务信息、二次写缓冲(<code>Double write buffer</code>) 等还是存放在原来的共享表空间内. </p>
+<h5 id="通用表空间-general-tablespaces"><a href="#通用表空间-general-tablespaces" class="headerlink" title="通用表空间 general tablespaces"></a>通用表空间 <code>general tablespaces</code></h5><p>通用表空间也是一种共享的表空间, 跟<code>ibdata1</code> 类似. </p>
+<p>可以创建一个通用的表空间,用来存储不同数据的表,数据路径和文件可以自定义. 语法: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">create tablespace ts2673 add datafile &#39;&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;ts2673.ibd&#39; file_block_size&#x3D;16K engine&#x3D;innodb;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在创建表的时候,可以指定表空间,用 <code>ALTER</code> 修改表空间可以转移表空间. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create table t2673(id integer) tablespace ts2673;</span><br></pre></td></tr></table></figure>
+
+<p>不同表空间的数据是可以移动的. </p>
+<p>删除表空间需要先删除里面的所有的表.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">drop table t2673;</span><br><span class="line">drop tablespace ts2673;</span><br></pre></td></tr></table></figure>
+
+<h5 id="临时表空间-temporary-tablespaces"><a href="#临时表空间-temporary-tablespaces" class="headerlink" title="临时表空间 temporary tablespaces"></a>临时表空间 <code>temporary tablespaces</code></h5><p>存储临时表的数据, 包括用户创建的临时表, 和磁盘的内部临时表,对应数据目录下的<code>ibtmp1</code>文件。当数据服务器正常关闭时, 该表空间被删除,下次重新产生. </p>
+<h5 id="Redo-log"><a href="#Redo-log" class="headerlink" title="Redo log"></a><code>Redo log</code></h5><p>磁盘结构里面的<code>redi log</code></p>
+<h5 id="undo-log-tablespace"><a href="#undo-log-tablespace" class="headerlink" title="undo log tablespace"></a><code>undo log tablespace</code></h5><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-undo-tablespaces.html">https://dev.mysql.com/doc/refman/5.7/en/innodb-undo-tablespaces.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-undo-logs.html">https://dev.mysql.com/doc/refman/5.7/en/innodb-undo-logs.html</a></p>
+<p><code>undo log</code> (撤销日志或回滚日志)记录了事务发生之前的数据状态(不包括<code>select</code>).如果修改了数据时出现异常,可以用<code>undo log</code> 来实现回滚操作(保证原子性). </p>
+<p>在执行<code>undo</code> 的时候,仅仅是将数据从逻辑上恢复至事务之前的状态,而不是从物理页面上操作实现的,属于逻辑格式的日志. </p>
+<p><code>redo log</code> 和<code>undo log</code> 与事务密切相关,统称为事务日志. </p>
+<p><code>undo Log</code>的数据默认在系统表空间<code>ibdata1</code>文件中,因为共享表空间不会自动收缩,也可以单独创建一个<code>undo</code> 表空间。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show global variables like &#39;%undo%&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>有了这些日志之后,我们来总结一下一个更新操作的流程,这是一个简化的过程.</p>
+<p>name的原值是<code>张三</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">update user set name &#x3D; &#39;李四&#39; where id&#x3D;1;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>事务开始,从内存或者磁盘取到这条数据,返回给<code>Server</code> 的执行器. </li>
+<li>执行器修改这一行的数据的值为<code>李四</code></li>
+<li>记录<code>name=张三</code>到<code>undo log</code></li>
+<li>记录<code>name=李四</code>到<code>redo log</code></li>
+<li>调用存储引擎接口,在内存<code>(Buffer Pool)</code>中修改<code>name=李四</code></li>
+<li>事务提交</li>
+</ol>
+<p>内存和磁盘之间工作着很多后台线程. </p>
+<h3 id="3-3-后台线程"><a href="#3-3-后台线程" class="headerlink" title="3.3 后台线程"></a>3.3 后台线程</h3><p>后台线程的主要作用是负责刷新内存池中的数据和把修改的数据页刷新到磁盘. 后台线程分为 <code>master thread</code>，<code>IO thread</code>，<code>purge thread</code>，<code>page cleaner thread</code></p>
+<p><code>master thread</code>:负责刷新缓存数据到磁盘并协调调度其他后台线程. </p>
+<p><code>IO thread</code>：分为<code>insert buffer</code>、<code>log</code>、<code>read、write</code> 进程,分别用来处理<code>insert buffer</code>,重做日志,读写请求的IO回调. </p>
+<p><code>purge thread</code>: 用来回收<code>undo</code> 页 . </p>
+<p><code>page cleaner thread</code>: 用来刷新脏页. </p>
+<p>除了<code>InnoDB</code> 架构中的日志文件,MySQL的<code>Server</code> 层也有一个日志文件,叫做<code>binlog</code>,它可以被所有的存储引擎使用. </p>
+<h3 id="3-4-BinLog"><a href="#3-4-BinLog" class="headerlink" title="3.4 BinLog"></a>3.4 <code>BinLog</code></h3><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/binary-log.html">https://dev.mysql.com/doc/refman/5.7/en/binary-log.html</a></p>
+<p><code>binlog</code> 以事件的形式记录了所有的DDL和DML语句(因为它记录的是操作而不是数据值,属于逻辑日志), 可以用来做主从复制和数据恢复. </p>
+<p>跟<code>redo log</code> 不一样,它的文件内容是可以追加的,没有固定大小限制. </p>
+<p>在开启了<code>binlog</code> 功能的情况下, 我们可以把<code>binlog</code>导入成SQL语句,把所有的操作重放一遍，来实现数据的恢复. </p>
+<p><code>binlog</code>的另一个功能就是用来实现主从复制,它的原理就是从服务器读取住服务器的<code>binlog</code>, 然后执行一遍. </p>
+<p>有了这两个日志后, 我们来看一下一条更新语句是怎么执行的? </p>
+<p><img src="http://files.luyanan.com//img/20200514215348.png" alt="image-20200514215347422"></p>
+<p>例如一条语句: <code>update teacher set name=&#39;盆鱼宴&#39; where id=1;</code></p>
+<ol>
+<li>先查询到这条数据,如果有缓存,也会用到缓存. </li>
+<li>把<code>name</code>改成盆鱼宴，然后调用引擎的 API 接口，写入这一行数据到内存，同时 记录 <code>redo log</code>。这时 <code>redo log</code> 进入 <code>prepare</code> 状态，然后告诉执行器，执行完成了，可 以随时提交。</li>
+<li>执行器收到通知后记录<code>binlog</code>, 然后调用存储引擎接口,设置 <code>redo log</code>为 <code>commit</code> 状态. </li>
+<li>更新完成. </li>
+</ol>
+<p>这张图的重点: </p>
+<ol>
+<li>先记录到内存,再写日志文件</li>
+<li>记录<code>redo log</code> 分为两个阶段</li>
+<li>存储引擎和<code>Server</code> 记录不同的日志</li>
+<li>先记录<code>redo</code>, 再记录<code>binlog</code></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/1.MySQL%E7%9A%84SQL%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/4.MySQL%E4%BA%8B%E5%8A%A1%E4%B8%8E%E9%94%81%E8%AF%A6%E8%A7%A3/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">MySQL架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%A8%A1%E5%9D%97%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.1.</span> <span class="nav-text">1. 模块详解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%9E%B6%E6%9E%84%E5%88%86%E5%B1%82"><span class="nav-number">1.2.</span> <span class="nav-text">2. 架构分层</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E8%BF%9E%E6%8E%A5%E5%B1%82"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 连接层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E6%9C%8D%E5%8A%A1%E5%B1%82"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 服务层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 存储引擎</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%B8%80%E6%9D%A1%E6%9B%B4%E6%96%B0SQL%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84"><span class="nav-number">1.3.</span> <span class="nav-text">3. 一条更新SQL是如何执行的?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E7%BC%93%E5%86%B2%E6%B1%A0-Buffer-Pool"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 缓冲池(Buffer Pool)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-InnoDB-%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E5%92%8C%E7%A3%81%E7%9B%98%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 InnoDB 内存结构和磁盘结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">3.2.1 内存结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-Buffer-Pool"><span class="nav-number">1.3.2.1.1.</span> <span class="nav-text">1. Buffer Pool</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-Change-Buffer-%E5%86%99%E7%BC%93%E5%86%B2"><span class="nav-number">1.3.2.1.2.</span> <span class="nav-text">2. Change Buffer  写缓冲</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-Adaptive-Hash-Index"><span class="nav-number">1.3.2.1.3.</span> <span class="nav-text">3. Adaptive Hash Index</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%EF%BC%88redo%EF%BC%89Log-Buffer"><span class="nav-number">1.3.2.1.4.</span> <span class="nav-text">4. （redo）Log Buffer</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-%E7%A3%81%E7%9B%98%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">3.2.2 磁盘结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%A1%A8%E7%A9%BA%E9%97%B4-system-tablespace"><span class="nav-number">1.3.2.2.1.</span> <span class="nav-text">系统表空间 system tablespace</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%8B%AC%E5%8D%A0%E8%A1%A8%E7%A9%BA%E9%97%B4-file-per-table-tablespaces"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">独占表空间  file-per-table tablespaces</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E8%A1%A8%E7%A9%BA%E9%97%B4-general-tablespaces"><span class="nav-number">1.3.2.3.1.</span> <span class="nav-text">通用表空间 general tablespaces</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%B4%E6%97%B6%E8%A1%A8%E7%A9%BA%E9%97%B4-temporary-tablespaces"><span class="nav-number">1.3.2.3.2.</span> <span class="nav-text">临时表空间 temporary tablespaces</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Redo-log"><span class="nav-number">1.3.2.3.3.</span> <span class="nav-text">Redo log</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#undo-log-tablespace"><span class="nav-number">1.3.2.3.4.</span> <span class="nav-text">undo log tablespace</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E5%90%8E%E5%8F%B0%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3 后台线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-BinLog"><span class="nav-number">1.3.4.</span> <span class="nav-text">3.4 BinLog</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1.启动一个线程是调用 run() 方法还是 start() 方法？启动一个线程调用的是start()方法，使线程进入到就绪状态，这就意味着它可以由JVM调度并执行，这并不意味着线程就会立马执行；run()方法是线程启动后线程要进行回调的方法。 2. 请说出同步线程及线程调度相关的方法？ wait():使一个线程处于阻塞状态，并且释放所持有的对象锁；  sleep():使一个线程休眠一段时间，当时">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/%E5%B8%B8%E8%A7%81%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%9D%A2%E8%AF%95%E9%A2%98/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="1.启动一个线程是调用 run() 方法还是 start() 方法？启动一个线程调用的是start()方法，使线程进入到就绪状态，这就意味着它可以由JVM调度并执行，这并不意味着线程就会立马执行；run()方法是线程启动后线程要进行回调的方法。 2. 请说出同步线程及线程调度相关的方法？ wait():使一个线程处于阻塞状态，并且释放所持有的对象锁；  sleep():使一个线程休眠一段时间，当时">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-01T09:46:52.283Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.114Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://luyanan.com/%E5%B8%B8%E8%A7%81%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%9D%A2%E8%AF%95%E9%A2%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%B8%B8%E8%A7%81%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%9D%A2%E8%AF%95%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-启动一个线程是调用-run-方法还是-start-方法？"><a href="#1-启动一个线程是调用-run-方法还是-start-方法？" class="headerlink" title="1.启动一个线程是调用 run() 方法还是 start() 方法？"></a>1.启动一个线程是调用 run() 方法还是 start() 方法？</h2><p>启动一个线程调用的是start()方法，使线程进入到就绪状态，这就意味着它可以由JVM调度并执行，这并不意味着线程就会立马执行；run()方法是线程启动后线程要进行回调的方法。</p>
+<h2 id="2-请说出同步线程及线程调度相关的方法？"><a href="#2-请说出同步线程及线程调度相关的方法？" class="headerlink" title="2. 请说出同步线程及线程调度相关的方法？"></a>2. 请说出同步线程及线程调度相关的方法？</h2><ul>
+<li><p>wait():使一个线程处于阻塞状态，并且释放所持有的对象锁；</p>
+</li>
+<li><p>sleep():使一个线程休眠一段时间，当时间过后线程又会恢复到以前的状态，并且在休眠状态不会释放对象锁；</p>
+</li>
+<li><p>notify():唤醒一个处于等待状态的线程，当然在调用此方法的时候，并不能确切的唤醒某一个等待状态的线程，而是由 JVM 确定唤醒哪个线程，而且与优先级无关；</p>
+</li>
+<li><p>notifyAll():唤醒所有处于等待状态的线程，该方法并不是将对象的锁给所有线程，而是让它们竞争，只有获得锁的线程才能进入就绪状态；</p>
+</li>
+</ul>
+<h2 id="3-线程和进程的区别？"><a href="#3-线程和进程的区别？" class="headerlink" title="3.线程和进程的区别？"></a>3.线程和进程的区别？</h2><ul>
+<li><p>进程：具有一定独立功能的程序关于某个数据集合上的一次运行活动，是操作系统进行资源分配和调度的一个独立单位。</p>
+</li>
+<li><p>线程：是进程的一个实体，是 cpu 调度和分派的基本单位，是比进程更小的可以独立运行的基本单位。</p>
+</li>
+</ul>
+<p>特点：线程的划分尺度小于进程，这使多线程程序拥有高并发性，进程在运行时各自内存单元相互独立，线程之间内存共享，这使多线程编程可以拥有更好的性能和用户体验</p>
+<h2 id="4-Java-中多线程间的通信怎么实现"><a href="#4-Java-中多线程间的通信怎么实现" class="headerlink" title="4.Java 中多线程间的通信怎么实现 ?"></a>4.Java 中多线程间的通信怎么实现 ?</h2><p>1.共享变量：线程间通信可以通过发送信号，发送信号的一个简单方式是在共享对象的变量里设置信号值’;</p>
+<p>2.wait/notify 机制:以资源为例，生产者生产一个资源，通知消费者就消费掉一个资源，生产者继续生产资源，消费者消费资源，以此循环;</p>
+<h2 id="5-什么情况下导致线程死锁，遇到线程死锁该怎么解决？"><a href="#5-什么情况下导致线程死锁，遇到线程死锁该怎么解决？" class="headerlink" title="5.什么情况下导致线程死锁，遇到线程死锁该怎么解决？"></a>5.什么情况下导致线程死锁，遇到线程死锁该怎么解决？</h2><p>死锁的定义：所谓死锁是指多个线程因竞争资源而造成的一种僵局（互相等待），若无外力作用，这些进程都将无法向前推进</p>
+<p>死锁产生的原因:系统资源的竞争,进程运行推进顺序不合适</p>
+<p><strong>如何避免死锁</strong>:</p>
+<ol>
+<li><p>加锁顺序（线程按照一定的顺序加锁）</p>
+</li>
+<li><p>加锁时限（线程尝试获取锁的时候加上一定的时限，超过时限则放弃对该锁的请求，并释放自己占有的锁）</p>
+</li>
+</ol>
+<p>同一个类中的 2 个方法都加了同步锁，多个线程能同时访问同一个类中的这两个方法吗？</p>
+<p>这个问题需要考虑到Lock与synchronized 两种实现锁的不同情形。因为这种情况下使用Lock 和synchronized会有截然不同的结果。Lock 可以让等待锁的线程响应中断，Lock 获取锁，之后需要释放锁。而 synchronized 却不行，使用 synchronized 时，当我们访问同一个类对象的时候，是同一把锁，所以可以访问该对象的其他 synchronized 方法。</p>
+<h2 id="7-请叙述一下您对线程池的理解？"><a href="#7-请叙述一下您对线程池的理解？" class="headerlink" title="7.请叙述一下您对线程池的理解？"></a>7.请叙述一下您对线程池的理解？</h2><ul>
+<li>第一：降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。</li>
+<li>第二：提高响应速度。当任务到达时，任务可以不需要等到线程创建就能立即执行。</li>
+<li>第三：提高线程的可管理性。线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。</li>
+</ul>
+<h2 id="8-常用的线程池有哪些？"><a href="#8-常用的线程池有哪些？" class="headerlink" title="8.常用的线程池有哪些？"></a>8.常用的线程池有哪些？</h2><ul>
+<li>newSingleThreadExecutor：创建一个单线程的线程池，此线程池保证所有任务的执行顺序按照任务的提交顺序执行。</li>
+<li>newFixedThreadPool：创建固定大小的线程池，每次提交一个任务就创建一个线程，直到线程达到线程池的最大大小。</li>
+<li>newCachedThreadPool：创建一个可缓存的线程池，此线程池不会对线程池大小做限制，线程池大小完全依赖于操作系统（或者说 JVM）能够创建的最大线程大小。</li>
+<li>newScheduledThreadPool：创建一个大小无限的线程池，此线程池支持定时以及周期性执行任务的需求。</li>
+</ul>
+<h2 id="9-在-java-中-wait-和-和-sleep-方法的不同？"><a href="#9-在-java-中-wait-和-和-sleep-方法的不同？" class="headerlink" title="9.在 java 中 wait 和 和 sleep 方法的不同？"></a>9.在 java 中 wait 和 和 sleep 方法的不同？</h2><p>最大的不同是在等待时 wait 会释放锁，而 sleep 一直持有锁。wait 通常被用于线程间交互，sleep 通常被用于暂停执行。</p>
+<h2 id="10-多线程的常见创建方式？"><a href="#10-多线程的常见创建方式？" class="headerlink" title="10.多线程的常见创建方式？"></a>10.多线程的常见创建方式？</h2><p>一种是继承thread类，一种是实现runnable接口；</p>
+<h2 id="11-synchronized和lock的区别？"><a href="#11-synchronized和lock的区别？" class="headerlink" title="11.synchronized和lock的区别？"></a>11.synchronized和lock的区别？</h2><ol>
+<li><p>synchronized是一个关键字，lock是一个接口</p>
+</li>
+<li><p>在代码出现异常的时候，synchronized会自动的释放锁资源，lock要调用unlock方法才能释放锁资源；</p>
+</li>
+<li><p>lock可以中断其他等待锁对象的线程，synchronized不行，线程会一直等待下去；</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E4%B9%90%E8%A7%82%E9%94%81%E5%92%8C%E6%82%B2%E8%A7%82%E9%94%81/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E5%BE%85%E8%A7%A3%E5%86%B3%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E6%98%AF%E8%B0%83%E7%94%A8-run-%E6%96%B9%E6%B3%95%E8%BF%98%E6%98%AF-start-%E6%96%B9%E6%B3%95%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">1.启动一个线程是调用 run() 方法还是 start() 方法？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%AF%B7%E8%AF%B4%E5%87%BA%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E5%8F%8A%E7%BA%BF%E7%A8%8B%E8%B0%83%E5%BA%A6%E7%9B%B8%E5%85%B3%E7%9A%84%E6%96%B9%E6%B3%95%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">2. 请说出同步线程及线程调度相关的方法？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%BA%BF%E7%A8%8B%E5%92%8C%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">3.线程和进程的区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Java-%E4%B8%AD%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.</span> <span class="nav-text">4.Java 中多线程间的通信怎么实现 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E5%AF%BC%E8%87%B4%E7%BA%BF%E7%A8%8B%E6%AD%BB%E9%94%81%EF%BC%8C%E9%81%87%E5%88%B0%E7%BA%BF%E7%A8%8B%E6%AD%BB%E9%94%81%E8%AF%A5%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3%EF%BC%9F"><span class="nav-number">5.</span> <span class="nav-text">5.什么情况下导致线程死锁，遇到线程死锁该怎么解决？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E8%AF%B7%E5%8F%99%E8%BF%B0%E4%B8%80%E4%B8%8B%E6%82%A8%E5%AF%B9%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E7%90%86%E8%A7%A3%EF%BC%9F"><span class="nav-number">6.</span> <span class="nav-text">7.请叙述一下您对线程池的理解？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E5%B8%B8%E7%94%A8%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="nav-number">7.</span> <span class="nav-text">8.常用的线程池有哪些？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-%E5%9C%A8-java-%E4%B8%AD-wait-%E5%92%8C-%E5%92%8C-sleep-%E6%96%B9%E6%B3%95%E7%9A%84%E4%B8%8D%E5%90%8C%EF%BC%9F"><span class="nav-number">8.</span> <span class="nav-text">9.在 java 中 wait 和 和 sleep 方法的不同？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%B8%B8%E8%A7%81%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="nav-number">9.</span> <span class="nav-text">10.多线程的常见创建方式？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-synchronized%E5%92%8Clock%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-number">10.</span> <span class="nav-text">11.synchronized和lock的区别？</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="9. Spring 事务详谈  从Spring事务配置说起先看看Spring事务的基础配置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/9.%20Spring%20%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="9. Spring 事务详谈  从Spring事务配置说起先看看Spring事务的基础配置">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com/3cbd6d28-bf3e-4163-82cf-4c90b14bec5f.jpg">
+<meta property="og:image" content="http://files.luyanan.com/f2b017de-07cc-4eb3-abbc-47b3eb792493.jpg">
+<meta property="og:image" content="http://files.luyanan.com/0f8ef8dc-04d5-4438-83f0-c618882078ba.jpg">
+<meta property="og:image" content="http://files.luyanan.com/6838f36d-f60e-4343-8151-94f0221b0d2c.jpg">
+<meta property="og:image" content="http://files.luyanan.com/1730125f-dea5-4997-b3f5-c526fcbf289c.jpg">
+<meta property="og:image" content="http://files.luyanan.com/3c625dce-0ab3-431c-bade-404901ddbff9.jpg">
+<meta property="og:image" content="http://files.luyanan.com/3e9f8220-849a-43af-a56c-cbc362a2b659.jpg">
+<meta property="og:image" content="http://files.luyanan.com/631a58ae-1aa2-4bc4-97c8-bad76d23b904.jpg">
+<meta property="og:image" content="http://files.luyanan.com/ab627b50-fe89-4674-8c64-72914c50d8f8.jpg">
+<meta property="og:image" content="http://files.luyanan.com/00e60c71-a7c4-46bd-ab47-145254fbe3e8.jpg">
+<meta property="article:published_time" content="2021-03-01T09:46:51.782Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.059Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com/3cbd6d28-bf3e-4163-82cf-4c90b14bec5f.jpg">
+
+<link rel="canonical" href="http://luyanan.com/9.%20Spring%20%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/9.%20Spring%20%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="9-Spring-事务详谈"><a href="#9-Spring-事务详谈" class="headerlink" title="9. Spring 事务详谈"></a>9. Spring 事务详谈</h1><hr>
+<hr>
+<h3 id="从Spring事务配置说起"><a href="#从Spring事务配置说起" class="headerlink" title="从Spring事务配置说起"></a>从Spring事务配置说起</h3><p>先看看Spring事务的基础配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">aop:aspectj-autoproxy</span> <span class="attr">proxy-target-class</span>=<span class="string">&quot;true&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;transactionManager&quot;</span></span></span><br><span class="line"><span class="tag"><span class="attr">class</span>=<span class="string">&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;dataSource&quot;</span> <span class="attr">ref</span>=<span class="string">&quot;dataSource&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:annotation-driven</span> <span class="attr">transaction-manager</span>=<span class="string">&quot;transactionManager&quot;</span>/&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 配置事务传播特性 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:advice</span> <span class="attr">id</span>=<span class="string">&quot;transactionAdvice&quot;</span> <span class="attr">transaction-manager</span>=<span class="string">&quot;transactionManager&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;add*&quot;</span> <span class="attr">propagation</span>=<span class="string">&quot;REQUIRED&quot;</span></span></span><br><span class="line"><span class="tag"><span class="attr">rollback-for</span>=<span class="string">&quot;Exception,RuntimeException,SQLException&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;remove*&quot;</span> <span class="attr">propagation</span>=<span class="string">&quot;REQUIRED&quot;</span></span></span><br><span class="line"><span class="tag"><span class="attr">rollback-for</span>=<span class="string">&quot;Exception,RuntimeException,SQLException&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;modify*&quot;</span> <span class="attr">propagation</span>=<span class="string">&quot;REQUIRED&quot;</span></span></span><br><span class="line"><span class="tag"><span class="attr">rollback-for</span>=<span class="string">&quot;Exception,RuntimeException,SQLException&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;login&quot;</span> <span class="attr">propagation</span>=<span class="string">&quot;NOT_SUPPORTED&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;query*&quot;</span> <span class="attr">read-only</span>=<span class="string">&quot;true&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tx:advice</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">aop:config</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">aop:pointcut</span> <span class="attr">expression</span>=<span class="string">&quot;execution(public * com.gupaoedu.vip..*.service..*Service.*(..))&quot;</span></span></span><br><span class="line"><span class="tag"><span class="attr">id</span>=<span class="string">&quot;transactionPointcut&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">aop:advisor</span> <span class="attr">pointcut-ref</span>=<span class="string">&quot;transactionPointcut&quot;</span> <span class="attr">advice-ref</span>=<span class="string">&quot;transactionAdvice&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">aop:config</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="数据库事务原理详解"><a href="#数据库事务原理详解" class="headerlink" title="数据库事务原理详解"></a>数据库事务原理详解</h3><h4 id="1-事务基本概念"><a href="#1-事务基本概念" class="headerlink" title="1. 事务基本概念"></a>1. 事务基本概念</h4><p>事务(Transaction)是访问并可能更新数据库中各种数据项的一个程序执行单元(unit)。<br>特点：事务是恢复和并发控制的基本单位。事务应该具有 4 个属性：原子性、一致性、<br>隔离性、持久性。这四个属性通常称为 ACID 特性。</p>
+<p>原子性（Automicity）。一个事务是一个不可分割的工作单位，事务中包括的诸操作要<br>么都做，要么都不做。</p>
+<p>一致性（Consistency）。事务必须是使数据库从一个一致性状态变到另一个一致性状态。<br>一致性与原子性是密切相关的。</p>
+<p>隔离性（Isolation）。一个事务的执行不能被其他事务干扰。即一个事务内部的操作及<br>使用的数据对并发的其他事务是隔离的，并发执行的各个事务之间不能互相干扰。</p>
+<p>持久性（Durability）。持久性也称永久性（Permanence），指一个事务一旦提交，它<br>对数据库中数据的改变就应该是永久性的。接下来的其他操作或故障不应该对其有任何<br>影响。</p>
+<h4 id="2、事务的基本原理"><a href="#2、事务的基本原理" class="headerlink" title="2、事务的基本原理"></a>2、事务的基本原理</h4><p>Spring 事务的本质其实就是数据库对事务的支持，没有数据库的事务支持，Spring 是无<br>法提供事务功能的。对于纯 JDBC 操作数据库，想要用到事务，可以按照以下步骤进行：</p>
+<ol>
+<li>获取连接 Connection con = DriverManager.getConnection()</li>
+<li>开启事务 con.setAutoCommit(true/false);</li>
+<li>执行 CRUD</li>
+<li>提交事务/回滚事务 con.commit() / con.rollback();</li>
+<li>关闭连接 conn.close();</li>
+</ol>
+<p>使用 Spring 的事务管理功能后，我们可以不再写步骤 2 和 4 的代码，而是由 Spirng 自<br>动完成。 那么 Spring 是如何在我们书写的 CRUD 之前和之后开启事务和关闭事务的<br>呢？解决这个问题，也就可以从整体上理解 Spring 的事务管理实现原理了。下面简单地<br>介绍下，注解方式为例子</p>
+<p>配置文件开启注解驱动，在相关的类和方法上通过注解@Transactional 标识。<br>Spring 在启动的时候会去解析生成相关的 bean，这时候会查看拥有相关注解的类和方<br>法，并且为这些类和方法生成代理，并根据@Transaction 的相关参数进行相关配置注入，<br>这样就在代理中为我们把相关的事务处理掉了（开启正常提交事务，异常回滚事务）。<br>真正的数据库层的事务提交和回滚是通过 binlog 或者 redo log 实现的。</p>
+<h4 id="3、Spring-事务的传播属性"><a href="#3、Spring-事务的传播属性" class="headerlink" title="3、Spring 事务的传播属性"></a>3、Spring 事务的传播属性</h4><p>所谓 spring 事务的传播属性，就是定义在存在多个事务同时存在的时候，spring 应该如<br>何处理这些事务的行为。这些属性在 TransactionDefinition 中定义，具体常量的解释见<br>下表：<br>| 常量名称                  | 常量解释                                                     |      |<br>| ————————- | ———————————————————— | —- |<br>| PROPAGATION_REQUIRED      | 支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择，也是 Spring默认的事务的传播。 |      |<br>| PROPAGATION_REQUIRES_NEW  | 新建事务,如果当前存在事务,把当前事务挂起。新建的事务将和被挂起的事务没有任何关系两个独立的事务，外层事务失败回滚之后，不能回滚内层事务执行的结果，内层事务失败抛出异常，外层事务捕获，也可以不处理回滚操作 |      |<br>| PROPAGATION_SUPPORTS      | 支持当前事务，如果当前没有事务，就以非事务方式执行。         |      |<br>| PROPAGATION_MANDATORY     | 支持当前事务，如果当前没有事务，就抛出异常。                 |      |<br>| PROPAGATION_NOT_SUPPORTED | 以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。   |      |<br>| PROPAGATION_NEVER         | 以非事务方式执行，如果当前存在事务，则抛出异常。             |      |<br>| PROPAGATION_NESTED        | 如果一个活动的事务存在，则运行在一个嵌套的事务中。如果没有活动事务，则按REQUIRED 属性执行。它使用了一个单独的事务，这个事务拥有多个可以回滚的保存点。内部事务的回滚不会对外部事务造成影响。它只对DataSourceTransactionManager 事务管理器起效。 |      |</p>
+<h4 id="4、数据库隔离级别"><a href="#4、数据库隔离级别" class="headerlink" title="4、数据库隔离级别"></a>4、数据库隔离级别</h4><table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>隔离级别的值</th>
+<th>导致的问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Read-Uncommitted</td>
+<td>0</td>
+<td>导致脏读</td>
+</tr>
+<tr>
+<td>Read-Committed</td>
+<td>1</td>
+<td>避免脏读，允许不可重复读和幻读</td>
+</tr>
+<tr>
+<td>Repeatable-Read</td>
+<td>2</td>
+<td>避免脏读，不可重复读，允许幻读</td>
+</tr>
+<tr>
+<td>Serializable</td>
+<td>3</td>
+<td>串行化读，事务只能一个一个执行，避免了脏读、不可重复读、幻读。执行效率慢，使用时慎重</td>
+</tr>
+</tbody></table>
+<p>脏读：一事务对数据进行了增删改，但未提交，另一事务可以读取到未提交的数据。如<br>果第一个事务这时候回滚了，那么第二个事务就读到了脏数据。</p>
+<p>不可重复读：一个事务中发生了两次读操作，第一次读操作和第二次操作之间，另外一<br>个事务对数据进行了修改，这时候两次读取的数据是不一致的。</p>
+<p>幻读：第一个事务对一定范围的数据进行批量修改，第二个事务在这个范围增加一条数<br>据，这时候第一个事务就会丢失对新增数据的修改。</p>
+<p>总结：</p>
+<p>隔离级别越高，越能保证数据的完整性和一致性，但是对并发性能的影响也越大。<br>大多数的数据库默认隔离级别为 Read Commited，比如 SqlServer、Oracle<br>少数数据库默认隔离级别为：Repeatable Read 比如： MySQL InnoDB</p>
+<h4 id="5、Spring-中的隔离级别"><a href="#5、Spring-中的隔离级别" class="headerlink" title="5、Spring 中的隔离级别"></a>5、Spring 中的隔离级别</h4><table>
+<thead>
+<tr>
+<th>常量</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ISOLATION_DEFAULT</td>
+<td>这是个 PlatfromTransactionManager 默认的隔离级别，使用数据库默认的事务隔离级别。另外四个与 JDBC 的隔离级别相对应。</td>
+</tr>
+<tr>
+<td>ISOLATION_READ_UNCOMMITTED</td>
+<td>这是事务最低的隔离级别，它允许另外一个事务可以看到这个事务未提交的数据。这种隔离级别会产生脏读，不可重复读和幻像读。</td>
+</tr>
+<tr>
+<td>ISOLATION_READ_COMMITTED</td>
+<td>保证一个事务修改的数据提交后才能被另外一个事务读取。另外一个事务不能读取该事务未提交的数据。</td>
+</tr>
+<tr>
+<td>ISOLATION_REPEATABLE_READ</td>
+<td>这种事务隔离级别可以防止脏读，不可重复读。但是可能出现幻像读。</td>
+</tr>
+<tr>
+<td>ISOLATION_SERIALIZABLE</td>
+<td>这是花费最高代价但是最可靠的事务隔离级别。事务被处理为顺序执行。</td>
+</tr>
+</tbody></table>
+<h4 id="6、事务的嵌套"><a href="#6、事务的嵌套" class="headerlink" title="6、事务的嵌套"></a>6、事务的嵌套</h4><p>通过上面的理论知识的铺垫，我们大致知道了数据库事务和 Spring 事务的一些属性和特<br>点，接下来我们通过分析一些嵌套事务的场景，来深入理解 Spring 事务传播的机制。</p>
+<p>假设外层事务 Service A 的 Method A() 调用 内层 Service B 的 Method B()<br><strong>PROPAGATION_REQUIRED(Spring 默认)</strong></p>
+<p>如果 ServiceB.MethodB() 的事务级别定义为 PROPAGATION_REQUIRED，那么执行<br>ServiceA.MethodA() 的时候 Spring 已经起了事务，这时调用 ServiceB.MethodB()，<br>ServiceB.MethodB() 看到自己已经运行在 ServiceA.MethodA() 的事务内部，就不再<br>起新的事务。</p>
+<p>假如 ServiceB.MethodB() 运行的时候发现自己没有在事务中，他就会为自己分配一个<br>事务。</p>
+<p>这样，在 ServiceA.MethodA() 或者在 ServiceB.MethodB() 内的任何地方出现异常，<br>事务都会被回滚。</p>
+<p><strong>PROPAGATION_REQUIRES_NEW</strong></p>
+<p>比如我们设计 ServiceA.MethodA() 的事务级别为 PROPAGATION_REQUIRED，<br>ServiceB.MethodB() 的事务级别为 PROPAGATION_REQUIRES_NEW。</p>
+<p>那么当执行到 ServiceB.MethodB() 的时候，ServiceA.MethodA() 所在的事务就会挂<br>起，ServiceB.MethodB() 会起一个新的事务，等待 ServiceB.MethodB() 的事务完成<br>以后，它才继续执行。</p>
+<p>他 与 PROPAGATION_REQUIRED 的 事 务 区 别 在 于 事 务 的 回 滚 程 度 了 。 因 为<br>ServiceB.MethodB() 是 新 起 一 个 事 务 ， 那 么 就 是 存 在 两 个 不 同 的 事 务 。 如 果<br>ServiceB.MethodB() 已 经 提 交 ， 那 么 ServiceA.MethodA() 失 败 回 滚 ，<br>ServiceB.MethodB() 是不会回滚的。如果 ServiceB.MethodB() 失败回滚，如果他抛</p>
+<p>出的异常被 ServiceA.MethodA() 捕获，ServiceA.MethodA() 事务仍然可能提交(主要<br>看 B 抛出的异常是不是 A 会回滚的异常)。</p>
+<p><strong>PROPAGATION_SUPPORTS</strong></p>
+<p>&nbsp;&nbsp;假设 ServiceB.MethodB() 的事务级别为 PROPAGATION_SUPPORTS，那么当执行到<br>ServiceB.MethodB()时，如果发现 ServiceA.MethodA()已经开启了一个事务，则加入<br>当前的事务，如果发现 ServiceA.MethodA()没有开启事务，则自己也不开启事务。这种<br>时候，内部方法的事务性完全依赖于最外层的事务。</p>
+<p><strong>PROPAGATION_NESTED</strong></p>
+<p>&nbsp;&nbsp;现 在 的 情 况 就 变 得 比 较 复 杂 了 , ServiceB.MethodB() 的 事 务 属 性 被 配 置 为<br>PROPAGATION_NESTED, 此时两者之间又将如何协作呢? ServiceB.MethodB() 如<br>果 rollback, 那么内部事务(即 ServiceB.MethodB()) 将回滚到它执行前的 SavePoint<br>而外部事务(即 ServiceA.MethodA()) 可以有以下两种处理方式:<br>捕获异常，执行异常分支逻辑</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">MethodA</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">ServiceB.MethodB();</span><br><span class="line">&#125; <span class="keyword">catch</span> (SomeException) &#123;</span><br><span class="line"><span class="comment">// 执行其他业务, 如 ServiceC.MethodC();</span></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这 种 方 式 也 是 嵌 套 事 务 最 有 价 值 的 地 方 , 它 起 到 了 分 支 执 行 的 效 果 , 如 果<br>ServiceB.MethodB()失败, 那么执行 ServiceC.MethodC(), 而 ServiceB.MethodB()<br>已经回滚到它执行之前的 SavePoint, 所以不会产生脏数据(相当于此方法从未执行过), 这 种 特 性 可 以 用 在 某 些 特 殊 的 业 务 中 , 而 PROPAGATION_REQUIRED 和<br>PROPAGATION_REQUIRES_NEW 都没有办法做到这一点。</p>
+<p>外部事务回滚/提交 代码不做任何修改, 那么如果内部事务(ServiceB.MethodB())<br>rollback, 那么首先 ServiceB.MethodB() 回滚到它执行之前的 SavePoint(在任何情况<br>下都会如此), 外部事务(即 ServiceA.MethodA()) 将根据具体的配置决定自己是<br>commit 还是 rollback。</p>
+<p>另外三种事务传播属性基本用不到，在此不做分析</p>
+<h4 id="7、Spring-事务-API-架构图"><a href="#7、Spring-事务-API-架构图" class="headerlink" title="7、Spring 事务 API 架构图"></a>7、Spring 事务 API 架构图</h4><p><img src="http://files.luyanan.com/3cbd6d28-bf3e-4163-82cf-4c90b14bec5f.jpg" alt="image"></p>
+<p>使用 Spring 进行基本的 JDBC 访问数据库有多种选择。Spring 至少提供了三种不同的工<br>作模式：JdbcTemplate, 一个在 Spring2.5 中新提供的 SimpleJdbc 类能够更好的处理<br>数据库元数据; 还有一种称之为 RDBMS Object 的风格的面向对象封装方式, 有点类似<br>于 JDO 的查询设计。 我们在这里简要列举你采取某一种工作方式的主要理由. 不过请注<br>意, 即使你选择了其中的一种工作模式, 你依然可以在你的代码中混用其他任何一种模<br>式以获取其带来的好处和优势。 所有的工作模式都必须要求 JDBC 2.0 以上的数据库驱<br>动的支持, 其中一些高级的功能可能需要 JDBC 3.0 以上的数据库驱动支持。<br>JdbcTemplate - 这是经典的也是最常用的 Spring 对于 JDBC 访问的方案。这也是最低<br>级别的封装, 其他的工作模式事实上在底层使用了 JdbcTemplate 作为其底层的实现基<br>础。JdbcTemplate 在 JDK 1.4 以上的环境上工作得很好。<br>NamedParameterJdbcTemplate - 对 JdbcTemplate 做了封装，提供了更加便捷的基<br>于命名参数的使用方式而不是传统的 JDBC 所使用的“?”作为参数的占位符。这种方式<br>在你需要为某个 SQL 指定许多个参数时，显得更加直观而易用。该特性必须工作在 JDK<br>1.4 以上。</p>
+<p>SimpleJdbcTemplate - 这 个 类 结 合 了 JdbcTemplate 和<br>NamedParameterJdbcTemplate 的最常用的功能，同时它也利用了一些 Java 5 的特性<br>所带来的优势，例如泛型、varargs 和 autoboxing 等，从而提供了更加简便的 API 访问<br>方式。需要工作在 Java 5 以上的环境中。<br>SimpleJdbcInsert 和 SimpleJdbcCall - 这两个类可以充分利用数据库元数据的特性<br>来简化配置。通过使用这两个类进行编程，你可以仅仅提供数据库表名或者存储过程的<br>名称以及一个 Map 作为参数。其中 Map 的 key 需要与数据库表中的字段保持一致。这<br>两个类通常和 SimpleJdbcTemplate 配合使用。这两个类需要工作在 JDK 5 以上，同时<br>数据库需要提供足够的元数据信息。</p>
+<p>RDBMS 对象包括 MappingSqlQuery, SqlUpdate and StoredProcedure - 这种方式允许你在初始化你的数据访问层时创建可重用并且线程安全的对象。该对象在你定义了<br>你的查询语句，声明查询参数并编译相应的 Query 之后被模型化。一旦模型化完成，任<br>何执行函数就可以传入不同的参数对之进行多次调用。这种方式需要工作在 JDK 1.4 以<br>上。</p>
+<p>异常处理<br>异常结构如下：<br><img src="http://files.luyanan.com/f2b017de-07cc-4eb3-abbc-47b3eb792493.jpg" alt="image"><br>SQLExceptionTranslator 是 一 个 接 口 ， 如 果 你 需 要 在 SQLException 和<br>org.springframework.dao.DataAccessException 之间作转换，那么必须实现该接口。<br>转换器类的实现可以采用一般通用的做法(比如使用 JDBC 的 SQLState code)，如果为了<br>使转换更准确，也可以进行定制（比如使用 Oracle 的 error code）。<br>SQLErrorCodeSQLExceptionTranslator 是 SQLExceptionTranslator 的默认实现。 该<br>实现使用指定数据库厂商的 error code，比采用 SQLState 更精确。转换过程基于一个<br>JavaBean （ 类 型 为 SQLErrorCodes ） 中 的 error code 。 这 个 JavaBean 由<br>SQLErrorCodesFactory 工厂类创建，其中的内容来自于 “sql-error-codes.xml”配置<br>文 件 。 该 文 件 中 的 数 据 库 厂 商 代 码 基 于 Database MetaData 信 息 中 的<br>DatabaseProductName，从而配合当前数据库的使用。</p>
+<p>SQLErrorCodeSQLExceptionTranslator 使用以下的匹配规则：</p>
+<p>首 先 检 查 是 否 存 在 完 成 定 制 转 换 的 子 类 实 现 。 通 常<br>SQLErrorCodeSQLExceptionTranslator 这个类可以作为一个具体类使用，不需要进行<br>定制，那么这个规则将不适用。</p>
+<p>接着将 SQLException 的 error code 与错误代码集中的 error code 进行匹配。 默认情<br>况下错误代码集将从 SQLErrorCodesFactory 取得。 错误代码集来自 classpath 下的<br>sql-error-codes.xml 文件，它们将与数据库 metadata 信息中的 database name 进行<br>映射。</p>
+<p>使用 fallback 翻译器。SQLStateSQLExceptionTranslator 类是缺省的 fallback 翻译器。<br>config 模块</p>
+<p>NamespaceHandler 接口，DefaultBeanDefinitionDocumentReader 使用该接口来处<br>理在 spring xml 配置文件中自定义的命名空间。<br><img src="http://files.luyanan.com/0f8ef8dc-04d5-4438-83f0-c618882078ba.jpg" alt="image"></p>
+<p>在 jdbc 模块，我们使用 JdbcNamespaceHandler 来处理 jdbc 配置的命名空间，其代<br>码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JdbcNamespaceHandler</span> <span class="keyword">extends</span> <span class="title">NamespaceHandlerSupport</span> </span>&#123;</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">registerBeanDefinitionParser(<span class="string">&quot;embedded-database&quot;</span>, <span class="keyword">new</span> EmbeddedDatabaseBeanDefinitionParser());</span><br><span class="line">registerBeanDefinitionParser(<span class="string">&quot;initialize-database&quot;</span>, <span class="keyword">new</span> InitializeDatabaseBeanDefinitionParser());</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其 中 ， EmbeddedDatabaseBeanDefinitionParser 继 承 了<br>AbstractBeanDefinitionParser ， 解 析 <embedded-database> 元 素 ， 并 使 用<br>EmbeddedDatabaseFactoryBean 创建一个 BeanDefinition。顺便介绍一下用到的软<br>件包 org.w3c.dom。</p>
+<p>软件包 org.w3c.dom:为文档对象模型 (DOM) 提供接口，该模型是 Java API for XML<br>Processing 的组件 API。该 Document Object Model Level 2 Core API 允许程序动<br>态访问和更新文档的内容和结构。</p>
+<p>Attr：Attr 接口表示 Element 对象中的属性。</p>
+<p>CDATASection： CDATA 节用于转义文本块，该文本块包含的字符如果不转义则会被<br>视为标记。</p>
+<p>CharacterData： CharacterData 接口使用属性集合和用于访问 DOM 中字符数据的<br>方法扩展节点。</p>
+<p>Comment： 此接口继承自 CharacterData 表示注释的内容，即起始 ‘<!--' 和结束
+'-->‘ 之间的所有字符。</p>
+<p>Document： Document 接口表示整个 HTML 或 XML 文档。</p>
+<p>DocumentFragment： DocumentFragment 是“轻量级”或“最小”Document 对<br>象。</p>
+<p>DocumentType： 每个 Document 都有 doctype 属性，该属性的值可以为 null，也<br>可以为 DocumentType 对象。</p>
+<p>DOMConfiguration： 该 DOMConfiguration 接口表示文档的配置，并维护一个可识<br>别的参数表。</p>
+<p>DOMError： DOMError 是一个描述错误的接口。</p>
+<p>DOMErrorHandler： DOMErrorHandler 是在报告处理 XML 数据时发生的错误或在<br>进行某些其他处理（如验证文档）时 DOM 实现可以调用的回调接口。</p>
+<p>DOMImplementation： DOMImplementation 接口为执行独立于文档对象模型的任<br>何特定实例的操作提供了许多方法。</p>
+<p>DOMImplementationList： DOMImplementationList 接口提供对 DOM 实现的有<br>序集合的抽象，没有定义或约束如何实现此集合。</p>
+<p>DOMImplementationSource： 此接口允许 DOM 实现程序根据请求的功能和版本提<br>供一个或多个实现，如下所述。</p>
+<p>DOMLocator： DOMLocator 是一个描述位置（如发生错误的位置）的接口。</p>
+<p>DOMStringList： DOMStringList 接口提供对 DOMString 值的有序集合的抽象，没<br>有定义或约束此集合是如何实现的。</p>
+<p>Element： Element 接口表示 HTML 或 XML 文档中的一个元素。</p>
+<p>Entity： 此接口表示在 XML 文档中解析和未解析的已知实体。</p>
+<p>EntityReference： EntityReference 节点可以用来在树中表示实体引用。</p>
+<p>NamedNodeMap： 实现 NamedNodeMap 接口的对象用于表示可以通过名称访问<br>的节点的集合。</p>
+<p>NameList NameList 接口提供对并行的名称和名称空间值对（可以为 null 值）的有序<br>集合的抽象，无需定义或约束如何实现此集合。</p>
+<p>Node： 该 Node 接口是整个文档对象模型的主要数据类型。</p>
+<p>NodeList： NodeList 接口提供对节点的有序集合的抽象，没有定义或约束如何实现此<br>集合。</p>
+<p>Notation： 此接口表示在 DTD 中声明的表示法。</p>
+<p>ProcessingInstruction： ProcessingInstruction 接口表示“处理指令”，该指令作为<br>一种在文档的文本中保持特定于处理器的信息的方法在 XML 中使用。</p>
+<p>Text： 该 Text 接口继承自 CharacterData，并且表示 Element 或 Attr 的文本内容<br>（在 XML 中称为 字符数据）。</p>
+<p>TypeInfo： TypeInfo 接口表示从 Element 或 Attr 节点引用的类型，用与文档相关<br>的模式指定。</p>
+<p>UserDataHandler： 当使用 Node.setUserData() 将一个对象与节点上的键相关联时，<br>当克隆、导入或重命名该对象关联的节点时应用程序可以提供调用的处理程序。</p>
+<p>core 模块</p>
+<p>1.JdbcTeamplate 对象，其结构如下：<br><img src="http://files.luyanan.com/6838f36d-f60e-4343-8151-94f0221b0d2c.jpg" alt="image"></p>
+<p>2.RowMapper<br><img src="http://files.luyanan.com/1730125f-dea5-4997-b3f5-c526fcbf289c.jpg" alt="image"><br>3.元数据 metaData 模块<br>本节中 Spring 应用到工厂模式，结合代码可以更具体了解。<br><img src="http://files.luyanan.com/3c625dce-0ab3-431c-bade-404901ddbff9.jpg" alt="image"><br>CallMetaDataProviderFactory 创建 CallMetaDataProvider 的工厂类，其代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> List&lt;String&gt; supportedDatabaseProductsForProcedures = Arrays.asList(</span><br><span class="line"><span class="string">&quot;Apache Derby&quot;</span>,</span><br><span class="line"><span class="string">&quot;DB2&quot;</span>,</span><br><span class="line"><span class="string">&quot;MySQL&quot;</span>,</span><br><span class="line"><span class="string">&quot;Microsoft SQL Server&quot;</span>,</span><br><span class="line"><span class="string">&quot;Oracle&quot;</span>,</span><br><span class="line"><span class="string">&quot;PostgreSQL&quot;</span>,</span><br><span class="line"><span class="string">&quot;Sybase&quot;</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">/** List of supported database products for function calls */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> List&lt;String&gt; supportedDatabaseProductsForFunctions = Arrays.asList(</span><br><span class="line"><span class="string">&quot;MySQL&quot;</span>,</span><br><span class="line"><span class="string">&quot;Microsoft SQL Server&quot;</span>,</span><br><span class="line"><span class="string">&quot;Oracle&quot;</span>,</span><br><span class="line"><span class="string">&quot;PostgreSQL&quot;</span></span><br><span class="line">);</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">public</span> CallMetaDataProvider <span class="title">createMetaDataProvider</span><span class="params">(DataSource dataSource, <span class="keyword">final</span> CallMetaDataContext</span></span></span><br><span class="line"><span class="function"><span class="params">context)</span> </span>&#123;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">CallMetaDataProvider result = (CallMetaDataProvider) JdbcUtils.extractDatabaseMetaData(dataSource,</span><br><span class="line">databaseMetaData -&gt; &#123;</span><br><span class="line">String databaseProductName = JdbcUtils.commonDatabaseName(databaseMetaData.getDatabaseProductName());</span><br><span class="line"><span class="keyword">boolean</span> accessProcedureColumnMetaData = context.isAccessCallParameterMetaData();</span><br><span class="line"><span class="keyword">if</span> (context.isFunction()) &#123;</span><br><span class="line"><span class="keyword">if</span> (!supportedDatabaseProductsForFunctions.contains(databaseProductName)) &#123;</span><br><span class="line"><span class="keyword">if</span> (logger.isWarnEnabled()) &#123;</span><br><span class="line">logger.warn(databaseProductName + <span class="string">&quot; is not one of the databases fully supported for function calls</span></span><br><span class="line"><span class="string">&quot;</span> +</span><br><span class="line"><span class="string">&quot;-- supported are: &quot;</span> + supportedDatabaseProductsForFunctions);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (accessProcedureColumnMetaData) &#123;</span><br><span class="line">logger.warn(<span class="string">&quot;Metadata processing disabled - you must specify all parameters explicitly&quot;</span>);</span><br><span class="line">accessProcedureColumnMetaData = <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line"><span class="keyword">if</span> (!supportedDatabaseProductsForProcedures.contains(databaseProductName)) &#123;</span><br><span class="line"><span class="keyword">if</span> (logger.isWarnEnabled()) &#123;</span><br><span class="line">logger.warn(databaseProductName + <span class="string">&quot; is not one of the databases fully supported for procedure</span></span><br><span class="line"><span class="string">calls &quot;</span> +</span><br><span class="line"><span class="string">&quot;-- supported are: &quot;</span> + supportedDatabaseProductsForProcedures);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (accessProcedureColumnMetaData) &#123;</span><br><span class="line">logger.warn(<span class="string">&quot;Metadata processing disabled - you must specify all parameters explicitly&quot;</span>);</span><br><span class="line">accessProcedureColumnMetaData = <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">CallMetaDataProvider provider;</span><br><span class="line"><span class="keyword">if</span> (<span class="string">&quot;Oracle&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line"></span><br><span class="line">provider = <span class="keyword">new</span> OracleCallMetaDataProvider(databaseMetaData);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;DB2&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> Db2CallMetaDataProvider((databaseMetaData));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;Apache Derby&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> DerbyCallMetaDataProvider((databaseMetaData));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;PostgreSQL&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> PostgresCallMetaDataProvider((databaseMetaData));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;Sybase&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> SybaseCallMetaDataProvider((databaseMetaData));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;Microsoft SQL Server&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> SqlServerCallMetaDataProvider((databaseMetaData));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;HDB&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> HanaCallMetaDataProvider((databaseMetaData));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">provider = <span class="keyword">new</span> GenericCallMetaDataProvider(databaseMetaData);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (logger.isDebugEnabled()) &#123;</span><br><span class="line">logger.debug(<span class="string">&quot;Using &quot;</span> + provider.getClass().getName());</span><br><span class="line">&#125;</span><br><span class="line">provider.initializeWithMetaData(databaseMetaData);</span><br><span class="line"><span class="keyword">if</span> (accessProcedureColumnMetaData) &#123;</span><br><span class="line">provider.initializeWithProcedureColumnMetaData(databaseMetaData,</span><br><span class="line">context.getCatalogName(), context.getSchemaName(), context.getProcedureName());</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> provider;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (MetaDataAccessException ex) &#123;</span><br><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> DataAccessResourceFailureException(<span class="string">&quot;Error retrieving database metadata&quot;</span>, ex);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>TableMetaDataProviderFactory 创建 TableMetaDataProvider 工厂类，其创建过程如<br>下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">public</span> CallMetaDataProvider <span class="title">createMetaDataProvider</span><span class="params">(DataSource dataSource, <span class="keyword">final</span> CallMetaDataContext</span></span></span><br><span class="line"><span class="function"><span class="params">context)</span> </span>&#123;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">CallMetaDataProvider result = (CallMetaDataProvider) JdbcUtils.extractDatabaseMetaData(dataSource,</span><br><span class="line">databaseMetaData -&gt; &#123;</span><br><span class="line">String databaseProductName = JdbcUtils.commonDatabaseName(databaseMetaData.getDatabaseProductName());</span><br><span class="line"><span class="keyword">boolean</span> accessProcedureColumnMetaData = context.isAccessCallParameterMetaData();</span><br><span class="line"><span class="keyword">if</span> (context.isFunction()) &#123;</span><br><span class="line"><span class="keyword">if</span> (!supportedDatabaseProductsForFunctions.contains(databaseProductName)) &#123;</span><br><span class="line"><span class="keyword">if</span> (logger.isWarnEnabled()) &#123;</span><br><span class="line">logger.warn(databaseProductName + <span class="string">&quot; is not one of the databases fully supported for function calls</span></span><br><span class="line"><span class="string">&quot;</span> +</span><br><span class="line"><span class="string">&quot;-- supported are: &quot;</span> + supportedDatabaseProductsForFunctions);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (accessProcedureColumnMetaData) &#123;</span><br><span class="line">logger.warn(<span class="string">&quot;Metadata processing disabled - you must specify all parameters explicitly&quot;</span>);</span><br><span class="line">accessProcedureColumnMetaData = <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line"><span class="keyword">if</span> (!supportedDatabaseProductsForProcedures.contains(databaseProductName)) &#123;</span><br><span class="line"><span class="keyword">if</span> (logger.isWarnEnabled()) &#123;</span><br><span class="line">logger.warn(databaseProductName + <span class="string">&quot; is not one of the databases fully supported for procedure</span></span><br><span class="line"><span class="string">calls &quot;</span> +</span><br><span class="line"><span class="string">&quot;-- supported are: &quot;</span> + supportedDatabaseProductsForProcedures);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (accessProcedureColumnMetaData) &#123;</span><br><span class="line">logger.warn(<span class="string">&quot;Metadata processing disabled - you must specify all parameters explicitly&quot;</span>);</span><br><span class="line">accessProcedureColumnMetaData = <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">CallMetaDataProvider provider;</span><br><span class="line"><span class="keyword">if</span> (<span class="string">&quot;Oracle&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> OracleCallMetaDataProvider(databaseMetaData);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;DB2&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> Db2CallMetaDataProvider((databaseMetaData));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;Apache Derby&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> DerbyCallMetaDataProvider((databaseMetaData));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;PostgreSQL&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> PostgresCallMetaDataProvider((databaseMetaData));</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;Sybase&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> SybaseCallMetaDataProvider((databaseMetaData));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;Microsoft SQL Server&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> SqlServerCallMetaDataProvider((databaseMetaData));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;HDB&quot;</span>.equals(databaseProductName)) &#123;</span><br><span class="line">provider = <span class="keyword">new</span> HanaCallMetaDataProvider((databaseMetaData));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">provider = <span class="keyword">new</span> GenericCallMetaDataProvider(databaseMetaData);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (logger.isDebugEnabled()) &#123;</span><br><span class="line">logger.debug(<span class="string">&quot;Using &quot;</span> + provider.getClass().getName());</span><br><span class="line">&#125;</span><br><span class="line">provider.initializeWithMetaData(databaseMetaData);</span><br><span class="line"><span class="keyword">if</span> (accessProcedureColumnMetaData) &#123;</span><br><span class="line">provider.initializeWithProcedureColumnMetaData(databaseMetaData,</span><br><span class="line">context.getCatalogName(), context.getSchemaName(), context.getProcedureName());</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> provider;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (MetaDataAccessException ex) &#123;</span><br><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> DataAccessResourceFailureException(<span class="string">&quot;Error retrieving database metadata&quot;</span>, ex);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用 SqlParameterSource 提供参数值<br>使用 Map 来指定参数值有时候工作得非常好，但是这并不是最简单的使用方式。Spring<br>提供了一些其他的 SqlParameterSource 实现类来指定参数值。 我们首先可以看看<br>BeanPropertySqlParameterSource 类，这是一个非常简便的指定参数的实现类，只要<br>你有一个符合 JavaBean 规范的类就行了。它将使用其中的 getter 方法来获取参数值。</p>
+<p>SqlParameter 封 装 了 定 义 sql 参 数 的 对 象 。 CallableStateMentCallback ，<br>PrePareStateMentCallback，StateMentCallback，ConnectionCallback 回调类分别<br>对应 JdbcTemplate 中的不同处理方法。</p>
+<p><img src="http://files.luyanan.com/3e9f8220-849a-43af-a56c-cbc362a2b659.jpg" alt="image"><br>simple 实现<br><img src="http://files.luyanan.com/631a58ae-1aa2-4bc4-97c8-bad76d23b904.jpg" alt="image"><br>Spring 通过 DataSource 获取数据库的连接。Datasource 是 jdbc 规范的一部分，<br>它通过 ConnectionFactory 获取。一个容器和框架可以在应用代码层中隐藏连接池和事<br>务管理。</p>
+<p>当使用 spring 的 jdbc 层，你可以通过 JNDI 来获取 DataSource，也可以通过你自<br>己配置的第三方连接池实现来获取。流行的第三方实现由 apache Jakarta Commons<br>dbcp 和 c3p0。<br><img src="http://files.luyanan.com/ab627b50-fe89-4674-8c64-72914c50d8f8.jpg" alt="image"></p>
+<p>TransactionAwareDataSourceProxy 作为目标 DataSource 的一个代理， 在对目标<br>DataSource 包装的同时，还增加了 Spring 的事务管理能力， 在这一点上，这个类的功<br>能非常像 J2EE 服务器所提供的事务化的 JNDI DataSource。</p>
+<p>该类几乎很少被用到，除非现有代码在被调用的时候需要一个标准的 JDBC DataSource<br>接口实现作为参数。 这种情况下，这个类可以使现有代码参与 Spring 的事务管理。通<br>常最好的做法是使用更高层的抽象 来对数据源进行管理，比如 JdbcTemplate 和<br>DataSourceUtils 等等。</p>
+<p>注意：DriverManagerDataSource 仅限于测试使用，因为它没有提供池的功能，这会导<br>致在多个请求获取连接时性能很差。</p>
+<p>object 模块</p>
+<p><img src="http://files.luyanan.com/00e60c71-a7c4-46bd-ab47-145254fbe3e8.jpg" alt="image"></p>
+<h4 id="JdbcTemplate"><a href="#JdbcTemplate" class="headerlink" title="JdbcTemplate"></a>JdbcTemplate</h4><p>JdbcTemplate 是 core 包的核心类。它替我们完成了资源的创建以及释放工作，从而简<br>化了我们对 JDBC 的使用。 它还可以帮助我们避免一些常见的错误，比如忘记关闭数据<br>库连接。 JdbcTemplate 将完成 JDBC 核心处理流程，比如 SQL 语句的创建、执行，而<br>把 SQL 语句的生成以及查询结果的提取工作留给我们的应用代码。 它可以完成 SQL 查<br>询、更新以及调用存储过程，可以对 ResultSet 进行遍历并加以提取。它还可以捕获 JDBC<br>异常并将其转换成 org.springframework.dao 包中定义的，通用的，信息更丰富的异常。<br>使用 JdbcTemplate 进行编码只需要根据明确定义的一组契约来实现回调接口。<br>PreparedStatementCreator 回调接口通过给定的 Connection 创建一个<br>PreparedStatement，包含 SQL 和任何相关的参数。 CallableStatementCreateor 实</p>
+<p>现同样的处理，只不过它创建的是 CallableStatement。 RowCallbackHandler 接口则<br>从数据集的每一行中提取值。</p>
+<p>我们可以在 DAO 实现类中通过传递一个 DataSource 引用来完成 JdbcTemplate 的实例<br>化，也可以在 Spring 的 IOC 容器中配置一个 JdbcTemplate 的 bean 并赋予 DAO 实现<br>类作为一个实例。 需要注意的是 DataSource 在 Spring 的 IOC 容器中总是配制成一个<br>bean，第一种情况下，DataSource bean 将传递给 service，第二种情况下 DataSource<br>bean 传递给 JdbcTemplate bean。</p>
+<p>NamedParameterJdbcTemplate</p>
+<p>NamedParameterJdbcTemplate 类为 JDBC 操作增加了命名参数的特性支持，而不是<br>传 统 的 使 用 （ ‘?’ ） 作 为 参 数 的 占 位 符 。 NamedParameterJdbcTemplate 类 对<br>JdbcTemplate 类进行了封装， 在底层，JdbcTemplate 完成了多数的工作。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/8.%20Spring%20MVC%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/1.%20SpringApplication%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#9-Spring-%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88"><span class="nav-number">1.</span> <span class="nav-text">9. Spring 事务详谈</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8ESpring%E4%BA%8B%E5%8A%A1%E9%85%8D%E7%BD%AE%E8%AF%B4%E8%B5%B7"><span class="nav-number">1.0.1.</span> <span class="nav-text">从Spring事务配置说起</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%8E%9F%E7%90%86%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.0.2.</span> <span class="nav-text">数据库事务原理详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E4%BA%8B%E5%8A%A1%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.0.2.1.</span> <span class="nav-text">1. 事务基本概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E4%BA%8B%E5%8A%A1%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">1.0.2.2.</span> <span class="nav-text">2、事务的基本原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%E3%80%81Spring-%E4%BA%8B%E5%8A%A1%E7%9A%84%E4%BC%A0%E6%92%AD%E5%B1%9E%E6%80%A7"><span class="nav-number">1.0.2.3.</span> <span class="nav-text">3、Spring 事务的传播属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-number">1.0.2.4.</span> <span class="nav-text">4、数据库隔离级别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5%E3%80%81Spring-%E4%B8%AD%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-number">1.0.2.5.</span> <span class="nav-text">5、Spring 中的隔离级别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6%E3%80%81%E4%BA%8B%E5%8A%A1%E7%9A%84%E5%B5%8C%E5%A5%97"><span class="nav-number">1.0.2.6.</span> <span class="nav-text">6、事务的嵌套</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7%E3%80%81Spring-%E4%BA%8B%E5%8A%A1-API-%E6%9E%B6%E6%9E%84%E5%9B%BE"><span class="nav-number">1.0.2.7.</span> <span class="nav-text">7、Spring 事务 API 架构图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JdbcTemplate"><span class="nav-number">1.0.2.8.</span> <span class="nav-text">JdbcTemplate</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

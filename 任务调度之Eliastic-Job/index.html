@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="任务调度之Eliastic-Job.md1.1 任务调度高级需求Quartz 的不足:  作业只能通过DB 抢占随机负载, 无法协调.  作业不能分片, 单个任务数据太多了跑不完,消耗线程,负载不均匀.  作业日志可视化监控,统计.   1.2 发展历史">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="任务调度之Eliastic-Job.md1.1 任务调度高级需求Quartz 的不足:  作业只能通过DB 抢占随机负载, 无法协调.  作业不能分片, 单个任务数据太多了跑不完,消耗线程,负载不均匀.  作业日志可视化监控,统计.   1.2 发展历史">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="c:/Users/luyanan/AppData/Roaming/Typora/typora-user-images/image-20200411134048082.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200411142623.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200411161903.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200411215604.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200411215705.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200411220851.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200411221250.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200412101813.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200412101834.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200412202333.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200412202505.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200412202530.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200412224843.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200412224950.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200412225005.png">
+<meta property="article:published_time" content="2021-03-01T09:46:52.313Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.061Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:/Users/luyanan/AppData/Roaming/Typora/typora-user-images/image-20200411134048082.png">
+
+<link rel="canonical" href="http://luyanan.com/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="任务调度之Eliastic-Job-md"><a href="#任务调度之Eliastic-Job-md" class="headerlink" title="任务调度之Eliastic-Job.md"></a>任务调度之Eliastic-Job.md</h1><h2 id="1-1-任务调度高级需求"><a href="#1-1-任务调度高级需求" class="headerlink" title="1.1 任务调度高级需求"></a>1.1 任务调度高级需求</h2><p><code>Quartz</code> 的不足:</p>
+<ol>
+<li>作业只能通过DB 抢占随机负载, 无法协调. </li>
+<li>作业不能分片, 单个任务数据太多了跑不完,消耗线程,负载不均匀. </li>
+<li>作业日志可视化监控,统计. </li>
+</ol>
+<h3 id="1-2-发展历史"><a href="#1-2-发展历史" class="headerlink" title="1.2 发展历史"></a>1.2 发展历史</h3><p><code>Elastic-Job</code> 是怎么来的?</p>
+<p>在当当的<code>ddframe</code> 框架中, 需要一个任务调度系统(作业系统)</p>
+<p><img src="C:/Users/luyanan/AppData/Roaming/Typora/typora-user-images/image-20200411134048082.png" alt="image-20200411134048082"></p>
+<p>实现的话有两种思路: 一种是修改开源产品, 一种是基于开源产品搭建(封装), 当当选择了后者,最开始这个调度系统叫做<code>dd-job</code>.它是一个无中心化的分布式任务调度框架。 因为数据库缺少分布式协调功能(必须选主), 替换为<code>Zookeeper</code>后, 增加了弹性扩容和数据分片的功能. </p>
+<p><code>Elastic-Job</code> 是<code>ddframe</code> 中的<code>dd-job</code> 作业模块分离出来的作业框架, 基于<code>Quartz</code>和<code>Curator</code>开发,在2015年开源. </p>
+<p>轻量级,无中心化的解决方案.</p>
+<p>为什么哦是无中心化呢? 因为没有统一的调度中心, 集群的每个节点都是对等的, 节点之间通过注册中心进行分布式协调. <code>Elastic-Job</code>存在主节点的概念, 但是主节点没有调度的功能,而是用于处理一些集中式的任务, 如分片、清理运行时信息等. </p>
+<p>思考: 如果ZK挂了怎么办？ </p>
+<p>每个任务都有自己独立的线程池. </p>
+<p>从官网开始:</p>
+<p><a target="_blank" rel="noopener" href="http://elasticjob.io/docs/elastic-job-lite/00-overview/">http://elasticjob.io/docs/elastic-job-lite/00-overview/</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/elasticjob">https://github.com/elasticjob</a></p>
+<p><code>Elastic-Job</code> 最开始只有一个<code>elastic-job-core</code> 的项目, 在2.X版本之后分为<code>Elastic-job-Lite</code>和<code>Elastic-job-Cloud</code> 两个子项目. 其中<code>Elastic-job-Lite</code> 定位为轻量级无中心化的解决方案,使用<code>jar</code> 包的形式来提供分布式任务的协调服务. 而<code>Elastic-job-Cloud</code> 使用<code>Mesos+Docker</code> 的解决方案, 额外提供资源管理、应用分发以及进程隔离服务(跟<code>Lite</code>的区别只是部署方式不同,他们使用相同的API, 只要开发一次)</p>
+<h3 id="1-3-功能特性"><a href="#1-3-功能特性" class="headerlink" title="1.3 功能特性"></a>1.3 功能特性</h3><ul>
+<li> 分布式调度协调:使用ZK 实现注册中心</li>
+<li>错误执行作用重触发(<code>Misfire</code>)</li>
+<li>支持并行调度(任务分片)</li>
+<li>作业分片一致性,保证同一个分片在分布式环境中仅有一个执行实例</li>
+<li>弹性扩容缩容: 将任务拆分成N个任务后, 各个服务区分别执行各自分配到的任务项, 一旦有新的服务器加入集群, 或现有服务器下线, <code>Elastic-job</code>将在保留本地任务不变的情况下, 下次任务开始前触发任务重分片. </li>
+<li>失效转移(<code>failover</code>): 弹性扩容缩容在下次作业运行前重新分片, 但本次作用执行的过程中, 下线的服务器所分配的作业将不会重新分配. 失效转移功能可以在本地作用运行中用空闲服务器抓取孤儿作业分片执行. 同样, 失效转移功能也会牺牲部分性能. </li>
+<li>支持作业生命周期操作(<code>listener</code>)</li>
+<li>丰富的作业类型(<code>Simple</code>、<code>DataFlow</code>、<code>Script</code>)</li>
+<li>Spring整合以及命名空间提供</li>
+<li>运维平台</li>
+</ul>
+<h3 id="1-4-项目架构"><a href="#1-4-项目架构" class="headerlink" title="1.4 项目架构"></a>1.4 项目架构</h3><p>应用在各自的节点上执行任务, 通过ZK 注册中心协调,节点注册、节点选举、任务分片、监听都在<code>Elastic-Job</code> 的代码中完成. </p>
+<p><img src="http://files.luyanan.com//img/20200411142623.png" alt="image-20200411142622344"></p>
+<h2 id="2-Java-开发"><a href="#2-Java-开发" class="headerlink" title="2. Java 开发"></a>2. Java 开发</h2><h3 id="2-1-pom-依赖"><a href="#2-1-pom-依赖" class="headerlink" title="2.1 pom 依赖"></a>2.1 <code>pom</code> 依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.dangdang<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>elastic-job-lite-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-2-任务类型"><a href="#2-2-任务类型" class="headerlink" title="2.2 任务类型"></a>2.2 任务类型</h3><p>任务类型有三种:</p>
+<h4 id="2-2-1-SimpleJob"><a href="#2-2-1-SimpleJob" class="headerlink" title="2.2.1 SimpleJob"></a>2.2.1 <code>SimpleJob</code></h4><p><code>SimpleJob</code>: 简单实现,非经过任何封装的类型,需要实现<code>SimpleJob</code>接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MySimpleJob</span> <span class="keyword">implements</span> <span class="title">SimpleJob</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(ShardingContext shardingContext)</span> </span>&#123;</span><br><span class="line">        System.out.println(String.format(<span class="string">&quot;分片项 ShardingItem: %s | 运行时间: %s | 线程ID: %s | 分片参数: %s &quot;</span>,</span><br><span class="line">                shardingContext.getShardingItem(), <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;HH:mm:ss&quot;</span>).format(<span class="keyword">new</span> Date()),</span><br><span class="line">                Thread.currentThread().getId(), shardingContext.getShardingParameter()));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2020/4/11</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;测试类&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleJobTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// zk注册中心</span></span><br><span class="line">        ZookeeperRegistryCenter registryCenter = <span class="keyword">new</span> ZookeeperRegistryCenter(<span class="keyword">new</span> ZookeeperConfiguration(<span class="string">&quot;192.168.31.22:2181&quot;</span>, <span class="string">&quot;ejob-standalone&quot;</span>));</span><br><span class="line">        registryCenter.init();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 数据源，使用DBCP</span></span><br><span class="line"><span class="comment">/*        BasicDataSource dataSource = new BasicDataSource();</span></span><br><span class="line"><span class="comment">        dataSource.setDriverClassName(&quot;com.mysql.jdbc.Driver&quot;);</span></span><br><span class="line"><span class="comment">        dataSource.setUrl(&quot;jdbc:mysql://localhost:3306/elastic_job_log&quot;);</span></span><br><span class="line"><span class="comment">        dataSource.setUsername(&quot;root&quot;);</span></span><br><span class="line"><span class="comment">        dataSource.setPassword(&quot;123456&quot;);</span></span><br><span class="line"><span class="comment">        JobEventConfiguration jobEventConfig = new JobEventRdbConfiguration(dataSource);*/</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义作业核心配置</span></span><br><span class="line">        JobCoreConfiguration coreConfiguration = JobCoreConfiguration.newBuilder(MySimpleJob.class.getSimpleName(),</span><br><span class="line">                <span class="string">&quot;0/2 * * * * ?&quot;</span>, <span class="number">4</span>).shardingItemParameters(<span class="string">&quot;0=RDP, 1=CORE, 2=SIMS, 3=ECIF&quot;</span>).build();</span><br><span class="line">        <span class="comment">// 定义Simple 类型配置</span></span><br><span class="line">        SimpleJobConfiguration simpleJobConfiguration = <span class="keyword">new</span> SimpleJobConfiguration(coreConfiguration, MySimpleJob.class.getCanonicalName());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 作业分片策略</span></span><br><span class="line">        <span class="comment">// 基于平均分配算法的分片策略</span></span><br><span class="line">        String jobShardingStrategyClass = AverageAllocationJobShardingStrategy.class.getCanonicalName();</span><br><span class="line">        <span class="comment">// 定义Lite 作业根配置</span></span><br><span class="line">        <span class="comment">// LiteJobConfiguration simpleJobRootConfig = LiteJobConfiguration.newBuilder(simpleJobConfig).jobShardingStrategyClass(jobShardingStrategyClass).build();</span></span><br><span class="line">        LiteJobConfiguration simpleJobRootConfig = LiteJobConfiguration.newBuilder(simpleJobConfiguration).build();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建Job</span></span><br><span class="line">        <span class="keyword">new</span> JobScheduler(registryCenter, simpleJobRootConfig).init();</span><br><span class="line">        <span class="comment">// new JobScheduler(regCenter, simpleJobRootConfig, jobEventConfig).init();</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">分片项 ShardingItem: 2 | 运行时间: 16:00:44 | 线程ID: 27 | 分片参数: SIMS </span><br><span class="line">分片项 ShardingItem: 3 | 运行时间: 16:00:44 | 线程ID: 28 | 分片参数: ECIF </span><br><span class="line">分片项 ShardingItem: 0 | 运行时间: 16:00:44 | 线程ID: 25 | 分片参数: RDP </span><br><span class="line">分片项 ShardingItem: 1 | 运行时间: 16:00:44 | 线程ID: 26 | 分片参数: CORE </span><br><span class="line">分片项 ShardingItem: 0 | 运行时间: 16:00:46 | 线程ID: 29 | 分片参数: RDP </span><br><span class="line">分片项 ShardingItem: 1 | 运行时间: 16:00:46 | 线程ID: 30 | 分片参数: CORE </span><br><span class="line">分片项 ShardingItem: 2 | 运行时间: 16:00:46 | 线程ID: 31 | 分片参数: SIMS </span><br><span class="line">分片项 ShardingItem: 3 | 运行时间: 16:00:46 | 线程ID: 32 | 分片参数: ECIF </span><br><span class="line">分片项 ShardingItem: 0 | 运行时间: 16:00:48 | 线程ID: 28 | 分片参数: RDP </span><br><span class="line">分片项 ShardingItem: 1 | 运行时间: 16:00:48 | 线程ID: 27 | 分片参数: CORE </span><br><span class="line">分片项 ShardingItem: 2 | 运行时间: 16:00:48 | 线程ID: 28 | 分片参数: SIMS </span><br><span class="line">分片项 ShardingItem: 3 | 运行时间: 16:00:48 | 线程ID: 25 | 分片参数: ECIF </span><br><span class="line">分片项 ShardingItem: 0 | 运行时间: 16:00:50 | 线程ID: 29 | 分片参数: RDP </span><br><span class="line">分片项 ShardingItem: 1 | 运行时间: 16:00:50 | 线程ID: 30 | 分片参数: CORE </span><br><span class="line">分片项 ShardingItem: 2 | 运行时间: 16:00:50 | 线程ID: 31 | 分片参数: SIMS </span><br><span class="line">分片项 ShardingItem: 3 | 运行时间: 16:00:50 | 线程ID: 32 | 分片参数: ECIF </span><br><span class="line">分片项 ShardingItem: 0 | 运行时间: 16:00:52 | 线程ID: 27 | 分片参数: RDP </span><br><span class="line">分片项 ShardingItem: 1 | 运行时间: 16:00:52 | 线程ID: 26 | 分片参数: CORE </span><br><span class="line">分片项 ShardingItem: 3 | 运行时间: 16:00:52 | 线程ID: 28 | 分片参数: ECIF </span><br><span class="line">分片项 ShardingItem: 2 | 运行时间: 16:00:52 | 线程ID: 27 | 分片参数: SIMS </span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-2-2-DataFlowJob"><a href="#2-2-2-DataFlowJob" class="headerlink" title="2.2.2 DataFlowJob"></a>2.2.2 <code>DataFlowJob</code></h4><p><code>DataFlowJob</code>: <code>DataFlow</code> 类型用于处理数据流, 必须实现<code>fetchData()</code>和 <code>processData()</code> 的方法, 一个用来获取数据, 一个用来处理获取到的数据. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.job.elasticjob.dataflow;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.dangdang.ddframe.job.api.ShardingContext;</span><br><span class="line"><span class="keyword">import</span> com.dangdang.ddframe.job.api.dataflow.DataflowJob;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2020/4/11</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;数据流&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyDataFlowJob</span> <span class="keyword">implements</span> <span class="title">DataflowJob</span>&lt;<span class="title">String</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;String&gt; <span class="title">fetchData</span><span class="params">(ShardingContext shardingContext)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;开始获取数据&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> Arrays.asList(<span class="string">&quot;张三&quot;</span>, <span class="string">&quot;李四&quot;</span>, <span class="string">&quot;王五&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processData</span><span class="params">(ShardingContext shardingContext, List&lt;String&gt; list)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 需要移除数据, 不然会一直循环</span></span><br><span class="line">        <span class="keyword">for</span> (String s : list) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;开始处理任务:&quot;</span> + s);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataFlowJobTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// zk注册中心</span></span><br><span class="line">        ZookeeperRegistryCenter registryCenter = <span class="keyword">new</span> ZookeeperRegistryCenter(<span class="keyword">new</span> ZookeeperConfiguration(<span class="string">&quot;192.168.31.22:2181&quot;</span>, <span class="string">&quot;ejob-standalone-dataflow&quot;</span>));</span><br><span class="line">        registryCenter.init();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义作业核心配置</span></span><br><span class="line">        JobCoreConfiguration coreConfiguration = JobCoreConfiguration.newBuilder(MyDataFlowJob.class.getSimpleName(),</span><br><span class="line">                <span class="string">&quot;0/2 * * * * ?&quot;</span>, <span class="number">4</span>).build();</span><br><span class="line">        <span class="comment">// 定义Simple 类型配置</span></span><br><span class="line">        DataflowJobConfiguration dataflowJobConfiguration = <span class="keyword">new</span> DataflowJobConfiguration(coreConfiguration,</span><br><span class="line">                MyDataFlowJob.class.getCanonicalName(), <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 作业分片策略</span></span><br><span class="line">        <span class="comment">// 基于平均分配算法的分片策略</span></span><br><span class="line">        String jobShardingStrategyClass = AverageAllocationJobShardingStrategy.class.getCanonicalName();</span><br><span class="line">        <span class="comment">// 定义Lite 作业根配置</span></span><br><span class="line">        <span class="comment">// LiteJobConfiguration simpleJobRootConfig = LiteJobConfiguration.newBuilder(simpleJobConfig).jobShardingStrategyClass(jobShardingStrategyClass).build();</span></span><br><span class="line">        LiteJobConfiguration simpleJobRootConfig = LiteJobConfiguration.newBuilder(dataflowJobConfiguration).build();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建Job</span></span><br><span class="line">        <span class="keyword">new</span> JobScheduler(registryCenter, simpleJobRootConfig).init();</span><br><span class="line">        <span class="comment">// new JobScheduler(regCenter, simpleJobRootConfig, jobEventConfig).init();</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>结果:</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">开始获取数据</span><br><span class="line">开始处理任务:张三</span><br><span class="line">开始处理任务:李四</span><br><span class="line">开始处理任务:王五</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-2-3-ScriptJob"><a href="#2-2-3-ScriptJob" class="headerlink" title="2.2.3 ScriptJob"></a>2.2.3 <code>ScriptJob</code></h4><p><code>ScriptJob</code>:<code>Script</code> 类型作业为脚本类型作业, 支持<code>Shell</code>、<code>Python</code>、<code>Perl</code> 等所有类型脚本, 只需要指定脚本的内容或者位置. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// zk注册中心</span></span><br><span class="line">    ZookeeperRegistryCenter registryCenter = <span class="keyword">new</span> ZookeeperRegistryCenter(</span><br><span class="line">            <span class="keyword">new</span> ZookeeperConfiguration(<span class="string">&quot;192.168.31.22:2181&quot;</span>, <span class="string">&quot;ejob-standalone-script&quot;</span>));</span><br><span class="line">    registryCenter.init();</span><br><span class="line">    <span class="comment">//定义作业核心配置</span></span><br><span class="line">    JobCoreConfiguration jobCoreConfiguration = JobCoreConfiguration</span><br><span class="line">            .newBuilder(<span class="string">&quot;scriteJob&quot;</span>, <span class="string">&quot;0/4 * * * * ?&quot;</span>, <span class="number">2</span>)</span><br><span class="line">            .build();</span><br><span class="line">    <span class="comment">//定义script类型配置</span></span><br><span class="line">    ScriptJobConfiguration scriptJobConfiguration = <span class="keyword">new</span> ScriptJobConfiguration(jobCoreConfiguration, <span class="string">&quot;D:/1.bat&quot;</span>);</span><br><span class="line">    <span class="comment">// 作业分片策略</span></span><br><span class="line">    <span class="comment">// 基于平均分配算法的分片策略</span></span><br><span class="line">    String jobShardingStrategyClass = AverageAllocationJobShardingStrategy.class.getCanonicalName();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义Lite作业根配置</span></span><br><span class="line">    <span class="comment">// LiteJobConfiguration scriptJobRootConfig = LiteJobConfiguration.newBuilder(scriptJobConfig).jobShardingStrategyClass(jobShardingStrategyClass).build();</span></span><br><span class="line">    LiteJobConfiguration scriptJobRootConfig = LiteJobConfiguration.newBuilder(scriptJobConfiguration).build();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构建Job</span></span><br><span class="line">    <span class="keyword">new</span> JobScheduler(registryCenter, scriptJobRootConfig).init();</span><br><span class="line">    <span class="comment">// new JobScheduler(regCenter, scriptJobRootConfig, jobEventConfig).init();</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-3-Elastic-Job-配置"><a href="#2-3-Elastic-Job-配置" class="headerlink" title="2.3 Elastic-Job 配置"></a>2.3 <code>Elastic-Job</code> 配置</h3><h4 id="2-3-1-配置步骤"><a href="#2-3-1-配置步骤" class="headerlink" title="2.3.1 配置步骤"></a>2.3.1 配置步骤</h4><p>配置手册: <a target="_blank" rel="noopener" href="http://elasticjob.io/docs/elastic-job-lite/02-guide/config-manual/">http://elasticjob.io/docs/elastic-job-lite/02-guide/config-manual/</a></p>
+<ol>
+<li><p><code>ZK</code> 注册中心配置</p>
+</li>
+<li><p>作业级别(从底层往下层: <code>core</code>-<code>Type</code>-<code>Lite</code>)</p>
+<table>
+<thead>
+<tr>
+<th>配置级别</th>
+<th>配置类</th>
+<th>配置内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>core</code></td>
+<td><code>JobCoreConfiguration</code></td>
+<td>用于提供作业核心配置信息，如：作业名称、CRON 表达式、分片总数等。</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td><code>JobTypeConfiguration</code></td>
+<td>有 3 个子类分别对应 <code>SIMPLE</code>, <code>DATAFLOW</code> 和 <code>SCRIPT</code> 类型作业，提供 3 种作 业需要的不同配置，如：<code>DATAFLOW</code> 类型是否流式处理或 <code>SCRIPT</code> 类型的命 令行等。<code>Simple</code> 和 <code>DataFlow</code> 需要指定任务类的路径</td>
+</tr>
+<tr>
+<td><code>Root</code></td>
+<td><code>JobRootConfiguration</code></td>
+<td>有 2 个子类分别对应 Lite 和 Cloud 部署类型，提供不同部署类型所需的配 置，如：Lite 类型的是否需要覆盖本地配置或 Cloud 占用 CPU 或 Memory 数量等。<br />可以定义分片策略：<a target="_blank" rel="noopener" href="http://elasticjob.io/docs/elastic-job-lite/02-guide/job-sharding-strategy/">http://elasticjob.io/docs/elastic-job-lite/02-guide/job-sharding-strategy/</a></td>
+</tr>
+</tbody></table>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// zk注册中心</span></span><br><span class="line">        ZookeeperRegistryCenter registryCenter = <span class="keyword">new</span> ZookeeperRegistryCenter(<span class="keyword">new</span> ZookeeperConfiguration(<span class="string">&quot;192.168.31.22:2181&quot;</span>, <span class="string">&quot;ejob-standalone&quot;</span>));</span><br><span class="line">        registryCenter.init();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 数据源，使用DBCP</span></span><br><span class="line"><span class="comment">/*        BasicDataSource dataSource = new BasicDataSource();</span></span><br><span class="line"><span class="comment">        dataSource.setDriverClassName(&quot;com.mysql.jdbc.Driver&quot;);</span></span><br><span class="line"><span class="comment">        dataSource.setUrl(&quot;jdbc:mysql://localhost:3306/elastic_job_log&quot;);</span></span><br><span class="line"><span class="comment">        dataSource.setUsername(&quot;root&quot;);</span></span><br><span class="line"><span class="comment">        dataSource.setPassword(&quot;123456&quot;);</span></span><br><span class="line"><span class="comment">        JobEventConfiguration jobEventConfig = new JobEventRdbConfiguration(dataSource);*/</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义作业核心配置</span></span><br><span class="line">        JobCoreConfiguration coreConfiguration = JobCoreConfiguration.newBuilder(MySimpleJob.class.getSimpleName(),</span><br><span class="line">                <span class="string">&quot;0/2 * * * * ?&quot;</span>, <span class="number">4</span>).shardingItemParameters(<span class="string">&quot;0=RDP, 1=CORE, 2=SIMS, 3=ECIF&quot;</span>).build();</span><br><span class="line">        <span class="comment">// 定义Simple 类型配置</span></span><br><span class="line">        SimpleJobConfiguration simpleJobConfiguration = <span class="keyword">new</span> SimpleJobConfiguration(coreConfiguration, MySimpleJob.class.getCanonicalName());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 作业分片策略</span></span><br><span class="line">        <span class="comment">// 基于平均分配算法的分片策略</span></span><br><span class="line">        String jobShardingStrategyClass = AverageAllocationJobShardingStrategy.class.getCanonicalName();</span><br><span class="line">        <span class="comment">// 定义Lite 作业根配置</span></span><br><span class="line">        <span class="comment">// LiteJobConfiguration simpleJobRootConfig = LiteJobConfiguration.newBuilder(simpleJobConfig).jobShardingStrategyClass(jobShardingStrategyClass).build();</span></span><br><span class="line">        LiteJobConfiguration simpleJobRootConfig = LiteJobConfiguration.newBuilder(simpleJobConfiguration).build();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建Job</span></span><br><span class="line">        <span class="keyword">new</span> JobScheduler(registryCenter, simpleJobRootConfig).init();</span><br><span class="line">        <span class="comment">// new JobScheduler(regCenter, simpleJobRootConfig, jobEventConfig).init();</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>作业配置分为三级, 分别是<code>JobCoreConfiguration</code>、<code>JobTypeConfiguration</code>和<code>LiteJobConfiguration</code>.<code>LiteJobConfiguration</code> 使用<code>JobTypeConfiguration</code>,<code>JobTypeConfiguration</code> 使用<code>JobCoreConfiguration</code>, 层层嵌套</p>
+<p><img src="http://files.luyanan.com//img/20200411161903.png" alt="image-20200411161902396"></p>
+<p><code>JobTypeConfiguration</code> 根据不同的实现类型分为<code>SimpleJobConfiguration</code> ， <code>DataflowJobConfiguration</code> 和 <code>ScriptJobConfiguration</code>。</p>
+<p><code>Elastic-Job</code> 使用zk 做分布式协调,所有的配置都会写入到ZK中. </p>
+<h4 id="2-3-2-ZK注册中心数据结构"><a href="#2-3-2-ZK注册中心数据结构" class="headerlink" title="2.3.2 ZK注册中心数据结构"></a>2.3.2 ZK注册中心数据结构</h4><p>一个任务, 一个二级节点</p>
+<p>这里面有些节点是临时节点,只有任务运行的是才能看到. </p>
+<blockquote>
+<p>注意：修改了任务重新运行任务不生效, 是因为zk的信息不会更新,除非把<code>overwrite</code>修改成``true`</p>
+</blockquote>
+<h5 id="config节点"><a href="#config节点" class="headerlink" title="config节点"></a>config节点</h5><p>JSON 格式存储</p>
+<p>存储任务的配置信息,包括执行类,<code>cron</code> 表达式, 分片算法类、分片数量、分片参数等. </p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;cron&quot;</span>: <span class="string">&quot;0/2 * * * * ?&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;description&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;disabled&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">&quot;failover&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">&quot;jobClass&quot;</span>: <span class="string">&quot;job.MySimpleJob&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;jobName&quot;</span>: <span class="string">&quot;MySimpleJob&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;jobParameter&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;jobProperties&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;executor_service_handler&quot;</span>: <span class="string">&quot;com.dangdang.ddframe.job.executor.handler.impl.DefaultExecutorServiceHandler&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;job_exception_handler&quot;</span>: <span class="string">&quot;com.dangdang.ddframe.job.executor.handler.impl.DefaultJobExceptionHandler&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;jobShardingStrategyClass&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;jobType&quot;</span>: <span class="string">&quot;SIMPLE&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;maxTimeDiffSeconds&quot;</span>: <span class="number">-1</span>,</span><br><span class="line">    <span class="attr">&quot;misfire&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">&quot;monitorExecution&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">&quot;monitorPort&quot;</span>: <span class="number">-1</span>,</span><br><span class="line">    <span class="attr">&quot;overwrite&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">&quot;reconcileIntervalMinutes&quot;</span>: <span class="number">10</span>,</span><br><span class="line">    <span class="attr">&quot;shardingItemParameters&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;shardingTotalCount&quot;</span>: <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>config</code>节点的数据是通过<code>ConfigService</code> 持久化到<code>zookeeper</code>中去的, 默认情况下, 如果你修改了<code>job</code>的配置, 比如<code>cron</code> 表达式、分片数量等是不会更新到<code>zookeeper</code>上去的, 除非你在<code>Lite</code>级别的配置把参数<code>overwrite</code> 修改成<code>true</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LiteJobConfiguration simpleJobRootConfig = LiteJobConfiguration.newBuilder(simpleJobConfig).overwrite(<span class="keyword">true</span>).build();</span><br></pre></td></tr></table></figure>
+
+<h5 id="instances-节点"><a href="#instances-节点" class="headerlink" title="instances 节点"></a><code>instances</code> 节点</h5><p>同一个<code>Job</code>下的<code>elasticJob</code> 的部署实例, 一台机器上可以运行多个<code>Job</code>实例, 也就是<code>Jar</code>包,<code>instances</code> 的命令是<code>Ip+@-@+PID</code>. 只有在运行的时候能看到. </p>
+<p><img src="http://files.luyanan.com//img/20200411215604.png" alt="image-20200411215538575"></p>
+<h5 id="Leader节点"><a href="#Leader节点" class="headerlink" title="Leader节点"></a><code>Leader</code>节点</h5><p><img src="http://files.luyanan.com//img/20200411215705.png" alt="image-20200411215703352"></p>
+<p>任务实例的主节点信息,通过<code>zookeeper</code> 的主节点选举,选出来的主节点信息, 在<code>elastic -job</code> 中, 任务的执行可以分布在不同的实例(节点)中, 但是任务分片等核心控制 ,需要由主节点完成, 因为, 任务执行前, 需要选举出主节点. </p>
+<p>下面有三个子节点: </p>
+<ul>
+<li><code>election</code>: 主节点选举</li>
+<li><code>sharding</code>: 分片</li>
+<li><code>failover</code>:失效转移</li>
+</ul>
+<p><code>election</code>:下面的<code>instance</code>节点显示了当前主节点的实例ID：<code>JobInstanceId</code></p>
+<p><code>sharding</code>:节点下面有一个临时节点, <code>necessary</code>,是否需要重新分片的标记. 如果分片数总数变化, 或者任务实例节点上下线或启动/禁用,以及主节点选举, 都会触发设置重分片标记, 主节点会进行分片计算. </p>
+<h5 id="Servers节点"><a href="#Servers节点" class="headerlink" title="Servers节点"></a><code>Servers</code>节点</h5><p><img src="http://files.luyanan.com//img/20200411220851.png" alt="image-20200411220850130"></p>
+<p>任务实例的信息, 主要是IP地址, 任务实例的IP地址, 跟<code>instances</code>不同, 如果多个任务实例在同一台机器上运行则会只出现一个IP子节点, 可在IP地址节点写入<code>DISABLED</code> 表示该任务实例禁用. </p>
+<h6 id="sharding-节点"><a href="#sharding-节点" class="headerlink" title="sharding 节点"></a><code>sharding</code> 节点</h6><p><img src="http://files.luyanan.com//img/20200411221250.png" alt="image-20200411221249072"></p>
+<p>任务的分片信息, 子节点是分片项序号, 从0开始. 分片个数是在任务配置中设置的, 分片项序号的子节点存储详细信息, 每个分片项下的子节点用于控制和记录分片运行状态 , 最主要的子节点就是<code>instance</code>.</p>
+<table>
+<thead>
+<tr>
+<th>子节点名</th>
+<th>是否临时节点</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>instance</code></td>
+<td>否</td>
+<td>执行该分片项的作业运行实例主键</td>
+</tr>
+<tr>
+<td><code>running</code></td>
+<td>是</td>
+<td>分片项正在运行的状态<br />仅配置<code>monitorExecution</code> 时有效</td>
+</tr>
+<tr>
+<td><code>failover</code></td>
+<td>是</td>
+<td>如果该分片项被失效转移分配给其他作业服务器, 则该节点值记录执行此分派你的作业服务器IP</td>
+</tr>
+<tr>
+<td><code>misfire</code></td>
+<td>否</td>
+<td>是否开启错误任务重新执行</td>
+</tr>
+<tr>
+<td><code>disabled</code></td>
+<td>否</td>
+<td>是否禁用此分片项</td>
+</tr>
+</tbody></table>
+<h2 id="3-运维平台"><a href="#3-运维平台" class="headerlink" title="3. 运维平台"></a>3. 运维平台</h2><h3 id="3-1-下载解压运行"><a href="#3-1-下载解压运行" class="headerlink" title="3.1 下载解压运行"></a>3.1 下载解压运行</h3><p>git 下载源码 <a target="_blank" rel="noopener" href="https://github.com/elasticjob/elastic-job-lite">https://github.com/elasticjob/elastic-job-lite</a></p>
+<p>对<code>elastic-job-lite-console</code>打包得到安装包. </p>
+<p>解压缩<code>elastic-job-lite-console-$&#123;version&#125;.tar.gz</code> 并执行<code>bin\start.sh（Windows 运行.bat）</code>. 打开浏览器访问<code>http://localhost:8899/</code> 即可访问控制台. </p>
+<p>8899为默认端口号, 可通过启动脚本输入<code>-p</code> 自定义端口号.</p>
+<p>默认管理员用户名和密码是<code>root/root</code>.右上角可以切换语言. </p>
+<h3 id="3-2-添加ZK注册中心"><a href="#3-2-添加ZK注册中心" class="headerlink" title="3.2 添加ZK注册中心"></a>3.2 添加ZK注册中心</h3><p>第一步,添加注册中心, 输入ZK地址和命名空间, 并连接</p>
+<p>运维平台和<code>elastic-job</code> 并无关系,是通过读取作业注册中心数据展现作业状态,或更新注册中心数据修改全局配置.</p>
+<p>控制台只能控制作业本身是否运行,但不能控制作业进程的启动, 因为控制台和作业本身是完全分离的,控制台并不能控制作业服务器. </p>
+<p>可以对作业机型操作. </p>
+<p><img src="http://files.luyanan.com//img/20200412101813.png" alt="image-20200412101811263"></p>
+<p>修改作业</p>
+<p><img src="http://files.luyanan.com//img/20200412101834.png" alt="image-20200412101833142"></p>
+<h3 id="3-3-事件追踪"><a href="#3-3-事件追踪" class="headerlink" title="3.3 事件追踪"></a>3.3 事件追踪</h3><p><a target="_blank" rel="noopener" href="http://elasticjob.io/docs/elastic-job-lite/02-guide/event-trace/">http://elasticjob.io/docs/elastic-job-lite/02-guide/event-trace/</a></p>
+<p><code>Elastic-Job</code> 提供了事件追踪功能, 可以通过事件订阅的方式处理调度过程的重要事件, 用于查询、统计和监控. </p>
+<p><code>Elastic-Job-Lite</code> 在配置中提供了<code>JobEventConfiguration</code>, 目前支持数据库方式配置. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">BasicDataSource dataSource = <span class="keyword">new</span> BasicDataSource();</span><br><span class="line">       dataSource.setDriverClassName(<span class="string">&quot;com.mysql.jdbc.Driver&quot;</span>);</span><br><span class="line">       dataSource.setUrl(<span class="string">&quot;jdbc:mysql://localhost:3306/elastic_job_log&quot;</span>);</span><br><span class="line">       dataSource.setUsername(<span class="string">&quot;root&quot;</span>);</span><br><span class="line">       dataSource.setPassword(<span class="string">&quot;123456&quot;</span>);</span><br><span class="line">       JobEventConfiguration jobEventConfig = <span class="keyword">new</span> JobEventRdbConfiguration(dataSource);</span><br></pre></td></tr></table></figure>
+
+<p>事件追踪的<code>event_trace_rdb_url</code> 属性对应库自动创建<code>JOB_EXECUTION_LOG</code> 和<code>JOB_STATUS_TRACE_LOG</code> 两张表以及若干索引</p>
+<p><img src="http://files.luyanan.com//img/20200412202333.png" alt="image-20200412202323391"></p>
+<p>需要在运维平台中添加数据源信息,并且连接:</p>
+<p><img src="http://files.luyanan.com//img/20200412202505.png" alt="image-20200412202504071"></p>
+<p>在作业中查询:</p>
+<p><img src="http://files.luyanan.com//img/20200412202530.png" alt="image-20200412202529730"></p>
+<h2 id="4-Spring-集成与分片详解"><a href="#4-Spring-集成与分片详解" class="headerlink" title="4.Spring 集成与分片详解"></a>4.Spring 集成与分片详解</h2><h3 id="4-1-pom依赖"><a href="#4-1-pom依赖" class="headerlink" title="4.1 pom依赖"></a>4.1 pom依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">elastic-job.version</span>&gt;</span>2.1.5<span class="tag">&lt;/<span class="name">elastic-job.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.dangdang<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>elastic-job-lite-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;elastic-job.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- elastic-job-lite-spring --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.dangdang<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>elastic-job-lite-spring<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;elastic-job.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-2-application-properties-定义配置类和任务类中要用到的参数"><a href="#4-2-application-properties-定义配置类和任务类中要用到的参数" class="headerlink" title="4.2 application.properties 定义配置类和任务类中要用到的参数"></a>4.2 <code>application.properties</code> 定义配置类和任务类中要用到的参数</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">server.port</span>=<span class="string">$&#123;random.int[10000,19999]&#125;</span></span><br><span class="line"><span class="meta">regCenter.serverList</span> = <span class="string">localhost:2181</span></span><br><span class="line"><span class="meta">regCenter.namespace</span> = <span class="string">ejob-springboot</span></span><br><span class="line"></span><br><span class="line"><span class="meta">elasticJob.cron</span> = <span class="string">0/3 * * * * ?</span></span><br><span class="line"><span class="meta">elasticJob.shardingTotalCount</span> = <span class="string">4</span></span><br><span class="line"><span class="meta">elasticJob.shardingItemParameters</span> = <span class="string">0=aaa,1=bbb, 2=mic, 3=ccc</span></span><br><span class="line"><span class="meta">elasticJob.jobParameter</span> = <span class="string">2673</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="4-3-创建任务"><a href="#4-3-创建任务" class="headerlink" title="4.3  创建任务"></a>4.3  创建任务</h3><p>创建任务类,加上<code>@Component</code> 注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MySimpleJob</span> <span class="keyword">implements</span> <span class="title">SimpleJob</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(ShardingContext shardingContext)</span> </span>&#123;</span><br><span class="line">        System.out.println(String.format(<span class="string">&quot;------【简单任务】Thread ID: %s, %s,任务总片数: %s, &quot;</span> +</span><br><span class="line">                        <span class="string">&quot;当前分片项: %s.当前参数: %s,&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;当前任务名称: %s.当前任务参数 %s&quot;</span>,</span><br><span class="line">                Thread.currentThread().getId(),</span><br><span class="line">                <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;HH:mm:ss&quot;</span>).format(<span class="keyword">new</span> Date()),</span><br><span class="line">                shardingContext.getShardingTotalCount(),</span><br><span class="line">                shardingContext.getShardingItem(),</span><br><span class="line">                shardingContext.getShardingParameter(),</span><br><span class="line">                shardingContext.getJobName(),</span><br><span class="line">                shardingContext.getJobParameter()</span><br><span class="line"></span><br><span class="line">        ));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-4-注册中心配置"><a href="#4-4-注册中心配置" class="headerlink" title="4.4  注册中心配置"></a>4.4  注册中心配置</h3><p><code>Bean</code>的<code>initMethod</code>  属性用来指定<code>Bean</code> 初始化完成之后要执行的方法, 用来替代继承<code>InitializingBean</code>  接口, 以便在容器启动的时候创建注册中心. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ElasticRegistryCenterConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean(initMethod = &quot;init&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ZookeeperRegistryCenter <span class="title">zookeeperRegistryCenter</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="meta">@Value(&quot;$&#123;regCenter.serverList&#125;&quot;)</span> String serverList,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="meta">@Value(&quot;$&#123;regCenter.namespace&#125;&quot;)</span> String namespace)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ZookeeperRegistryCenter(</span><br><span class="line">                <span class="keyword">new</span> ZookeeperConfiguration(serverList, namespace));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-5-作业三级配置"><a href="#4-5-作业三级配置" class="headerlink" title="4.5  作业三级配置"></a>4.5  作业三级配置</h3><p><code>Core</code> - <code>Type</code> -<code>Lite</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ElasticJobConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ZookeeperRegistryCenter regCenter;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义调度器</span></span><br><span class="line">    <span class="meta">@Bean(initMethod = &quot;init&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> JobScheduler <span class="title">simpleJobScheduler</span><span class="params">(<span class="keyword">final</span> MySimpleJob simpleJob,</span></span></span><br><span class="line"><span class="function"><span class="params">                                           <span class="meta">@Value(&quot;$&#123;elasticJob.cron&#125;&quot;)</span> <span class="keyword">final</span> String cron,</span></span></span><br><span class="line"><span class="function"><span class="params">                                           <span class="meta">@Value(&quot;$&#123;elasticJob.shardingTotalCount&#125;&quot;)</span> <span class="keyword">final</span> <span class="keyword">int</span> shardingTotalCount,</span></span></span><br><span class="line"><span class="function"><span class="params">                                           <span class="meta">@Value(&quot;$&#123;elasticJob.shardingItemParameters&#125;&quot;)</span> <span class="keyword">final</span> String shardingItemParameters,</span></span></span><br><span class="line"><span class="function"><span class="params">                                           <span class="meta">@Value(&quot;$&#123;elasticJob.jobParameter&#125;&quot;)</span> <span class="keyword">final</span> String jobParameter)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SpringJobScheduler(simpleJob, regCenter,</span><br><span class="line">                getLiteJobConfiguration(simpleJob.getClass(), cron, shardingTotalCount, shardingItemParameters, jobParameter));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 配置任务详细信息</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> LiteJobConfiguration <span class="title">getLiteJobConfiguration</span><span class="params">(<span class="keyword">final</span> Class&lt;? extends SimpleJob&gt; jobClass,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                         <span class="keyword">final</span> String cron,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                         <span class="keyword">final</span> <span class="keyword">int</span> shardingTotalCount,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                         <span class="keyword">final</span> String shardingItemParameters,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                         <span class="keyword">final</span> String jobParameter)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> LiteJobConfiguration.newBuilder(<span class="keyword">new</span> SimpleJobConfiguration(</span><br><span class="line">                JobCoreConfiguration.newBuilder(jobClass.getName(), cron, shardingTotalCount)</span><br><span class="line">                        .shardingItemParameters(shardingItemParameters).jobParameter(jobParameter).build()</span><br><span class="line">                , jobClass.getCanonicalName())</span><br><span class="line">        ).overwrite(<span class="keyword">true</span>).build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean(initMethod = &quot;init&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> JobScheduler <span class="title">dataFlowJobScheduler</span><span class="params">(<span class="keyword">final</span> MyDataFlowJob dataFlowJob,</span></span></span><br><span class="line"><span class="function"><span class="params">                                             <span class="meta">@Value(&quot;$&#123;elasticJob.dataflow.cron&#125;&quot;)</span> <span class="keyword">final</span> String cron,</span></span></span><br><span class="line"><span class="function"><span class="params">                                             <span class="meta">@Value(&quot;$&#123;elasticJob.dataflow.shardingTotalCount&#125;&quot;)</span> <span class="keyword">final</span> <span class="keyword">int</span> shardingTotalCount,</span></span></span><br><span class="line"><span class="function"><span class="params">                                             <span class="meta">@Value(&quot;$&#123;elasticJob.dataflow.shardingItemParameters&#125;&quot;)</span> <span class="keyword">final</span> String shardingItemParameters)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SpringJobScheduler(dataFlowJob, regCenter, getDataFlowJobConfiguration(dataFlowJob.getClass(), cron, shardingTotalCount, shardingItemParameters, <span class="keyword">true</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> LiteJobConfiguration <span class="title">getDataFlowJobConfiguration</span><span class="params">(<span class="keyword">final</span> Class&lt;? extends DataflowJob&gt; jobClass, //任务类</span></span></span><br><span class="line"><span class="function"><span class="params">                                                             <span class="keyword">final</span> String cron,    // 运行周期配置</span></span></span><br><span class="line"><span class="function"><span class="params">                                                             <span class="keyword">final</span> <span class="keyword">int</span> shardingTotalCount,  //分片个数</span></span></span><br><span class="line"><span class="function"><span class="params">                                                             <span class="keyword">final</span> String shardingItemParameters,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                             <span class="keyword">final</span> Boolean streamingProcess   //是否是流式作业</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span> </span>&#123;  <span class="comment">// 分片参数</span></span><br><span class="line">        <span class="keyword">return</span> LiteJobConfiguration.newBuilder(<span class="keyword">new</span> DataflowJobConfiguration(</span><br><span class="line">                JobCoreConfiguration.newBuilder(jobClass.getName(), cron, shardingTotalCount)</span><br><span class="line">                        .shardingItemParameters(shardingItemParameters).build()</span><br><span class="line">                <span class="comment">// true为流式作业,除非fetchData返回数据为null或者size为0,否则会一直执行</span></span><br><span class="line">                <span class="comment">// false非流式,只会按配置时间执行一次</span></span><br><span class="line">                , jobClass.getCanonicalName(), streamingProcess)</span><br><span class="line">        ).overwrite(<span class="keyword">true</span>).build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean(initMethod = &quot;init&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> JobScheduler <span class="title">scriptJobScheduler</span><span class="params">(<span class="meta">@Value(&quot;$&#123;elasticJob.script.cron&#125;&quot;)</span> <span class="keyword">final</span> String cron,</span></span></span><br><span class="line"><span class="function"><span class="params">                                           <span class="meta">@Value(&quot;$&#123;elasticJob.script.shardingTotalCount&#125;&quot;)</span> <span class="keyword">final</span> <span class="keyword">int</span> shardingTotalCount,</span></span></span><br><span class="line"><span class="function"><span class="params">                                           <span class="meta">@Value(&quot;$&#123;elasticJob.script.shardingItemParameters&#125;&quot;)</span> <span class="keyword">final</span> String shardingItemParameters)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SpringJobScheduler(<span class="keyword">null</span>, regCenter,</span><br><span class="line">                getScriptJobConfiguration(<span class="string">&quot;script_job&quot;</span>, cron, shardingTotalCount, shardingItemParameters,</span><br><span class="line">                        <span class="string">&quot;D:/1.bat&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> LiteJobConfiguration <span class="title">getScriptJobConfiguration</span><span class="params">(<span class="keyword">final</span> String jobName, //任务名字</span></span></span><br><span class="line"><span class="function"><span class="params">                                                           <span class="keyword">final</span> String cron,    // 运行周期配置</span></span></span><br><span class="line"><span class="function"><span class="params">                                                           <span class="keyword">final</span> <span class="keyword">int</span> shardingTotalCount,  //分片个数</span></span></span><br><span class="line"><span class="function"><span class="params">                                                           <span class="keyword">final</span> String shardingItemParameters,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                           <span class="keyword">final</span> String scriptCommandLine   //是脚本路径或者命令</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span> </span>&#123;  <span class="comment">// 分片参数</span></span><br><span class="line">        <span class="keyword">return</span> LiteJobConfiguration.newBuilder(<span class="keyword">new</span> ScriptJobConfiguration(</span><br><span class="line">                JobCoreConfiguration.newBuilder(jobName, cron, shardingTotalCount)</span><br><span class="line">                        .shardingItemParameters(shardingItemParameters).build()</span><br><span class="line">                <span class="comment">// 此处配置文件路径或者执行命令</span></span><br><span class="line">                , scriptCommandLine)</span><br><span class="line">        ).overwrite(<span class="keyword">true</span>).build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 动态添加任务</span></span><br><span class="line"><span class="comment">/*    public void addSimpleJobScheduler(final Class&lt;? extends SimpleJob&gt; jobClass,</span></span><br><span class="line"><span class="comment">                                       final String cron,</span></span><br><span class="line"><span class="comment">                                       final int shardingTotalCount,</span></span><br><span class="line"><span class="comment">                                       final String shardingItemParameters)&#123;</span></span><br><span class="line"><span class="comment">        JobCoreConfiguration coreConfig = JobCoreConfiguration</span></span><br><span class="line"><span class="comment">                .newBuilder(jobClass.getName(), cron, shardingTotalCount)</span></span><br><span class="line"><span class="comment">                .shardingItemParameters(shardingItemParameters)</span></span><br><span class="line"><span class="comment">                .jobParameter(&quot;name&quot;)</span></span><br><span class="line"><span class="comment">                .build();</span></span><br><span class="line"><span class="comment">        SimpleJobConfiguration simpleJobConfig = new SimpleJobConfiguration(coreConfig, jobClass.getCanonicalName());</span></span><br><span class="line"><span class="comment">        JobScheduler jobScheduler = new JobScheduler(regCenter, LiteJobConfiguration.newBuilder(simpleJobConfig).build());</span></span><br><span class="line"><span class="comment">        jobScheduler.init();</span></span><br><span class="line"><span class="comment">    &#125;*/</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-6-分片策略"><a href="#4-6-分片策略" class="headerlink" title="4.6  分片策略"></a>4.6  分片策略</h3><h4 id="4-6-1-分片项和分片参数"><a href="#4-6-1-分片项和分片参数" class="headerlink" title="4.6.1 分片项和分片参数"></a>4.6.1 分片项和分片参数</h4><p>任务分片, 是为了实现把一个任务拆分成多个子任务, 在不同的<code>ejob</code>实例上运行, 假如说100W 条数据, 在配置文件中指定分为10个子任务(分片项),这10个子任务再按照一定的规则分配到5个实际运行的服务器上执行, 除了直接用分片项<code>ShardingItem</code>  获取分片任务之外, 还可以用<code>item</code>对应的<code>parameter</code> 获取任务. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JobCoreConfiguration coreConfig = JobCoreConfiguration.newBuilder(<span class="string">&quot;MySimpleJob&quot;</span>, <span class="string">&quot;0/2 * * * * ?&quot;</span>, <span class="number">4</span>).shardingItemParameters(<span class="string">&quot;0=RDP, 1=CORE, 2=SIMS, 3=ECIF&quot;</span>).build();</span><br></pre></td></tr></table></figure>
+
+<p><code>springboot</code> 工程, 在<code>application.properties</code> 中定义. </p>
+<p>定义几个分片项, 一个任务就会有几个线程去运行他. </p>
+<p>注意: 分片个数和分片参数要一一对应,通常把分片项设置的比<code>Elastic-Job</code> 服务器个数要大一些, 比如3台服务器,分成9片, 这样如果有服务器宕机,分片还可以相对均匀. </p>
+<h4 id="4-6-2-分片验证"><a href="#4-6-2-分片验证" class="headerlink" title="4.6.2 分片验证"></a>4.6.2 分片验证</h4><p>为避免运行的任务太多,看不清楚运行结果, 可以注释在<code>Elastic-Job</code> 中注释<code>DatFlowJob</code>和<code>ScriptJob</code>,<code>SimpleJob</code>的分片项改为2. </p>
+<p>然后运行主启动类</p>
+<p>多实例运行(单机)</p>
+<ol>
+<li>多运行一个点, 任务不会重跑(两个节点各获得一个分片项)</li>
+<li>关闭一个节点, 任务不会漏跑</li>
+</ol>
+<h4 id="4-7-3-分片策略"><a href="#4-7-3-分片策略" class="headerlink" title="4.7.3 分片策略"></a>4.7.3 分片策略</h4><p><a target="_blank" rel="noopener" href="http://elasticjob.io/docs/elastic-job-lite/02-guide/job-sharding-strategy/">http://elasticjob.io/docs/elastic-job-lite/02-guide/job-sharding-strategy/</a></p>
+<p>分片项如何分配到服务器? 这个跟分片策略有关. </p>
+<table>
+<thead>
+<tr>
+<th>策略类</th>
+<th>描述</th>
+<th>具体规则</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>AverageAllocationJobShardingStrategy</code></td>
+<td>基于平均分配算法的分片策略, 也是默认的分片策略</td>
+<td>如果分片不能整除, 则不能整除的多余分片将依次追加到序号小的服务器, 如:<br />1. 如果有3台服务器,分成9片, 则每台服务器分到的分片是<code>1=[0,1,2], 2=[3,4,5], 3=[6,7,8]</code><br />2. 如果有三台服务器, 分成8片, 则每台服务器分到的分片是: <code>1=[0,1,6], 2=[2,3,7], 3=[4,5]</code><br />3.如果有三台服务器,分成10片, 则每台服务器分到的分片是: <code>1=[0,1,2,9], 2=[3,4,5], 3=[6,7,8]</code></td>
+</tr>
+<tr>
+<td><code>OdevitySortByNameJobShardingStrategy</code></td>
+<td>根据作业名的哈希值奇偶数决定IP 升将序算法的分片策略</td>
+<td>1. 作业名是哈希值为奇数则IP升序<br />2. 作业名的哈希值为偶数则Ip降序<br />用于不同的作业平均分配负载至不同的服务器</td>
+</tr>
+<tr>
+<td><code>RotateServerByNameJobShardingStrategy</code></td>
+<td>根据作业名的哈希值对服务器列表进行轮转的分片策略</td>
+<td></td>
+</tr>
+<tr>
+<td>自定义分片策略</td>
+<td></td>
+<td>实现<code>JobShardingStrategy</code> 接口并实现<code>sharding</code> 方法, 接口方法参数为作业服务器IP列表和分片策略选项,分片策略选项包括作业名称、分片总数以及分片序列号和个性化参数对照表, 可以根据需求定制化自己的分片策略.</td>
+</tr>
+</tbody></table>
+<p><code>AverageAllocationJobShardingStrategy</code>的缺点是: 一旦分片数小于作业服务器数,作业将永远分配至IP 地址靠前的服务器, 导致IP地址靠后的服务器空闲. 而<code>OdevitySortByNameJobShardingStrategy</code>  则可以根据作业名称重新分配服务器负载. 如: </p>
+<p>如果有 3 台服务器，分成 2 片，作业名称的哈希值为奇数，则每台服务器分到的分片是：1=[0], 2=[1], 3=[]<br>       如果有 3 台服务器，分成 2 片，作业名称的哈希值为偶数，则每台服务器分到的分片是：3=[0], 2=[1], 1=[]</p>
+<p>在<code>Lite</code> 配置中指定分片策略:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String jobShardingStrategyClass = AverageAllocationJobShardingStrategy.class.getCanonicalName();</span><br><span class="line">LiteJobConfiguration simpleJobRootConfig = LiteJobConfiguration.newBuilder(simpleJobConfig).jobShardingStrategyClass(jobShardingStrategyClass).build()</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-6-4-分片方案"><a href="#4-6-4-分片方案" class="headerlink" title="4.6.4 分片方案"></a>4.6.4 分片方案</h4><p>获取到分片项<code>shardingItem</code> 之后, 怎么对数据进行分片呢? </p>
+<ol>
+<li><p>对业务主键进行取模, 获取余数等于分片项的数据</p>
+<p> 举例: 获取到的<code>shardingItem</code> 是0,1</p>
+<p>在SQL 中加入过滤条件: <code>where mod(id, 4) in (1, 2)</code></p>
+<p>这种方式的缺点: 会导致索引失效,查询数据时会全表扫描 . </p>
+<p>解决方案: 在查询条件中在增加一个索引条件进行过滤.</p>
+</li>
+<li><p>在表中增加一个字段, 根据分片数生成一个<code>mod</code>的值. 取模的基数要大于机器数,否则在增加机器后, 会导致机器空闲. 假如取模基数是2,而服务器有5台, 那么有三台服务器是永远空闲的.而取模基数是10, 生成10个<code>shardingItem</code>，可以分配到5台服务器. 当然,取模基数也可以调整. </p>
+</li>
+<li><p>如果从业务层面,可以用<code>ShardingParamter</code> 进行分片. </p>
+<p> 假如<code>0=RDP, 1=CORE, 2=SIMS, 3=ECIF</code></p>
+<p><code>List = SELECT * FROM user WHERE status = 0 AND SYSTEM_ID = &#39;RDP&#39; limit 0, 100。</code></p>
+</li>
+</ol>
+<p>在SpringBoot中<code>Elastic-Job</code> 要配置的东西太多了,有没有更加简单的添加任务的方法呢? 比如在类上添加一个注解, 这个时候我们就要用到<code>starter</code></p>
+<h3 id="4-7-Elastic-Job-starter"><a href="#4-7-Elastic-Job-starter" class="headerlink" title="4.7 Elastic-Job starter"></a>4.7 <code>Elastic-Job</code> <code>starter</code></h3><p>git上有一个现成的实现</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/TFdream/elasticjob-spring-boot-starter">https://github.com/TFdream/elasticjob-spring-boot-starter</a></p>
+<h2 id="5-Elastic-Job的原理"><a href="#5-Elastic-Job的原理" class="headerlink" title="5. Elastic-Job的原理"></a>5. <code>Elastic-Job</code>的原理</h2><h3 id="5-1-启动"><a href="#5-1-启动" class="headerlink" title="5.1 启动"></a>5.1 启动</h3><p>我们从</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> JobScheduler(registryCenter, simpleJobRootConfig).init();</span><br></pre></td></tr></table></figure>
+
+<p>开始分析,首先看<code>init()</code> 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 初始化作业.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">      LiteJobConfiguration liteJobConfigFromRegCenter = schedulerFacade.updateJobConfiguration(liteJobConfig);</span><br><span class="line">    <span class="comment">// 设置分片数</span></span><br><span class="line">    JobRegistry.getInstance().setCurrentShardingTotalCount(liteJobConfigFromRegCenter.getJobName(), liteJobConfigFromRegCenter.getTypeConfig().getCoreConfig().getShardingTotalCount());</span><br><span class="line">    <span class="comment">// 构建任务, 创建调度器</span></span><br><span class="line">      JobScheduleController jobScheduleController = <span class="keyword">new</span> JobScheduleController(</span><br><span class="line">              createScheduler(), createJobDetail(liteJobConfigFromRegCenter.getTypeConfig().getJobClass()), liteJobConfigFromRegCenter.getJobName());</span><br><span class="line">      <span class="comment">// 去ZK上注册任务</span></span><br><span class="line">      JobRegistry.getInstance().registerJob(liteJobConfigFromRegCenter.getJobName(), jobScheduleController, regCenter);</span><br><span class="line">      <span class="comment">// 添加任务信息,并进行节点选举</span></span><br><span class="line">      schedulerFacade.registerStartUpInfo(!liteJobConfigFromRegCenter.isDisabled());</span><br><span class="line">     <span class="comment">// 启动调度器</span></span><br><span class="line">     jobScheduleController.scheduleJob(liteJobConfigFromRegCenter.getTypeConfig().getCoreConfig().getCron());</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来看<code>com.dangdang.ddframe.job.lite.internal.schedule.SchedulerFacade#registerStartUpInfo</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 注册作业启动信息.</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> enabled 作业是否启用</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerStartUpInfo</span><span class="params">(<span class="keyword">final</span> <span class="keyword">boolean</span> enabled)</span> </span>&#123;</span><br><span class="line">   <span class="comment">// 启动所有的监听器</span></span><br><span class="line">    listenerManager.startAllListeners();</span><br><span class="line">    <span class="comment">// 节点选举</span></span><br><span class="line">    leaderService.electLeader();</span><br><span class="line">    <span class="comment">// 服务信息持久化(写入ZK)</span></span><br><span class="line">    serverService.persistOnline(enabled);</span><br><span class="line">    <span class="comment">// 实例信息持久化(写到ZK)</span></span><br><span class="line">    instanceService.persistOnline();</span><br><span class="line">    <span class="comment">// 重新分片</span></span><br><span class="line">    shardingService.setReshardingFlag();</span><br><span class="line">    <span class="comment">// 监控信息监听器</span></span><br><span class="line">    monitorService.listen();</span><br><span class="line">    <span class="comment">// 自诊断恢复, 使本地节点与ZK数据一致</span></span><br><span class="line">    <span class="keyword">if</span> (!reconcileService.isRunning()) &#123;</span><br><span class="line">        reconcileService.startAsync();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>监听器用于监听ZK节点信息变化</p>
+<p>启动的时候进行主节点选举</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 选举主节点.</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">electLeader</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     log.debug(<span class="string">&quot;Elect a new leader now.&quot;</span>);</span><br><span class="line">     jobNodeStorage.executeInLeader(LeaderNode.LATCH, <span class="keyword">new</span> LeaderElectionExecutionCallback());</span><br><span class="line">     log.debug(<span class="string">&quot;Leader election completed.&quot;</span>);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Latch</code>是 一个分布式锁,选举成功后在<code>instance</code> 写入服务器信息</p>
+<p><img src="http://files.luyanan.com//img/20200412224843.png" alt="image-20200412224842087"></p>
+<p>服务信息持久化(写到ZK Servers 节点)</p>
+<p><code>serverService.persistOnline(enabled)</code></p>
+<p>以下是单机运行多个实例:</p>
+<p><img src="http://files.luyanan.com//img/20200412224950.png" alt="image-20200412224948880"></p>
+<p>运行了两个实例</p>
+<p><img src="http://files.luyanan.com//img/20200412225005.png" alt="image-20200412225005046"></p>
+<h3 id="5-2-任务执行和分片原理"><a href="#5-2-任务执行和分片原理" class="headerlink" title="5.2 任务执行和分片原理"></a>5.2 任务执行和分片原理</h3><p>关注两个问题</p>
+<ol>
+<li><code>LiteJob</code>   是怎么被执行的?</li>
+<li>分片项是怎么分配给不同的服务实例的?</li>
+</ol>
+<p>在创建<code>Job</code>的时候(<code>createJobDetail</code>), 创建的是一个实现了<code>quartz</code>的<code>job</code>接口的<code>LiteJob</code>类, <code>LiteJob</code>类也实现了<code>Quartz</code>的<code>Job</code> 接口 . </p>
+<p>在<code>LiteJOb</code>的<code>execute</code>方法中获取对应类型的执行器, 调用<code>execute()</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> AbstractElasticJobExecutor <span class="title">getJobExecutor</span><span class="params">(ElasticJob elasticJob, JobFacade jobFacade)</span> </span>&#123;</span><br><span class="line">     <span class="keyword">if</span> (<span class="keyword">null</span> == elasticJob) &#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">new</span> ScriptJobExecutor(jobFacade);</span><br><span class="line">     &#125; <span class="keyword">else</span> <span class="keyword">if</span> (elasticJob <span class="keyword">instanceof</span> SimpleJob) &#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">new</span> SimpleJobExecutor((SimpleJob)elasticJob, jobFacade);</span><br><span class="line">     &#125; <span class="keyword">else</span> <span class="keyword">if</span> (elasticJob <span class="keyword">instanceof</span> DataflowJob) &#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">new</span> DataflowJobExecutor((DataflowJob)elasticJob, jobFacade);</span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">         <span class="keyword">throw</span> <span class="keyword">new</span> JobConfigurationException(<span class="string">&quot;Cannot support job type &#x27;%s&#x27;&quot;</span>, <span class="keyword">new</span> Object[]&#123;elasticJob.getClass().getCanonicalName()&#125;);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Elastic-Job</code> 提供管理任务执行器的抽象类<code>AbstractElasticJobExecutor</code>, 核心动作在<code>execute()</code> 方法中执行. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>调用了另一个<code>execute()</code> 方法, 122行</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">execute(shardingContexts, JobExecutionEvent.ExecutionSource.NORMAL_TRIGGER);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(<span class="keyword">final</span> ShardingContexts shardingContexts, <span class="keyword">final</span> JobExecutionEvent.ExecutionSource executionSource)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (shardingContexts.getShardingItemParameters().isEmpty()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (shardingContexts.isAllowSendJobEvent()) &#123;</span><br><span class="line">            jobFacade.postJobStatusTraceEvent(shardingContexts.getTaskId(), State.TASK_FINISHED, String.format(<span class="string">&quot;Sharding item for job &#x27;%s&#x27; is empty.&quot;</span>, jobName));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    jobFacade.registerJobBegin(shardingContexts);</span><br><span class="line">    String taskId = shardingContexts.getTaskId();</span><br><span class="line">    <span class="keyword">if</span> (shardingContexts.isAllowSendJobEvent()) &#123;</span><br><span class="line">        jobFacade.postJobStatusTraceEvent(taskId, State.TASK_RUNNING, <span class="string">&quot;&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        process(shardingContexts, executionSource);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="comment">// TODO 考虑增加作业失败的状态，并且考虑如何处理作业失败的整体回路</span></span><br><span class="line">        jobFacade.registerJobCompleted(shardingContexts);</span><br><span class="line">        <span class="keyword">if</span> (itemErrorMessages.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (shardingContexts.isAllowSendJobEvent()) &#123;</span><br><span class="line">                jobFacade.postJobStatusTraceEvent(taskId, State.TASK_FINISHED, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (shardingContexts.isAllowSendJobEvent()) &#123;</span><br><span class="line">                jobFacade.postJobStatusTraceEvent(taskId, State.TASK_ERROR, itemErrorMessages.toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>在这个<code>execute</code>方法中又调用了<code>com.dangdang.ddframe.job.executor.AbstractElasticJobExecutor#process(com.dangdang.ddframe.job.executor.ShardingContexts, com.dangdang.ddframe.job.event.type.JobExecutionEvent.ExecutionSource)</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(<span class="keyword">final</span> ShardingContexts shardingContexts, <span class="keyword">final</span> JobExecutionEvent.ExecutionSource executionSource)</span> </span>&#123;</span><br><span class="line">    Collection&lt;Integer&gt; items = shardingContexts.getShardingItemParameters().keySet();</span><br><span class="line">    <span class="comment">// 当只有一个分片的时候, 直接执行</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="number">1</span> == items.size()) &#123;</span><br><span class="line">        <span class="keyword">int</span> item = shardingContexts.getShardingItemParameters().keySet().iterator().next();</span><br><span class="line">        JobExecutionEvent jobExecutionEvent =  <span class="keyword">new</span> JobExecutionEvent(shardingContexts.getTaskId(), jobName, executionSource, item);</span><br><span class="line">        process(shardingContexts, item, jobExecutionEvent);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">final</span> CountDownLatch latch = <span class="keyword">new</span> CountDownLatch(items.size());</span><br><span class="line">    <span class="comment">// 本节点遍历执行相应的分片信息</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">final</span> <span class="keyword">int</span> each : items) &#123;</span><br><span class="line">        <span class="keyword">final</span> JobExecutionEvent jobExecutionEvent = <span class="keyword">new</span> JobExecutionEvent(shardingContexts.getTaskId(), jobName, executionSource, each);</span><br><span class="line">        <span class="keyword">if</span> (executorService.isShutdown()) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        executorService.submit(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            </span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    process(shardingContexts, each, jobExecutionEvent);</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    latch.countDown();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 等待所有的分片项任务执行完毕</span></span><br><span class="line">        latch.await();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (<span class="keyword">final</span> InterruptedException ex) &#123;</span><br><span class="line">        Thread.currentThread().interrupt();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>里面又调用了一个<code>com.dangdang.ddframe.job.executor.AbstractElasticJobExecutor#process(com.dangdang.ddframe.job.executor.ShardingContexts, int, com.dangdang.ddframe.job.event.type.JobExecutionEvent)</code> 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(<span class="keyword">final</span> ShardingContexts shardingContexts, <span class="keyword">final</span> <span class="keyword">int</span> item, <span class="keyword">final</span> JobExecutionEvent startEvent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (shardingContexts.isAllowSendJobEvent()) &#123;</span><br><span class="line">            jobFacade.postJobExecutionEvent(startEvent);</span><br><span class="line">        &#125;</span><br><span class="line">        log.trace(<span class="string">&quot;Job &#x27;&#123;&#125;&#x27; executing, item is: &#x27;&#123;&#125;&#x27;.&quot;</span>, jobName, item);</span><br><span class="line">        JobExecutionEvent completeEvent;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            process(<span class="keyword">new</span> ShardingContext(shardingContexts, item));</span><br><span class="line">            completeEvent = startEvent.executionSuccess();</span><br><span class="line">            log.trace(<span class="string">&quot;Job &#x27;&#123;&#125;&#x27; executed, item is: &#x27;&#123;&#125;&#x27;.&quot;</span>, jobName, item);</span><br><span class="line">            <span class="keyword">if</span> (shardingContexts.isAllowSendJobEvent()) &#123;</span><br><span class="line">                jobFacade.postJobExecutionEvent(completeEvent);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// CHECKSTYLE:OFF</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (<span class="keyword">final</span> Throwable cause) &#123;</span><br><span class="line">            <span class="comment">// CHECKSTYLE:ON</span></span><br><span class="line">            completeEvent = startEvent.executionFailure(cause);</span><br><span class="line">            jobFacade.postJobExecutionEvent(completeEvent);</span><br><span class="line">            itemErrorMessages.put(item, ExceptionUtil.transform(cause));</span><br><span class="line">            jobExceptionHandler.handleException(jobName, cause);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+
+<p>然后调用了一个抽象的<code>com.dangdang.ddframe.job.executor.AbstractElasticJobExecutor#process(com.dangdang.ddframe.job.api.ShardingContext)</code> 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(ShardingContext shardingContext)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>交给具体的实现类（<code>SimpleJobExecutor</code>、<code>DataflowJobExecutor</code>、 <code>ScriptJobExecutor</code>） 去处理</p>
+<p>最终调用到任务类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"> <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(<span class="keyword">final</span> ShardingContext shardingContext)</span> </span>&#123;</span><br><span class="line">     simpleJob.execute(shardingContext);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MySimpleJob</span> <span class="keyword">implements</span> <span class="title">SimpleJob</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(ShardingContext shardingContext)</span> </span>&#123;</span><br><span class="line">        System.out.println(String.format(<span class="string">&quot;分片项 ShardingItem: %s | 运行时间: %s | 线程ID: %s | 分片参数: %s &quot;</span>,</span><br><span class="line">                shardingContext.getShardingItem(), <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;HH:mm:ss&quot;</span>).format(<span class="keyword">new</span> Date()),</span><br><span class="line">                Thread.currentThread().getId(), shardingContext.getShardingParameter()));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-3-失效转移"><a href="#5-3-失效转移" class="headerlink" title="5.3  失效转移"></a>5.3  失效转移</h3><p>所谓的失效转移,就是在执行任务的过程中发生了异常,这个分片任务可以在其他节点再次执行,</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义作业核心配置</span></span><br><span class="line">       JobCoreConfiguration coreConfiguration = JobCoreConfiguration.newBuilder(MySimpleJob.class.getSimpleName(),</span><br><span class="line">               <span class="string">&quot;0/2 * * * * ?&quot;</span>, <span class="number">4</span>).shardingItemParameters(<span class="string">&quot;0=RDP, 1=CORE, 2=SIMS, 3=ECIF&quot;</span>).failover(<span class="keyword">true</span>).build();</span><br></pre></td></tr></table></figure>
+
+<p><code>FailoverListenerManager</code> 监听的是zl的<code>instance</code>节点删除事件,如果任务配置了<code>fairover</code>等于<code>true</code>,其中某个<code>instance</code> 与zk 失去联系或者被删除,并且失效的节点又不是本身, 就会触发是失效转移逻辑. </p>
+<p><code>Job</code>的失效转移监听来源于<code>FailoverListenerManager</code>的内部类,<code>JobCrashedJobListener</code> 的 <code>dataChanged</code> 方法</p>
+<p>当节点任务失效后会调用<code>JobCrashedJobListener</code> 监听器,此监听器会根据实例id 获取所有的分片, 然后调用<code>FailoverService</code> 的 <code>setCrashedFailoverFlag</code> 方法, 将每个分片id 写到<code>到/jobName/leader/failover/items</code>, 假如原来的实例负责1、2分片项, 那<code>items</code> 节点就会写入1、2, 代表这两个分片项需要失效转移. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">       <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">dataChanged</span><span class="params">(<span class="keyword">final</span> String path, <span class="keyword">final</span> Type eventType, <span class="keyword">final</span> String data)</span> </span>&#123;</span><br><span class="line">           <span class="keyword">if</span> (isFailoverEnabled() &amp;&amp; Type.NODE_REMOVED == eventType &amp;&amp; instanceNode.isInstancePath(path)) &#123;</span><br><span class="line">               String jobInstanceId = path.substring(instanceNode.getInstanceFullPath().length() + <span class="number">1</span>);</span><br><span class="line">               <span class="keyword">if</span> (jobInstanceId.equals(JobRegistry.getInstance().getJobInstance(jobName).getJobInstanceId())) &#123;</span><br><span class="line">                   <span class="keyword">return</span>;</span><br><span class="line">               &#125;</span><br><span class="line">               List&lt;Integer&gt; failoverItems = failoverService.getFailoverItems(jobInstanceId);</span><br><span class="line">               <span class="keyword">if</span> (!failoverItems.isEmpty()) &#123;</span><br><span class="line">                   <span class="keyword">for</span> (<span class="keyword">int</span> each : failoverItems) &#123;</span><br><span class="line">                       <span class="comment">// 设置失效的分片项标记</span></span><br><span class="line">                       failoverService.setCrashedFailoverFlag(each);</span><br><span class="line">                       failoverService.failoverIfNecessary();</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                   <span class="keyword">for</span> (<span class="keyword">int</span> each : shardingService.getShardingItems(jobInstanceId)) &#123;</span><br><span class="line">                       failoverService.setCrashedFailoverFlag(each);</span><br><span class="line">                       failoverService.failoverIfNecessary();</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后接下来调用<code>FailoverService</code> 的 <code>failoverIfNessary</code>方法, 首先判断是否需要失效转移,如果可以需要则只需要作业失败转移. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 如果需要失效转移, 则执行作业失效转移.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">failoverIfNecessary</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (needFailover()) &#123;</span><br><span class="line">        jobNodeStorage.executeInLeader(FailoverNode.LATCH, <span class="keyword">new</span> FailoverLeaderExecutionCallback());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>条件一： <code>$&#123;JOB_NAME&#125;/leader/failover/items/$&#123;ITEM_ID&#125;</code> 有失效转移的作业分片</p>
+<p>条件二: 当前作业不再运行中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">needFailover</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> jobNodeStorage.isJobNodeExisted(FailoverNode.ITEMS_ROOT) &amp;&amp; !jobNodeStorage.getJobNodeChildrenKeys(FailoverNode.ITEMS_ROOT).isEmpty()</span><br><span class="line">               &amp;&amp; !JobRegistry.getInstance().isJobRunning(jobName);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在主节点执行操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 在主节点执行操作.</span></span><br><span class="line"><span class="comment">    * </span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> latchNode 分布式锁使用的作业节点名称</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> callback 执行操作的回调</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">executeInLeader</span><span class="params">(<span class="keyword">final</span> String latchNode, <span class="keyword">final</span> LeaderExecutionCallback callback)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">try</span> (LeaderLatch latch = <span class="keyword">new</span> LeaderLatch(getClient(), jobNodePath.getFullPath(latchNode))) &#123;</span><br><span class="line">           latch.start();</span><br><span class="line">           latch.await();</span><br><span class="line">           callback.execute();</span><br><span class="line">       <span class="comment">//CHECKSTYLE:OFF</span></span><br><span class="line">       &#125; <span class="keyword">catch</span> (<span class="keyword">final</span> Exception ex) &#123;</span><br><span class="line">       <span class="comment">//CHECKSTYLE:ON</span></span><br><span class="line">           handleException(ex);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>再次判断是否需要失效转移</li>
+<li>从注册中心获取一个<code>$&#123;JOB_NAME&#125;/leader/failover/items/$&#123;ITEM_ID&#125;</code> 作业分片项</li>
+<li>在注册中心节点<code>$&#123;JOB_NAME&#125;/sharding/$&#123;ITEM_ID&#125;/failover</code> 注册作业分片项为当前作业节点</li>
+<li>然后移除任务转移分片项</li>
+<li>最后调用执行, 提交任务</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FailoverLeaderExecutionCallback</span> <span class="keyword">implements</span> <span class="title">LeaderExecutionCallback</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 判断是否需要失效转悠</span></span><br><span class="line">        <span class="keyword">if</span> (JobRegistry.getInstance().isShutdown(jobName) || !needFailover()) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 从$&#123;JOB_NAME&#125;/leader/failover/items/$&#123;ITEM_ID&#125;获得一个分片项</span></span><br><span class="line">        <span class="keyword">int</span> crashedItem = Integer.parseInt(jobNodeStorage.getJobNodeChildrenKeys(FailoverNode.ITEMS_ROOT).get(<span class="number">0</span>));</span><br><span class="line">        log.debug(<span class="string">&quot;Failover job &#x27;&#123;&#125;&#x27; begin, crashed item &#x27;&#123;&#125;&#x27;&quot;</span>, jobName, crashedItem);</span><br><span class="line">        <span class="comment">// 在注册中心节点`$&#123;JOB_NAME&#125;/sharding/$&#123;ITEM_ID&#125;/failover`注册作业分片项为当前作业节点</span></span><br><span class="line">        jobNodeStorage.fillEphemeralJobNode(FailoverNode.getExecutionFailoverNode(crashedItem), JobRegistry.getInstance().getJobInstance(jobName).getJobInstanceId());</span><br><span class="line">        <span class="comment">// 移除任务转移分片项</span></span><br><span class="line">        jobNodeStorage.removeJobNodeIfExisted(FailoverNode.getItemsNode(crashedItem));</span><br><span class="line">        <span class="comment">// TODO 不应使用triggerJob, 而是使用executor统一调度</span></span><br><span class="line">        JobScheduleController jobScheduleController = JobRegistry.getInstance().getJobScheduleController(jobName);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != jobScheduleController) &#123;</span><br><span class="line">            <span class="comment">//  提交任务</span></span><br><span class="line">            jobScheduleController.triggerJob();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里仅仅是触发作业，而不是立即执行. </p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%8EThreadPoolExecutor%E7%B1%BB%E6%B5%85%E6%9E%90/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job-md"><span class="nav-number">1.</span> <span class="nav-text">任务调度之Eliastic-Job.md</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E9%AB%98%E7%BA%A7%E9%9C%80%E6%B1%82"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 任务调度高级需求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.2 发展历史</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E5%8A%9F%E8%83%BD%E7%89%B9%E6%80%A7"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.3 功能特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.4 项目架构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Java-%E5%BC%80%E5%8F%91"><span class="nav-number">1.2.</span> <span class="nav-text">2. Java 开发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-pom-%E4%BE%9D%E8%B5%96"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 pom 依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E4%BB%BB%E5%8A%A1%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 任务类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-SimpleJob"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">2.2.1 SimpleJob</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-DataFlowJob"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">2.2.2 DataFlowJob</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-3-ScriptJob"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">2.2.3 ScriptJob</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-Elastic-Job-%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 Elastic-Job 配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1-%E9%85%8D%E7%BD%AE%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">2.3.1 配置步骤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-2-ZK%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">2.3.2 ZK注册中心数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#config%E8%8A%82%E7%82%B9"><span class="nav-number">1.2.3.2.1.</span> <span class="nav-text">config节点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#instances-%E8%8A%82%E7%82%B9"><span class="nav-number">1.2.3.2.2.</span> <span class="nav-text">instances 节点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Leader%E8%8A%82%E7%82%B9"><span class="nav-number">1.2.3.2.3.</span> <span class="nav-text">Leader节点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Servers%E8%8A%82%E7%82%B9"><span class="nav-number">1.2.3.2.4.</span> <span class="nav-text">Servers节点</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#sharding-%E8%8A%82%E7%82%B9"><span class="nav-number">1.2.3.2.4.1.</span> <span class="nav-text">sharding 节点</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%BF%90%E7%BB%B4%E5%B9%B3%E5%8F%B0"><span class="nav-number">1.3.</span> <span class="nav-text">3. 运维平台</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E4%B8%8B%E8%BD%BD%E8%A7%A3%E5%8E%8B%E8%BF%90%E8%A1%8C"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 下载解压运行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E6%B7%BB%E5%8A%A0ZK%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 添加ZK注册中心</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E4%BA%8B%E4%BB%B6%E8%BF%BD%E8%B8%AA"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3 事件追踪</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Spring-%E9%9B%86%E6%88%90%E4%B8%8E%E5%88%86%E7%89%87%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.4.</span> <span class="nav-text">4.Spring 集成与分片详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-pom%E4%BE%9D%E8%B5%96"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 pom依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-application-properties-%E5%AE%9A%E4%B9%89%E9%85%8D%E7%BD%AE%E7%B1%BB%E5%92%8C%E4%BB%BB%E5%8A%A1%E7%B1%BB%E4%B8%AD%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E5%8F%82%E6%95%B0"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 application.properties 定义配置类和任务类中要用到的参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E5%88%9B%E5%BB%BA%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3  创建任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.4.</span> <span class="nav-text">4.4  注册中心配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-%E4%BD%9C%E4%B8%9A%E4%B8%89%E7%BA%A7%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.5.</span> <span class="nav-text">4.5  作业三级配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-6-%E5%88%86%E7%89%87%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.6.</span> <span class="nav-text">4.6  分片策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-6-1-%E5%88%86%E7%89%87%E9%A1%B9%E5%92%8C%E5%88%86%E7%89%87%E5%8F%82%E6%95%B0"><span class="nav-number">1.4.6.1.</span> <span class="nav-text">4.6.1 分片项和分片参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-6-2-%E5%88%86%E7%89%87%E9%AA%8C%E8%AF%81"><span class="nav-number">1.4.6.2.</span> <span class="nav-text">4.6.2 分片验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-7-3-%E5%88%86%E7%89%87%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.6.3.</span> <span class="nav-text">4.7.3 分片策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-6-4-%E5%88%86%E7%89%87%E6%96%B9%E6%A1%88"><span class="nav-number">1.4.6.4.</span> <span class="nav-text">4.6.4 分片方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-7-Elastic-Job-starter"><span class="nav-number">1.4.7.</span> <span class="nav-text">4.7 Elastic-Job starter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Elastic-Job%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-number">1.5.</span> <span class="nav-text">5. Elastic-Job的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E5%90%AF%E5%8A%A8"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1 启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E4%BB%BB%E5%8A%A1%E6%89%A7%E8%A1%8C%E5%92%8C%E5%88%86%E7%89%87%E5%8E%9F%E7%90%86"><span class="nav-number">1.5.2.</span> <span class="nav-text">5.2 任务执行和分片原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E5%A4%B1%E6%95%88%E8%BD%AC%E7%A7%BB"><span class="nav-number">1.5.3.</span> <span class="nav-text">5.3  失效转移</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

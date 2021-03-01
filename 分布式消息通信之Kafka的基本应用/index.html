@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="分布式消息通信之Kafka的基本应用消息中间件的背景分析场景分析我们可以使用阻塞队列+线程池的方式来实现生产者和消费者的模式 . 比如在一个应用中, A 方法调用B方法去执行一些任务处理, 我们可以同步调用, 但是如果这个时候请求比较多的情况下, 同步调用会比较耗时会导致请求阻塞. 我们会使用阻塞队列+线程池的方式来实现异步任务的处理.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="分布式消息通信之Kafka的基本应用消息中间件的背景分析场景分析我们可以使用阻塞队列+线程池的方式来实现生产者和消费者的模式 . 比如在一个应用中, A 方法调用B方法去执行一些任务处理, 我们可以同步调用, 但是如果这个时候请求比较多的情况下, 同步调用会比较耗时会导致请求阻塞. 我们会使用阻塞队列+线程池的方式来实现异步任务的处理.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com//img/20191224155658.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20191226214934.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20191227105757.png">
+<meta property="article:published_time" content="2021-03-01T09:46:52.774Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.090Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com//img/20191224155658.png">
+
+<link rel="canonical" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="分布式消息通信之Kafka的基本应用"><a href="#分布式消息通信之Kafka的基本应用" class="headerlink" title="分布式消息通信之Kafka的基本应用"></a>分布式消息通信之Kafka的基本应用</h1><h2 id="消息中间件的背景分析"><a href="#消息中间件的背景分析" class="headerlink" title="消息中间件的背景分析"></a>消息中间件的背景分析</h2><h3 id="场景分析"><a href="#场景分析" class="headerlink" title="场景分析"></a>场景分析</h3><p>我们可以使用阻塞队列+线程池的方式来实现生产者和消费者的模式 . 比如在一个应用中, A 方法调用B方法去执行一些任务处理, 我们可以同步调用, 但是如果这个时候请求比较多的情况下, 同步调用会比较耗时会导致请求阻塞. 我们会使用阻塞队列+线程池的方式来实现异步任务的处理. </p>
+<p><img src="http://files.luyanan.com//img/20191224155658.png"></p>
+<p>那么问题来了, 在分布式系统用中, 两个服务之间需要通过这种异步的队列的方式来处理任务, 那么单进程级别的队列就无法解决这个问题了. </p>
+<p>因此, 引入了消息中间件, 也就是把消息交给第三方的服务, 这个服务能够实现数据的存储以及传输, 使得在分布式架构下实现跨进程的远程消息通信. </p>
+<p>所以,简单来说: 消息中间件是指利用高效的消息传输机制进行平台无关的数据交流, 并且基于数据通信来是进行分布式系统的集成. </p>
+<h3 id="思考一下消息中间件的设计"><a href="#思考一下消息中间件的设计" class="headerlink" title="思考一下消息中间件的设计"></a>思考一下消息中间件的设计</h3><h4 id="可以先从基本的需求开始考虑"><a href="#可以先从基本的需求开始考虑" class="headerlink" title="可以先从基本的需求开始考虑"></a>可以先从基本的需求开始考虑</h4><ul>
+<li>最基本的是要能支持消息的发送和接受, 需要设计到网络通信就一定会涉及到NIO</li>
+<li>消息中心的消息存储(持久化/ 非持久化)</li>
+<li>消息的序列化和非序列化</li>
+<li>是否跨语言</li>
+<li>消息的确认机制, 如何避免重复消费</li>
+</ul>
+<h4 id="高级功能"><a href="#高级功能" class="headerlink" title="高级功能"></a>高级功能</h4><ul>
+<li>消息的有序性</li>
+<li>是否支持事务消息</li>
+<li>消息收发的性能,对高并发大数据的支持</li>
+<li>是否支持集群</li>
+<li>消息的可靠性存储</li>
+<li>是否支持多协议. </li>
+</ul>
+<p>这个思考的过程其实就是做需求的整理, 然后再使用已有的技术体系进行技术的实现. 而我们所目前阶段去了解的, 无非就是别人根据实际需求进行实现后, 我们如何使用它们提供的API 进行应用而已,但是有了这样一个全局的思考, 那么对于后续的学习这个技术本身而言, 也显得很容易了. </p>
+<h3 id="发展过程"><a href="#发展过程" class="headerlink" title="发展过程"></a>发展过程</h3><p>实际上消息中间件的发展也是挺有意思的, 我们直到任何一个技术的出现都是为了解决实际问题，<strong>这个问题是通过一种通过通用的软件”总线” 也就是一种通信系统, 解决应用程序之间繁重的信息通讯工作</strong>. 最早的小白鼠就是金融领域, 因为在当时这个领域中, 交易员需要通过不同的终端完成交易, 每台终端显示不同的信息, 如果接入消息总线, 那么交易员只需要在一台终端上操作, 然后订阅其他终端感兴趣的消息,于是就诞生了发布订阅模型(pubsub).  同时诞生了世界上以第一个现代消息队列软件(TIB) <code>The information Bus</code>, TIB  允许开发者建立一系列规则去描述消息内容, 只要消息按照这些规则发布出去,任何消费者应用都能订阅自己感兴趣的消息. 随着TIB 带来的甜头被广泛的应用在各大领域, IBM 也开始研究开发自己的消息中间件, 3年之后IBM 的消息队列 IBM MQ 产品系列发布, 之后的一段时间MQ系列进入成了 <code>WebSphere MQ</code> 统治商业消息队列平台市场. </p>
+<p>包括后期微软也研发了自己的消息队列(MSMQ)</p>
+<p>各大厂商纷纷研究自己的MQ,但是他们是以商业化的模式运营自己的MQ软件, 商业MQ 想要解决的是应用互通的问题, 而不是创建标准的接口来允许不同的MQ 互通, 所有有些大型的金融公司可能会使用多个供应商的MQ产品, 来服务企业内部的不同的应用. 那么问题来了, 如果应用已经订阅了TIB MQ的消息然后突然需要消费IBM MQ的消息, 那么整个实现过程就会很麻烦了. 为了解决这个问题, 在2001 年诞生了<code>Java Message Service(JMS)</code>, JMS 通过提供公共的java API方式, 隐藏单独MQ产品供应商的实现接口, 从而跨域了不同MQ消费和解决互通问题. 从技术层面来说, Java应用程序只需要针对JMS API 编程, 选择合适的MQ驱动即可. JMS 会处理其他部分, 这种方案其实是通过单独标准化接口来整个很多不同的接口, 效果还是不错的.  **但是碰到了互用性的问题, 两套使用不同编程语言的程序如何通过它们的异步消息传递机制相互通信呢?  这个时候就需要定义一个异步消息的通用标准. **</p>
+<p>所以AMQP<code>（Advanced Message Queuing Protocol）</code> 高级消息队列就产生了, 它使用一套标准的底层协议, 加入了许多其他特征来支持互用性, 为现代应用丰富了消息传递需求, 针对标准编码的任何人都可以和任何AMQP 供应商提供的MQ 服务器进行交互. </p>
+<p>除了JMS和AMQP 规范以外, 还有一种MQTT(Message Queueing Telemetry[特莱米缺] Transport)， 他是专门为小设备设计的, 因为计算性能不高的设备不能适应AMQP的基本要求, 而如今, MQTT是互联网(IOT）生态系统中的主要成分之一. </p>
+<blockquote>
+<p>今天讲解的Kafka, 它并没有遵循上面所说的协议规范, 注重吞吐量, 类似udp和tcp. </p>
+</blockquote>
+<h2 id="Kafka-的介绍"><a href="#Kafka-的介绍" class="headerlink" title="Kafka 的介绍"></a>Kafka 的介绍</h2><h3 id="什么是Kafka"><a href="#什么是Kafka" class="headerlink" title="什么是Kafka"></a>什么是Kafka</h3><p>Kafka是一款分布式消息发布和订阅系统, 他的特点是高性能、高吞吐量. </p>
+<p>最早设计的目的是作为 <code>LinkedIn</code>的活动流和运营数据的处理管道, 这些数据主要用来对用户做用户画像分析以及服务器性能的一些监控. </p>
+<p>所以Kafka 一开始设计的目标就是作为一个高性能、高吞吐量的消息系统, 所以适合运用在大数据传输场景. </p>
+<h3 id="Kafka-的应用场景"><a href="#Kafka-的应用场景" class="headerlink" title="Kafka 的应用场景"></a>Kafka 的应用场景</h3><p>由于Kafka具有更好的吞吐量、内置分区、冗余和容错性的优点(Kafka每秒可以处理几十万消息), 让Kafka 成为了一个很好的大规模消息处理应用的解决方案, 所以在企业级应用场景,主要会应用于如下几个方面: </p>
+<h4 id="行为追踪"><a href="#行为追踪" class="headerlink" title="行为追踪"></a>行为追踪</h4><p>Kafka 可以用于追踪用户浏览页面、搜索以及其他行为, 通过发布、订阅模式实时记录到对应的topic中, 通过后端大数据平台接入处理分析, 并作更进一步的实时处理和监控. </p>
+<h4 id="日志收集"><a href="#日志收集" class="headerlink" title="日志收集"></a>日志收集</h4><p>日志收集方面, 有很多比较优秀的产品, 比如 <code>Apache Flume</code>, 很多公司使用Kafka 代理日志聚合, 日志聚合表示从服务器上收集日志文件, 然后放到一个集中的平台(文件服务器)进行处理. 在实际应用开发中, 我们应用程序的log 都会输出到本地的磁盘上, 排查问题的话通过linux 命令来搞定. 如果应用程序组成了负载均衡集群, 并且集群的数量有几十台以上, 那么想通过日志快速定位到问题 , 就是很麻烦的问题. 所以一般都会做一个日志统一收集平台管理log日志用来快速查询重要应用的问题. 所以很多公司的套路都是把应用日志集中到Kafka上, 然后分别导入到ES和HSFS上, 用来做实时检索和离线统计数据备份等. 而另一方面,Kafka 本身就提供了很好的api 来集成日志并且做日志收集 . </p>
+<p><img src="http://files.luyanan.com//img/20191226214934.png"></p>
+<h2 id="Kafka-本身的架构"><a href="#Kafka-本身的架构" class="headerlink" title="Kafka 本身的架构"></a>Kafka 本身的架构</h2><p>一个典型的Kafka 集群包含若干 <code>Produce</code>（可以是应用节点产生的消息, 也可以是通过<code>Flume</code> 收集日志产生的事件）, 若干个Broker(Kafka支持水平扩展), 若干个Consumer Group以及一个zookeeper 集群. Kafka 通过zookeeper 管理集群配置和服务协同. Produce 使用push模式将消息发布到broker, consumer 通过监听使用pull 模式从 broker 订阅并消费消息 </p>
+<p>多个broker 协同工作, produce和consumer 部署在各个业务逻辑中,三者通过 zookeeper 管理协调请求和转发, 这样就组成了一个高性能的分布式消息发布和订阅系统. </p>
+<p> 图上有一个细节是和其他mq中间件不同的点是, produce 发送消息到 broker 的过程是push, 而consumer 是从broker 消费消息的过程是pull, 主动去拉数据. 而不是broker 把数据主动发送给 consumer. </p>
+<p><img src="http://files.luyanan.com//img/20191227105757.png"></p>
+<h3 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h3><h4 id="broker"><a href="#broker" class="headerlink" title="broker"></a>broker</h4><p>Kafka集群包含一个或者多个服务器, 这种服务器被称为 broker. broker 端不维护数据的消费状态, 提升了性能. 直接使用磁盘进行存储, 线性读写速度快, 避免了数据在JVM内存和系统内存之间的复制, 减少了耗性能的创建对象和垃圾回收. </p>
+<h4 id="Produce"><a href="#Produce" class="headerlink" title="Produce"></a>Produce</h4><p>负责发布消息到Kafka broker</p>
+<h4 id="Consumer"><a href="#Consumer" class="headerlink" title="Consumer"></a>Consumer</h4><p>消息消费者,向Kafka broker 读取消息的客户端, consumer 从broker 拉取(pull) 数据并进行处理. </p>
+<h4 id="Topic"><a href="#Topic" class="headerlink" title="Topic"></a>Topic</h4><p>每条发布到Kafka 集群的消息都有一个类别, 每个类别被称为Topic,(物理上不同Topic 的消息分开存储, 逻辑上一个Topic 的消息虽然保存于一个或者多个broker上, 但用户只需要指定消息的Topic 即可生产或者消费数据而不必关心数据存于何处). </p>
+<h4 id="Partition"><a href="#Partition" class="headerlink" title="Partition"></a>Partition</h4><p>Partition 是物理上的概念, 每个Topic 包含一个或者多个Partition</p>
+<h4 id="Consumer-Group"><a href="#Consumer-Group" class="headerlink" title="Consumer Group"></a>Consumer Group</h4><p>每个Consumer 属于一个特定的 Consumer Group(可为每个Consumer 指定group name,若不指定group name 则属于默认的group)</p>
+<h4 id="Topic-amp-Partition"><a href="#Topic-amp-Partition" class="headerlink" title="Topic &amp; Partition"></a>Topic &amp; Partition</h4><p>Topic 在逻辑上可以被认为是一个queue, 每条消费者都必须指定它的topic, 可以简单理解为必须指明把这条消息放进哪个queue.为了使得kafka 的吞吐率可以线性提高, 物理上把topic 分为一个或者多个Partition,  每个Partition 在物理上对应一个文件夹, 该文件夹下存储这个Partition 的所有消息和索引文件. 若创建 topic1和topic2两个topic, 且分别有13个分区和19个分区, 则整个集群上会相应生成共32个文件夹(本文所有集群共8个节点,此处topic1和topic2 replication-factor均为1). </p>
+<h2 id="Kafka-的安装部署"><a href="#Kafka-的安装部署" class="headerlink" title="Kafka 的安装部署"></a>Kafka 的安装部署</h2><h3 id="单机部署"><a href="#单机部署" class="headerlink" title="单机部署"></a>单机部署</h3><h4 id="下载Kafka"><a href="#下载Kafka" class="headerlink" title="下载Kafka"></a>下载Kafka</h4><p><a target="_blank" rel="noopener" href="https://archive.apache.org/dist/kafka/2.0.0/kafka_2.11-2.0.0.tgz">https://archive.apache.org/dist/kafka/2.0.0/kafka_2.11-2.0.0.tgz</a></p>
+<h4 id="安装-过程"><a href="#安装-过程" class="headerlink" title="安装 过程"></a>安装 过程</h4><p>安装过程非常简单, 只需要解压就行, 因为这个是编译好之后的可执行程序. </p>
+<blockquote>
+<p>tar -zxvf kafka_2.11-2.0.0.tgz</p>
+</blockquote>
+<h4 id="配置zookeeper"><a href="#配置zookeeper" class="headerlink" title="配置zookeeper"></a>配置zookeeper</h4><p>因为Kafka 依赖于zookeeper 来做master 选举以及其他数据的维护, 所以需要先启动zookeeper 节点, Kafka 内置了zookeeper的服务, 所以 在bin目录下提供了这些脚本.</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">zookeeper-server-start.sh</span><br><span class="line">zookeeper-server-stop.sh</span><br></pre></td></tr></table></figure>
+
+<p>在config 目录下, 存在一些配置文件</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">zookeeper.properties</span><br><span class="line">server.properties</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>所以我们可以通过下面的脚来启动zk服务。当然也可以自己搭建zk 的集群来实现. </p>
+<blockquote>
+<p>sh zookeeper-server-start.sh -daemon ../config/zookeeper.properties</p>
+</blockquote>
+<h4 id="启动和停止Kafka"><a href="#启动和停止Kafka" class="headerlink" title="启动和停止Kafka"></a>启动和停止Kafka</h4><ul>
+<li><p>修改 <code>server.properties</code> , 增加zookeeper 的配置</p>
+<blockquote>
+<p>zookeeper.connect=localhost:2181</p>
+</blockquote>
+</li>
+<li><p>启动kafka</p>
+<blockquote>
+<p> ./kafka-server-start.sh -daemon ../config/server.properties</p>
+</blockquote>
+</li>
+<li><p>停止Kafka</p>
+<blockquote>
+<p>sh kafka-server-stop.sh -daemon config/server.properties</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="Kafka的基本操作"><a href="#Kafka的基本操作" class="headerlink" title="Kafka的基本操作"></a>Kafka的基本操作</h3><h4 id="创建Topic"><a href="#创建Topic" class="headerlink" title="创建Topic"></a>创建Topic</h4><blockquote>
+<p>sh kafka-topics.sh –create –zookeeper localhost:2181 –replication-factor 1 – partitions 1 –topic test</p>
+</blockquote>
+<p><code>Replication-factor</code> 表示该topic 需要在不同的broker 中保存几份, 这里设置为1, 表示在两个broker 中保存两份. </p>
+<p><code>Partitions</code> 分区数</p>
+<h4 id="查看Topic"><a href="#查看Topic" class="headerlink" title="查看Topic"></a>查看Topic</h4><blockquote>
+<p>sh kafka-topics.sh –list –zookeeper localhost:2181</p>
+</blockquote>
+<h4 id="查看Topic的属性"><a href="#查看Topic的属性" class="headerlink" title="查看Topic的属性"></a>查看Topic的属性</h4><blockquote>
+<p>sh kafka-topics.sh –describe –zookeeper localhost:2181 –topic first_topic</p>
+</blockquote>
+<h4 id="消费消息"><a href="#消费消息" class="headerlink" title="消费消息"></a>消费消息</h4><blockquote>
+<p>sh kafka-console-consumer.sh –bootstrap-server 192.168.13.106:9092 –topic test –from-beginning</p>
+</blockquote>
+<h4 id="发送消息"><a href="#发送消息" class="headerlink" title="发送消息"></a>发送消息</h4><blockquote>
+<p>sh kafka-console-producer.sh –broker-list 192.168.244.128:9092 –topic first_topic</p>
+</blockquote>
+<h2 id="集群安装"><a href="#集群安装" class="headerlink" title="集群安装"></a>集群安装</h2><h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><ul>
+<li>准备三台虚拟机</li>
+<li>分别把kafka 的安装包部署在三台机器上. </li>
+</ul>
+<h3 id="修改配置"><a href="#修改配置" class="headerlink" title="修改配置"></a>修改配置</h3><p>以下配置修改均为 <code>server.properties</code></p>
+<ul>
+<li><p>分别修改三台机器的server.properties 配置, 同一个集群中的每个机器的id必须唯一. </p>
+<blockquote>
+<p>broker.id=0</p>
+<p>broker.id=1</p>
+<p>broker.id=2</p>
+</blockquote>
+</li>
+<li><p>修改zookeeper 的连接配置</p>
+</li>
+</ul>
+<blockquote>
+<p>zookeeper.connect=192.168.86.128:2181</p>
+</blockquote>
+<ul>
+<li> 修改 listeners配置</li>
+</ul>
+<p>如果配置了listeners, 那么消息生产者和消费者会使用 <code>listeners</code>的配置来进行消息的收发, 否则, 会使用 localhost</p>
+<p><code>PLAINTEXT</code> 表示协议, 默认是明文, 可以选择其他加密协议. </p>
+<blockquote>
+<p> listeners=PLAINTEXT://192.168.86.128:9092</p>
+</blockquote>
+<ul>
+<li><p>分别启动三台服务器</p>
+<blockquote>
+<p>sh kafka-server-start.sh -daemon ../config/server.properties</p>
+</blockquote>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">分布式消息通信之Kafka的基本应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E8%83%8C%E6%99%AF%E5%88%86%E6%9E%90"><span class="nav-number">1.1.</span> <span class="nav-text">消息中间件的背景分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E5%88%86%E6%9E%90"><span class="nav-number">1.1.1.</span> <span class="nav-text">场景分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%80%83%E4%B8%80%E4%B8%8B%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.1.2.</span> <span class="nav-text">思考一下消息中间件的设计</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%AF%E4%BB%A5%E5%85%88%E4%BB%8E%E5%9F%BA%E6%9C%AC%E7%9A%84%E9%9C%80%E6%B1%82%E5%BC%80%E5%A7%8B%E8%80%83%E8%99%91"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">可以先从基本的需求开始考虑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%AB%98%E7%BA%A7%E5%8A%9F%E8%83%BD"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">高级功能</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E5%B1%95%E8%BF%87%E7%A8%8B"><span class="nav-number">1.1.3.</span> <span class="nav-text">发展过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E7%9A%84%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.2.</span> <span class="nav-text">Kafka 的介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFKafka"><span class="nav-number">1.2.1.</span> <span class="nav-text">什么是Kafka</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kafka-%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.2.2.</span> <span class="nav-text">Kafka 的应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A1%8C%E4%B8%BA%E8%BF%BD%E8%B8%AA"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">行为追踪</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">日志收集</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E6%9C%AC%E8%BA%AB%E7%9A%84%E6%9E%B6%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">Kafka 本身的架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8D%E8%AF%8D%E8%A7%A3%E9%87%8A"><span class="nav-number">1.3.1.</span> <span class="nav-text">名词解释</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#broker"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">broker</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Produce"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">Produce</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Consumer"><span class="nav-number">1.3.1.3.</span> <span class="nav-text">Consumer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Topic"><span class="nav-number">1.3.1.4.</span> <span class="nav-text">Topic</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Partition"><span class="nav-number">1.3.1.5.</span> <span class="nav-text">Partition</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Consumer-Group"><span class="nav-number">1.3.1.6.</span> <span class="nav-text">Consumer Group</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Topic-amp-Partition"><span class="nav-number">1.3.1.7.</span> <span class="nav-text">Topic &amp; Partition</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E7%9A%84%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2"><span class="nav-number">1.4.</span> <span class="nav-text">Kafka 的安装部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2"><span class="nav-number">1.4.1.</span> <span class="nav-text">单机部署</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDKafka"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">下载Kafka</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-%E8%BF%87%E7%A8%8B"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">安装 过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEzookeeper"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">配置zookeeper</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E5%92%8C%E5%81%9C%E6%AD%A2Kafka"><span class="nav-number">1.4.1.4.</span> <span class="nav-text">启动和停止Kafka</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="nav-number">1.4.2.</span> <span class="nav-text">Kafka的基本操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BATopic"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">创建Topic</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8BTopic"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">查看Topic</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8BTopic%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">查看Topic的属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E6%B6%88%E6%81%AF"><span class="nav-number">1.4.2.4.</span> <span class="nav-text">消费消息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF"><span class="nav-number">1.4.2.5.</span> <span class="nav-text">发送消息</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E5%AE%89%E8%A3%85"><span class="nav-number">1.5.</span> <span class="nav-text">集群安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">1.5.1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE"><span class="nav-number">1.5.2.</span> <span class="nav-text">修改配置</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

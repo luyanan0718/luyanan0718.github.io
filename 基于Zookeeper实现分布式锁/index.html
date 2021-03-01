@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="基于Zookeeper 实现分布式锁分布式锁的基本场景如果在多线程并行情况下去访问某一个共享资源,比如说共享变量, 那么势必会造成线程安全问题. 那么我们可以用很多种方法来解决, 比如synchronized、比如Lock 之类的锁操作来解决线程问题, 那么在分布式架构下,涉及到多个进程访问某一个共享资源的情况下, 比如说在电商平台中商品库存问题, 在库存中只有10个的情况下进来100个用户, 如">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/%E5%9F%BA%E4%BA%8EZookeeper%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="基于Zookeeper 实现分布式锁分布式锁的基本场景如果在多线程并行情况下去访问某一个共享资源,比如说共享变量, 那么势必会造成线程安全问题. 那么我们可以用很多种方法来解决, 比如synchronized、比如Lock 之类的锁操作来解决线程问题, 那么在分布式架构下,涉及到多个进程访问某一个共享资源的情况下, 比如说在电商平台中商品库存问题, 在库存中只有10个的情况下进来100个用户, 如">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com//img/20191111113744.png">
+<meta property="article:published_time" content="2021-03-01T09:46:52.969Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.097Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com//img/20191111113744.png">
+
+<link rel="canonical" href="http://luyanan.com/%E5%9F%BA%E4%BA%8EZookeeper%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%9F%BA%E4%BA%8EZookeeper%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="基于Zookeeper-实现分布式锁"><a href="#基于Zookeeper-实现分布式锁" class="headerlink" title="基于Zookeeper 实现分布式锁"></a>基于Zookeeper 实现分布式锁</h1><h2 id="分布式锁的基本场景"><a href="#分布式锁的基本场景" class="headerlink" title="分布式锁的基本场景"></a>分布式锁的基本场景</h2><p>如果在多线程并行情况下去访问某一个共享资源,比如说共享变量, 那么势必会造成线程安全问题. 那么我们可以用很多种方法来解决, 比如synchronized、比如Lock 之类的锁操作来解决线程问题, 那么在分布式架构下,涉及到多个进程访问某一个共享资源的情况下, 比如说在电商平台中商品库存问题, 在库存中只有10个的情况下进来100个用户, 如果能够避免超卖呢? 所以这个时候就要一个互斥的手段来防止彼此之间的干扰. </p>
+<p>然后在分布式情况下, synchronized 或者Lock 之类的锁只能控制单一进程的资源访问, 在多进程架构下, 这些API就没办法解决我们的问题了, 怎么办呢? </p>
+<h2 id="用Zookeeper-来实现分布式锁"><a href="#用Zookeeper-来实现分布式锁" class="headerlink" title="用Zookeeper 来实现分布式锁"></a>用Zookeeper 来实现分布式锁</h2><p>我们可以利用zoookeeper 的特性来实现独占锁, 就是同级节点的唯一性,多个进程往zookeeper的指定节点下创建一个相同名称的节点, 只有一个能成功, 另外一个是创建失败. 创建失败的节点全部通过zookeeper的watcher 机制来监听zookeeper 这个子节点的变化, 一旦监听到子节点的删除事件, 则再次触发所有进程去写锁. </p>
+<p><img src="http://files.luyanan.com//img/20191111113744.png"></p>
+<p>这种实现方式很简单, 但是会产生”惊群效应”,简单来说, 就是如果存在修多的客户端在等待获取锁, 当成功获取到锁的进程释放该节点后, 所有处于等待状态的客户端都会被唤醒, 这个时候zookeeper 在短时间内发送大量子节点变更事件给所有待获取锁的客户端, 然后实际情况是只会有一个客户端获取锁. 如果在集群规模比较大的情况下, 会对zookeeper 服务器的性能产生比较大的影响. </p>
+<h2 id="利用有序节点来实现分布式锁"><a href="#利用有序节点来实现分布式锁" class="headerlink" title="利用有序节点来实现分布式锁"></a>利用有序节点来实现分布式锁</h2><p>我们可以通过有序节点来实现分布式锁, 每个客户端都往指定的节点下注册一个临时有序节点, 越早创建的节点, 节点的顺序编号就越小, 那么我们可以判断子节点中最小的节点设置为获取锁. 如果自己的节点不是所有子节点中最小的, 意味着还没有获取锁. 这个锁的实现和前面单节点的实现的差异在于, 每个节点只需要监听比自己小的节点, 当比自己小的节点删除以后, 客户端会受到watcher 事件, 此时再次判断自己的节点是不是所有子节点中最小的, 如果是则获取锁, 否则就不断重复这个过程, 这样就不会导致”惊群效应”,因为每个客户端只需要监听一个节点. </p>
+<h2 id="curator-分布式锁的基本使用"><a href="#curator-分布式锁的基本使用" class="headerlink" title="curator 分布式锁的基本使用"></a>curator 分布式锁的基本使用</h2><p>curator 对于锁这块做了一些封装, curator 提供了 InterProcessMutex  这样一个API。除了分布式锁之外, 还提供了Leader 选举,、分布式队列等常用的功能. </p>
+<ul>
+<li><p> InterProcessMutex：分布式可重入排它锁 </p>
+</li>
+<li><p> InterProcessSemaphoreMutex：分布式排它锁 </p>
+</li>
+<li><p> InterProcessReadWriteLock：分布式读写锁 </p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.zk.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.CuratorFramework;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.CuratorFrameworkFactory;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.recipes.locks.InterProcessLock;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.recipes.locks.InterProcessMultiLock;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.recipes.locks.InterProcessMutex;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.retry.ExponentialBackoffRetry;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2019/11/11</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;分布式锁&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LockDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        String connect = <span class="string">&quot;192.168.91.128:2181&quot;</span>;</span><br><span class="line"></span><br><span class="line">        CuratorFramework framework = createClient(connect);</span><br><span class="line"></span><br><span class="line">        framework.start();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> InterProcessMutex lock = <span class="keyword">new</span> InterProcessMutex(framework, <span class="string">&quot;/locks&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line"></span><br><span class="line">                System.out.println(Thread.currentThread().getName() + <span class="string">&quot;: 尝试获得锁&quot;</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    lock.acquire();</span><br><span class="line">                    System.out.println(Thread.currentThread().getName() + <span class="string">&quot;: 已经获得锁&quot;</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">4000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    lock.release();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + <span class="string">&quot;: 释放锁&quot;</span>);</span><br><span class="line"></span><br><span class="line">            &#125;, <span class="string">&quot;thread-&quot;</span> + i).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> CuratorFramework <span class="title">createClient</span><span class="params">(String connect)</span> </span>&#123;</span><br><span class="line">        CuratorFramework framework = CuratorFrameworkFactory</span><br><span class="line">                .builder()</span><br><span class="line">                <span class="comment">// 连接信息</span></span><br><span class="line">                .connectString(connect)</span><br><span class="line">                <span class="comment">// 会话超时时间</span></span><br><span class="line">                .sessionTimeoutMs(<span class="number">5000</span>)</span><br><span class="line">                <span class="comment">//失败重试机制</span></span><br><span class="line">                <span class="comment">//ExponentialBackoffRetry</span></span><br><span class="line">                <span class="comment">//RetryOneTime  仅仅只重试一次</span></span><br><span class="line">                <span class="comment">//RetryUntilElapsed</span></span><br><span class="line">                <span class="comment">//RetryNTimes</span></span><br><span class="line">                .retryPolicy(<span class="keyword">new</span> ExponentialBackoffRetry(<span class="number">1000</span>, <span class="number">3</span>))</span><br><span class="line">                .build();</span><br><span class="line">        <span class="keyword">return</span> framework;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="curator-实现分布式锁的基本原理"><a href="#curator-实现分布式锁的基本原理" class="headerlink" title="curator 实现分布式锁的基本原理"></a>curator 实现分布式锁的基本原理</h2><h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">InterProcessMutex</span><span class="params">(CuratorFramework client, String path)</span> </span>&#123;</span><br><span class="line">     <span class="comment">//  Zookeeper 利用path 创建临时顺序节点, 实现公平锁的核心</span></span><br><span class="line">      <span class="keyword">this</span>(client, path, <span class="keyword">new</span> StandardLockInternalsDriver());</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">InterProcessMutex</span><span class="params">(CuratorFramework client, String path, LockInternalsDriver driver)</span> </span>&#123;</span><br><span class="line">     <span class="comment">// maxLeases  =1 表示可以获取分布式锁的线程数量(跨JVM)为1, 即为互斥锁</span></span><br><span class="line">    <span class="keyword">this</span>(client, path, <span class="string">&quot;lock-&quot;</span>, <span class="number">1</span>, driver);</span><br><span class="line">   &#125;</span><br><span class="line"> InterProcessMutex(CuratorFramework client, String path, String lockName, <span class="keyword">int</span> maxLeases, LockInternalsDriver driver) &#123;</span><br><span class="line">       <span class="keyword">this</span>.threadData = Maps.newConcurrentMap();</span><br><span class="line">       <span class="keyword">this</span>.basePath = PathUtils.validatePath(path);</span><br><span class="line">    </span><br><span class="line">     <span class="comment">// internals 的类型为 LockInternals, InterProcessMutex 将分布式锁的申请和释放操作委托给 internals 执行</span></span><br><span class="line">     <span class="keyword">this</span>.internals = <span class="keyword">new</span> LockInternals(client, driver, path, lockName, maxLeases);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="InterProcessMutex-acquire-获取锁"><a href="#InterProcessMutex-acquire-获取锁" class="headerlink" title="InterProcessMutex.acquire();   获取锁"></a>InterProcessMutex.acquire();   获取锁</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 无限等待 </span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.internalLock(-<span class="number">1L</span>, (TimeUnit)<span class="keyword">null</span>)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">&quot;Lost connection while trying to acquire lock: &quot;</span> + <span class="keyword">this</span>.basePath);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">// 限时等待</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">acquire</span><span class="params">(<span class="keyword">long</span> time, TimeUnit unit)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.internalLock(time, unit);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="InterProcessMutex-internalLock"><a href="#InterProcessMutex-internalLock" class="headerlink" title="InterProcessMutex.internalLock();"></a>InterProcessMutex.internalLock();</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">internalLock</span><span class="params">(<span class="keyword">long</span> time, TimeUnit unit)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        Thread currentThread = Thread.currentThread();</span><br><span class="line">        InterProcessMutex.LockData lockData = (InterProcessMutex.LockData)<span class="keyword">this</span>.threadData.get(currentThread);</span><br><span class="line">        <span class="keyword">if</span> (lockData != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 实现可重入</span></span><br><span class="line">            <span class="comment">// 同一个线程再次 acquire, 首先判断当前的映射表内(threadData) 是否有该线程的锁信息, 如果有, 则原子+1, 然后返回. </span></span><br><span class="line">            lockData.lockCount.incrementAndGet();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 映射表中没有对应的锁信息, 尝试通过LockInternals 获取锁. </span></span><br><span class="line">            String lockPath = <span class="keyword">this</span>.internals.attemptLock(time, unit, <span class="keyword">this</span>.getLockNodeBytes());</span><br><span class="line">            <span class="keyword">if</span> (lockPath != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// 成功获取锁, 记录信息到映射表</span></span><br><span class="line">                InterProcessMutex.LockData newLockData = <span class="keyword">new</span> InterProcessMutex.LockData(currentThread, lockPath);</span><br><span class="line">                <span class="keyword">this</span>.threadData.put(currentThread, newLockData);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 映射表</span></span><br><span class="line"><span class="comment">// 记录线程与锁信息的映射关系</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;Thread, InterProcessMutex.LockData&gt; threadData;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 锁信息</span></span><br><span class="line"><span class="comment">// Zookeeper 中一个临时顺序节点对应一个锁, 但让锁生效激活需要排队(公平锁),下面会继续分析</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">LockData</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Thread owningThread;</span><br><span class="line">        <span class="keyword">final</span> String lockPath;</span><br><span class="line">       <span class="comment">// 分布式锁重入次数</span></span><br><span class="line">        <span class="keyword">final</span> AtomicInteger lockCount;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="title">LockData</span><span class="params">(Thread owningThread, String lockPath)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.lockCount = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">            <span class="keyword">this</span>.owningThread = owningThread;</span><br><span class="line">            <span class="keyword">this</span>.lockPath = lockPath;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="InterProcessMutex-attemptLock"><a href="#InterProcessMutex-attemptLock" class="headerlink" title="InterProcessMutex.attemptLock"></a>InterProcessMutex.attemptLock</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 尝试获取锁, 并返回锁对应的zookeeper 临时顺序节点的路径 </span></span><br><span class="line"><span class="function">String <span class="title">attemptLock</span><span class="params">(<span class="keyword">long</span> time, TimeUnit unit, <span class="keyword">byte</span>[] lockNodeBytes)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">long</span> startMillis = System.currentTimeMillis();</span><br><span class="line">    <span class="comment">// 无限等待时, millisToWait 为null</span></span><br><span class="line">        Long millisToWait = unit != <span class="keyword">null</span> ? unit.toMillis(time) : <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">// 创建ZNode 节点时的数据内容, 无关紧要, 这里为null, 采用默认值(ip地址)</span></span><br><span class="line">        <span class="keyword">byte</span>[] localLockNodeBytes = <span class="keyword">this</span>.revocable.get() != <span class="keyword">null</span> ? <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">0</span>] : lockNodeBytes;</span><br><span class="line">    <span class="comment">// 当前已经重试次数, 与    CuratorFramework的重试策略有关. </span></span><br><span class="line">    <span class="keyword">int</span> retryCount = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 在zookeeper 中创建的临时顺序节点的路径相当于一把待激活的分布式锁.</span></span><br><span class="line">    <span class="comment">// 激活条件: 同级目录下子节点, 名字排序最小(排队、公平锁) </span></span><br><span class="line">        String ourPath = <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">// 是否已经持有分布式锁. </span></span><br><span class="line">        <span class="keyword">boolean</span> hasTheLock = <span class="keyword">false</span>;</span><br><span class="line">    <span class="comment">// 是否已经完成了尝试获取分布式锁的操作 </span></span><br><span class="line">        <span class="keyword">boolean</span> isDone = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>(!isDone) &#123;</span><br><span class="line">            isDone = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 从InterProcessMutex 的构造函数可知实际driver 为StandardLockInternalsDriver 的实例. </span></span><br><span class="line">                <span class="comment">// 在zookeeper 中创建顺序临时节点. </span></span><br><span class="line">                ourPath = <span class="keyword">this</span>.driver.createsTheLock(<span class="keyword">this</span>.client, <span class="keyword">this</span>.path, localLockNodeBytes);</span><br><span class="line">                <span class="comment">// 循环等待来激活分布式锁, 实现锁的公平性</span></span><br><span class="line">                hasTheLock = <span class="keyword">this</span>.internalLockLoop(startMillis, millisToWait, ourPath);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (NoNodeException var14) &#123;</span><br><span class="line">                <span class="comment">// 容错处理</span></span><br><span class="line">                <span class="comment">// 因为绘会话过期等原因,StandardLockInternalsDriver 因为无法找到创建的临时顺序节点而抛出NoNodeException 异常. </span></span><br><span class="line">                <span class="keyword">if</span> ( client.getZookeeperClient().getRetryPolicy().allowRetry(retryCount++, System.currentTimeMillis() - startMillis, RetryLoop.getDefaultRetrySleeper()) )</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">// 满足重试策略尝试重新获取锁</span></span><br><span class="line">                    isDone = <span class="keyword">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">// 不满足重试策略则继续抛出 NoNodeException 异常. </span></span><br><span class="line">                    <span class="keyword">throw</span> e;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ( hasTheLock )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 成功获取分布式锁, 返回临时顺序节点的路径, 上层将其封装成锁信息记录在映射表中, 方便锁重入</span></span><br><span class="line">            <span class="keyword">return</span> ourPath;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取分布式锁失败, 返回null</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="createsTheLock"><a href="#createsTheLock" class="headerlink" title="createsTheLock"></a>createsTheLock</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">   <span class="meta">@Override</span></span><br><span class="line"><span class="comment">// 在zookeeper中创建临时顺序节点</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">createsTheLock</span><span class="params">(CuratorFramework client, String path, <span class="keyword">byte</span>[] lockNodeBytes)</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        String ourPath;</span><br><span class="line">        <span class="keyword">if</span> ( lockNodeBytes != <span class="keyword">null</span> )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// lockNodeBytes 不为null 则作为数据节点内容, 否则采用默认内容(ip地址)</span></span><br><span class="line">            <span class="comment">// creatingParentContainersIfNeeded: 用于创建父节点, 如果不支持 CreateMode.CONTAINER</span></span><br><span class="line">            <span class="comment">// 那么将采用 CreateMode.PERSISTENT</span></span><br><span class="line">            <span class="comment">// withProtection: 临时子节点会添加 GUID 前缀</span></span><br><span class="line">            ourPath = client.create().creatingParentContainersIfNeeded().withProtection().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(path, lockNodeBytes);</span><br><span class="line">            <span class="comment">// CreateMode.EPHEMERAL_SEQUENTIAL: 临时顺序节点, zookeeper 能保证在节点产生的顺序性.</span></span><br><span class="line">            <span class="comment">// 依据顺序来激活分布式锁, 从而实现了分布式锁的公平性,</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            ourPath = client.create().creatingParentContainersIfNeeded().withProtection().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(path);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ourPath;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="LockInternals-internalLockLoop"><a href="#LockInternals-internalLockLoop" class="headerlink" title="LockInternals.internalLockLoop"></a>LockInternals.internalLockLoop</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 循环等待来激活分布式锁,实现锁的公平性.  </span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">internalLockLoop</span><span class="params">(<span class="keyword">long</span> startMillis, Long millisToWait, String ourPath)</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">    <span class="comment">// 是否已经持有分布式锁</span></span><br><span class="line">        <span class="keyword">boolean</span>     haveTheLock = <span class="keyword">false</span>;</span><br><span class="line">    <span class="comment">// 是否需要删除子节点</span></span><br><span class="line">        <span class="keyword">boolean</span>     doDelete = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> ( revocable.get() != <span class="keyword">null</span> )</span><br><span class="line">            &#123;</span><br><span class="line">                client.getData().usingWatcher(revocableWatcher).forPath(ourPath);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span> ( (client.getState() == CuratorFrameworkState.STARTED) &amp;&amp; !haveTheLock )</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 获取排序后的子节点的顺序</span></span><br><span class="line">                List&lt;String&gt;        children = getSortedChildren();</span><br><span class="line">                <span class="comment">// 获取前面自己创建的临时顺序子节点的名称</span></span><br><span class="line">                String              sequenceNodeName = ourPath.substring(basePath.length() + <span class="number">1</span>); <span class="comment">// +1 to include the slash</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">// 实现锁的公平性的核心逻辑. </span></span><br><span class="line">                PredicateResults    predicateResults = driver.getsTheLock(client, children, sequenceNodeName, maxLeases);</span><br><span class="line">                <span class="keyword">if</span> ( predicateResults.getsTheLock() )</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">// 获取了锁, 中断循环, 继续返回上层</span></span><br><span class="line">                    haveTheLock = <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">// 没有获取锁, 监听上一临时顺序节点</span></span><br><span class="line">                    String  previousSequencePath = basePath + <span class="string">&quot;/&quot;</span> + predicateResults.getPathToWatch();</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">synchronized</span>(<span class="keyword">this</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="keyword">try</span> </span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="comment">// use getData() instead of exists() to avoid leaving unneeded watchers which is a type of resource leak</span></span><br><span class="line">                            <span class="comment">// exists  会导致资源泄露, 因此exists() 可以监听不存在的ZNode, 因为采用 getData</span></span><br><span class="line">                            <span class="comment">//  上一临时顺序节点如果被删除, 会唤醒当前线程继续竞争锁,正常情况下能直接获得锁, 因为锁是公平的. </span></span><br><span class="line">                            </span><br><span class="line">                            client.getData().usingWatcher(watcher).forPath(previousSequencePath);</span><br><span class="line">                            <span class="keyword">if</span> ( millisToWait != <span class="keyword">null</span> )</span><br><span class="line">                            &#123;</span><br><span class="line">                                millisToWait -= (System.currentTimeMillis() - startMillis);</span><br><span class="line">                                startMillis = System.currentTimeMillis();</span><br><span class="line">                                <span class="keyword">if</span> ( millisToWait &lt;= <span class="number">0</span> )</span><br><span class="line">                                &#123;</span><br><span class="line">                                    <span class="comment">// 获取锁超时, 标记删除之前创建的临时顺序节点</span></span><br><span class="line">                                    doDelete = <span class="keyword">true</span>;    <span class="comment">// timed out - delete our node</span></span><br><span class="line">                                    <span class="keyword">break</span>;</span><br><span class="line">                                &#125;</span><br><span class="line"></span><br><span class="line">                                <span class="comment">// 等待被唤醒, 限时等待</span></span><br><span class="line">                                wait(millisToWait);</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                            &#123;</span><br><span class="line">                                <span class="comment">// 等待被唤醒, 无限等待</span></span><br><span class="line">                                wait();</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">catch</span> ( KeeperException.NoNodeException e ) </span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="comment">// 容错处理, </span></span><br><span class="line">                            <span class="comment">// client.getData()  可能调用时抛出 NoNodeException，原因可能是锁被释放或会话过期(连接丢失)等. </span></span><br><span class="line">                            <span class="comment">// 这里并没有做任何处理, 因为外层是while 循环, 再次执行driver.getsTheLock 会调用 validateOurIndex</span></span><br><span class="line">                            <span class="comment">// 此时会抛出NoNodeException, 从而进入下面的catch 和finally 逻辑, 重新抛出上层尝试重试获取锁并删除临时顺序节点</span></span><br><span class="line">                            <span class="comment">// it has been deleted (i.e. lock released). Try to acquire again</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> ( Exception e )</span><br><span class="line">        &#123;</span><br><span class="line">            ThreadUtils.checkInterrupted(e);</span><br><span class="line">            <span class="comment">// 标记删除, 在finally 删除之前创建的临时顺序节点(后台不断尝试)</span></span><br><span class="line">            doDelete = <span class="keyword">true</span>;</span><br><span class="line">            <span class="comment">//  重新抛出,尝试重新获取锁. </span></span><br><span class="line">            <span class="keyword">throw</span> e;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> ( doDelete )</span><br><span class="line">            &#123;</span><br><span class="line">                deleteOurPath(ourPath);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> haveTheLock;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="getsTheLock"><a href="#getsTheLock" class="headerlink" title="getsTheLock"></a>getsTheLock</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> PredicateResults <span class="title">getsTheLock</span><span class="params">(CuratorFramework client, List&lt;String&gt; children, String sequenceNodeName, <span class="keyword">int</span> maxLeases)</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       <span class="comment">// 之前创建的临时顺序节点在排序后的子节点中的索引</span></span><br><span class="line">       <span class="keyword">int</span>             ourIndex = children.indexOf(sequenceNodeName);</span><br><span class="line">       <span class="comment">// 校验之前创建的临时顺寻节点是否有效</span></span><br><span class="line">       validateOurIndex(sequenceNodeName, ourIndex);</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 锁公平性的核心逻辑</span></span><br><span class="line">       <span class="comment">// 由InterProcessMutex 的构造函数可知,maxLeases 为1, 即只有ourIndex 为0时, 线程才能持有锁, 或者说该线程创建的临时顺序节点激活了锁.</span></span><br><span class="line">       <span class="comment">// Zookeeper 的临时顺序节点特性能够保证跨多个JVM 的线程并发创建节点的顺序性, 越早创建临时顺序节点成功的线程会更早的激活锁或获取锁. </span></span><br><span class="line">      </span><br><span class="line">       <span class="keyword">boolean</span>         getsTheLock = ourIndex &lt; maxLeases;</span><br><span class="line">      <span class="comment">// 如果 已经获取到锁, 则无需监听任何节点, 否则需要监听上一个顺序节点(ourIndex -1)</span></span><br><span class="line">       <span class="comment">// 因为锁是公平的, 因为无需监听除了(ourIndex -1) 以外 的所有节点, 这时为了减少羊群效应, 非常巧妙的涉及. </span></span><br><span class="line">       String          pathToWatch = getsTheLock ? <span class="keyword">null</span> : children.get(ourIndex - maxLeases);</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 返回获取锁的结果, 交由上层继续处理(添加监听等操作)</span></span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> PredicateResults(pathToWatch, getsTheLock);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">validateOurIndex</span><span class="params">(String sequenceNodeName, <span class="keyword">int</span> ourIndex)</span> <span class="keyword">throws</span> KeeperException</span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> ( ourIndex &lt; <span class="number">0</span> )</span><br><span class="line">       &#123;</span><br><span class="line">           <span class="comment">// 容错处理</span></span><br><span class="line">           <span class="comment">// 由于会话过期或连接丢失等原因, 该线程创建的临时顺序节点被zookee 服务端删除, 往外抛出NoNodeException</span></span><br><span class="line">           <span class="comment">// 如果在重试策略允许范围内, 则进行重新禅师获取锁, 这会重新生成临时顺序节点</span></span><br><span class="line">          </span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> KeeperException.NoNodeException(<span class="string">&quot;Sequential path not found: &quot;</span> + sequenceNodeName);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="释放锁-InterProcessMutex-release"><a href="#释放锁-InterProcessMutex-release" class="headerlink" title="释放锁  InterProcessMutex.release();"></a>释放锁  InterProcessMutex.release();</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">release</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">            Note on concurrency: a given lockData instance</span></span><br><span class="line"><span class="comment">            can be only acted on by a single thread so locking isn&#x27;t necessary</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line"></span><br><span class="line">        Thread currentThread = Thread.currentThread();</span><br><span class="line">        LockData lockData = threadData.get(currentThread);</span><br><span class="line">        <span class="keyword">if</span> ( lockData == <span class="keyword">null</span> )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//  无法从映射表中获取锁信息, 不持有锁. </span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalMonitorStateException(<span class="string">&quot;You do not own the lock: &quot;</span> + basePath);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> newLockCount = lockData.lockCount.decrementAndGet();</span><br><span class="line">        <span class="keyword">if</span> ( newLockCount &gt; <span class="number">0</span> )</span><br><span class="line">        &#123;</span><br><span class="line">             <span class="comment">// 锁是可重入的, 初始值为1 原子为-1 到0, 锁才释放. </span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> ( newLockCount &lt; <span class="number">0</span> )</span><br><span class="line">        &#123;</span><br><span class="line">           <span class="comment">// 理论上无法执行该路径</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalMonitorStateException(<span class="string">&quot;Lock count has gone negative for lock: &quot;</span> + basePath);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//  lockData != null &amp;&amp; newLockCount ==</span></span><br><span class="line"><span class="number">0</span>，释放锁资源</span><br><span class="line">            internals.releaseLock(lockData.lockPath);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 最后从映射表中移除当前线程的锁信息. </span></span><br><span class="line">            threadData.remove(currentThread);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="LockInternals-releaseLock"><a href="#LockInternals-releaseLock" class="headerlink" title="LockInternals.releaseLock"></a>LockInternals.releaseLock</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">releaseLock</span><span class="params">(String lockPath)</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">      client.removeWatchers();</span><br><span class="line">      revocable.set(<span class="keyword">null</span>);</span><br><span class="line">     <span class="comment">// 删除临时顺序节点, 只会触发后一顺序节点去获取锁, 理论上不存在竞争, 只排队, 非抢占, 公平锁.先到先得</span></span><br><span class="line">      deleteOurPath(lockPath);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">deleteOurPath</span><span class="params">(String ourPath)</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">      <span class="keyword">try</span></span><br><span class="line">      &#123;</span><br><span class="line">          <span class="comment">// 后台不断尝试删除.</span></span><br><span class="line">          client.delete().guaranteed().forPath(ourPath);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">catch</span> ( KeeperException.NoNodeException e )</span><br><span class="line">      &#123;</span><br><span class="line">          <span class="comment">// 已经删除(可能会话过期到期),不做处理. </span></span><br><span class="line">          <span class="comment">// ignore - already deleted (possibly expired session, etc.)</span></span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%9F%BA%E4%BA%8EZookeeper%20%E5%AE%9E%E7%8E%B0Leader%E9%80%89%E4%B8%BE/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E8%AE%BE%E8%AE%A1/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EZookeeper-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">基于Zookeeper 实现分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%9C%BA%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">分布式锁的基本场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8Zookeeper-%E6%9D%A5%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.2.</span> <span class="nav-text">用Zookeeper 来实现分布式锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E6%9C%89%E5%BA%8F%E8%8A%82%E7%82%B9%E6%9D%A5%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.3.</span> <span class="nav-text">利用有序节点来实现分布式锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#curator-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">1.4.</span> <span class="nav-text">curator 分布式锁的基本使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#curator-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">1.5.</span> <span class="nav-text">curator 实现分布式锁的基本原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">1.5.1.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InterProcessMutex-acquire-%E8%8E%B7%E5%8F%96%E9%94%81"><span class="nav-number">1.5.2.</span> <span class="nav-text">InterProcessMutex.acquire();   获取锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#InterProcessMutex-internalLock"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">InterProcessMutex.internalLock();</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InterProcessMutex-attemptLock"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">InterProcessMutex.attemptLock</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#createsTheLock"><span class="nav-number">1.5.2.3.</span> <span class="nav-text">createsTheLock</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LockInternals-internalLockLoop"><span class="nav-number">1.5.2.4.</span> <span class="nav-text">LockInternals.internalLockLoop</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getsTheLock"><span class="nav-number">1.5.2.5.</span> <span class="nav-text">getsTheLock</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8A%E6%94%BE%E9%94%81-InterProcessMutex-release"><span class="nav-number">1.5.3.</span> <span class="nav-text">释放锁  InterProcessMutex.release();</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#LockInternals-releaseLock"><span class="nav-number">1.5.3.1.</span> <span class="nav-text">LockInternals.releaseLock</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="RocketMQ事务性消息​    在现在的很多分布式集群环境中, 经常会遇到本地事务无法解决的问题, 所以会引进分布式事务. 所谓的分布式事务是指分布式架构中多个服务的节点的数据一致性.  1. 经典的X&#x2F;OpenDTP事务模型​    X&#x2F;Open DTP(X&#x2F;Open Distributed Transaction Processing Reference Model) 是X&#x2F;Open 这个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/RocketMQ%E4%BA%8B%E5%8A%A1%E6%80%A7%E6%B6%88%E6%81%AF/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="RocketMQ事务性消息​    在现在的很多分布式集群环境中, 经常会遇到本地事务无法解决的问题, 所以会引进分布式事务. 所谓的分布式事务是指分布式架构中多个服务的节点的数据一致性.  1. 经典的X&#x2F;OpenDTP事务模型​    X&#x2F;Open DTP(X&#x2F;Open Distributed Transaction Processing Reference Model) 是X&#x2F;Open 这个">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com//img/20200115140700.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200115140722.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200115140836.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200115141134.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200115155523.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200115155726.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200115163617.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200116094256.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200116112604.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200116134637.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200116135615.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200116140325.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200116140504.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200116140934.png">
+<meta property="article:published_time" content="2021-03-01T09:46:52.859Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.084Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com//img/20200115140700.png">
+
+<link rel="canonical" href="http://luyanan.com/RocketMQ%E4%BA%8B%E5%8A%A1%E6%80%A7%E6%B6%88%E6%81%AF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RocketMQ%E4%BA%8B%E5%8A%A1%E6%80%A7%E6%B6%88%E6%81%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="RocketMQ事务性消息"><a href="#RocketMQ事务性消息" class="headerlink" title="RocketMQ事务性消息"></a>RocketMQ事务性消息</h1><p>​    在现在的很多分布式集群环境中, 经常会遇到本地事务无法解决的问题, 所以会引进分布式事务. 所谓的分布式事务是指分布式架构中多个服务的节点的数据一致性. </p>
+<h2 id="1-经典的X-OpenDTP事务模型"><a href="#1-经典的X-OpenDTP事务模型" class="headerlink" title="1. 经典的X/OpenDTP事务模型"></a>1. 经典的X/OpenDTP事务模型</h2><p>​    X/Open DTP(X/Open <code>Distributed Transaction Processing Reference Model</code>) 是X/Open 这个组织定义的一套分布式事务的标准， 也就是定义了规范和API接口,由各个厂商进行具体的实现. </p>
+<p>​    这个标准提出了使用二阶段提交(2PC-<code> Two-Phase-Commit</code>) 来保证分布式事务的完整性.后来J2EE 也遵循了X/Open DTP 规范, 设计并使用了Java 的分布式事务编程接口规范-JTA</p>
+<h3 id="1-1-X-Open-DTP-角色"><a href="#1-1-X-Open-DTP-角色" class="headerlink" title="1.1 X/Open DTP 角色"></a>1.1 <code>X/Open DTP</code> 角色</h3><p>在<code>X/Open DTP</code>事务模型中,定义了三个角色: </p>
+<p><strong>AP:</strong> <code>application</code>,应用程序,也就是业务层,哪些操作属于同一个事务,就是<code>AP</code>定义的. </p>
+<p><strong>RM</strong>: <code>Resource Manager</code>,资源管理器, 一般是数据库, 也可以是其他资源管理器, 比如消息队列. </p>
+<p><strong>TM</strong>:<code>Transaction Manage</code>: 事务管理器、事务协调者,负责接收来自用户程序(<code>AP</code>)发起的XA事务指令,并调度和协调参与事务的所有<code>RM(S数据库)</code> , 确保事务正确完成. </p>
+<p>​    在分布式系统中, 每一个机器节点虽然都能够明确知道自己在进行事务操作过程中的结果是成功还是失败, 但却无法直接获取到其他分布式节点的操作结果.因此, 当一个事务操作需要跨越多个分布式节点的时候, 为了保证事务处理的<code>ACID</code>特性, 就需要引入一个”协调者”(<code>TM</code>)来统一调度所有分布式节点的执行逻辑 , 这些被调度的分布式节点被称为<code>AP</code>.<code>TM</code>负责调度<code>AP</code>的行为, 并最终决定这些<code>AP</code> 是否要事务真正的进行提交到<code>RM</code>.</p>
+<p>​    <code>XA</code>是<code>X/Open DTP</code> 定义的资源管理器和事务管理器之间的接口规范,<code>TM</code> 用它来通知和协调相关RM事务的开始、结束、提交和回滚.目前Oracle、Mysql、DR2 都提交了对<code>XA</code>的支持; <code>XA</code>接口是双向的系统接口, 在事务管理器(TM) 以及多个资源管理器之间形成通信的桥梁(XA不能自动提交).</p>
+<p><img src="http://files.luyanan.com//img/20200115140700.png"></p>
+<p><img src="http://files.luyanan.com//img/20200115140722.png"></p>
+<h3 id="1-2-2PC"><a href="#1-2-2PC" class="headerlink" title="1.2    2PC"></a>1.2    2PC</h3><h4 id="1-2-1-第一阶段"><a href="#1-2-1-第一阶段" class="headerlink" title="1.2.1 第一阶段"></a>1.2.1 第一阶段</h4><p><img src="http://files.luyanan.com//img/20200115140836.png"></p>
+<p>RM 在第一阶段会做两件事情: </p>
+<ol>
+<li>记录事务日志: reduo、undo</li>
+<li>返回给TM 信息 : ok、error</li>
+</ol>
+<p>存在问题:如果第一阶段完成后TM宕机或者网络出现故障了,此时RM 就会一直阻塞,发生了死锁,因为没有 timeout机制,3PC就针对此问题进行了改造,加入了 timeout机制. </p>
+<h4 id="1-2-2-第二阶段"><a href="#1-2-2-第二阶段" class="headerlink" title="1.2.2 第二阶段"></a>1.2.2 第二阶段</h4><p><img src="http://files.luyanan.com//img/20200115141134.png"></p>
+<p>根据第一个阶段的返回结果进行提交或者回滚. </p>
+<h3 id="1-3-CAP理论"><a href="#1-3-CAP理论" class="headerlink" title="1.3 CAP理论"></a>1.3 CAP理论</h3><p>CAP的含义是: </p>
+<ul>
+<li>C: <code>Consistency</code>一致性,同一个数据的多个副本是否实时相同. </li>
+<li>A：<code>Availability</code>可用性, 可用性: 一定时间内 &amp; 系统返回一个明确的结果,则称之为该系统可用. </li>
+<li>P：<code>Partition tolerance</code> 分区容错性,将同一服务分布在多个系统中, 从而保证某一个系统宕机, 让然有其他系统提供相同的服务. </li>
+</ul>
+<p>CAP 理论告诉我们, 在分布式系统中, C、A、P 三个条件中我们最多只能选择两个,那么问题来了,究竟选择哪两个条件较为合适呢? </p>
+<p>​    对于一个业务系统来说, 可用性和分区容错性是必须满足的两个条件,并且这两个是相辅相成的. 业务系统之所以使用分布式系统, 主要原因有两个: </p>
+<ul>
+<li>提升系统性能, 当业务量猛增, 单个服务器已经无法满足我们的业务需求的时候, 就需要使用分布式系统,使用多个节点提供相同的功能, 从而整体上提升系统的性能,这就是使用分布式系统的第一个原因. </li>
+<li>实现分区容错性, 单一节点或者多个节点处于相同的是网络环境下, 那么会存在一定的风险, 万一该机房断电、该地区发生自然灾害, 那么业务系统就全面瘫痪了.为了防止这一问题,采用分布式系统,将多个子系统分布在不同的地域、不同的机房, 从而保证了系统高可用. </li>
+</ul>
+<p>这说明分区容错性是分布式系统的根本, 如果分区容错性不能满足, 那使用分布式系统将失去意义. </p>
+<p>​    此外,可用性对业务系统也尤为重要, 在大谈用户体验的今天,如果业务系统常出现”系统异常”、响应时间过程等情况, 这使得用户对系统的好感度大打折扣, 在互联网行业竞争激烈的今天,相同领域竞争者不甚枚举,系统的间歇性不可以会立马导致用户流向竞争对手。因此, 我们只能通用牺牲一致性来换取系统的<strong>可用性</strong>和<strong>分区容错</strong>. </p>
+<h3 id="1-4-Base-理论"><a href="#1-4-Base-理论" class="headerlink" title="1.4 Base 理论"></a>1.4 Base 理论</h3><p>CAP理论告诉我们一个悲惨但不得不接受的事实– 我们只能在C、A、P 中选择两个条件, 而对于业务系统而言,我们往往选择牺牲一致性来换取系统的可用性和分区容错性. 不过要在这里指出的是, 所谓是”牺牲一致性”并不是完全放弃数据一致性, 而是牺牲”强一致性”换取”弱一致性”. </p>
+<ul>
+<li><p><code>BA:Basic Availabl </code> 基本可用</p>
+<p> 整个系统在某些不可抗力的情况下, 让然能够保证”可用性”, 即一定时间内然然能返回一个明确的结果.只不过”基本可用”和”高可用”的区别是:</p>
+<ul>
+<li>“一定时间”可以适当延长,当举行大促时, 响应时间可以适当延长. </li>
+<li>给部分用户返回一个降级页面, 给部分用户直接返回一个降级页面, 从而缓解服务器压力. 但要注意的是: 返回降级页面仍然是返回明确结果. </li>
+</ul>
+</li>
+<li><p><code>S:Soft State</code>: 柔性状态,同一数据的不同副本的状态, 可以不需要实时一致. </p>
+</li>
+<li><p><code>E:Eventual Consisstency</code>: 最终一致性, 同一数据的不同副本状态, 可以不需要实时一致, 但一定要保证经过一段时间后仍然是一致的. </p>
+</li>
+</ul>
+<h2 id="2-分布式事务常见解决方案"><a href="#2-分布式事务常见解决方案" class="headerlink" title="2. 分布式事务常见解决方案"></a>2. 分布式事务常见解决方案</h2><h3 id="2-1-最大努力通知方案"><a href="#2-1-最大努力通知方案" class="headerlink" title="2.1 最大努力通知方案"></a>2.1 最大努力通知方案</h3><p><img src="http://files.luyanan.com//img/20200115155523.png"></p>
+<h3 id="2-2-TCC-两阶段补偿方案"><a href="#2-2-TCC-两阶段补偿方案" class="headerlink" title="2.2 TCC 两阶段补偿方案"></a>2.2 TCC 两阶段补偿方案</h3><p>TCC 是<code>Try-Confirm-Cance</code>, 比如在支付场景中,先冻结一部分资金,再去发起支付. 如果支付成功,则将冻结的资金进行实时扣除, 如果支付失败, 则取消资金冻结. </p>
+<p>​    </p>
+<p><img src="http://files.luyanan.com//img/20200115155726.png"></p>
+<h4 id="2-2-1-Try阶段"><a href="#2-2-1-Try阶段" class="headerlink" title="2.2.1 Try阶段"></a>2.2.1 Try阶段</h4><p>完成所以业务检查(一致性),预留业务资源(准隔离性)</p>
+<h4 id="2-2-2Confirm阶段"><a href="#2-2-2Confirm阶段" class="headerlink" title="2.2.2Confirm阶段"></a>2.2.2Confirm阶段</h4><p>确认执行业务操作, 不做任何业务检查, 只使用try 阶段预留的业务资源. </p>
+<h4 id="2-2-3-Cancel阶段"><a href="#2-2-3-Cancel阶段" class="headerlink" title="2.2.3 Cancel阶段"></a>2.2.3 Cancel阶段</h4><p>取消try 阶段预留的业务资源, Try出现出现阶段时, 取消所有业务资源预留请求. </p>
+<h3 id="2-3-关于状态机"><a href="#2-3-关于状态机" class="headerlink" title="2.3 关于状态机"></a>2.3 关于状态机</h3><p>在使用最终一致性的方案时, 一定要提到的一个概念就是状态机. </p>
+<p>​    什么是状态机? 是一种特殊的组织代码的方式, 用这种方式能够确保你的对象随时都直到自己所处的状态以及能够做的操作。它也是一种用来进行对象行为建模的工具, 用于描述对象在他的生命周期内所经历的状态序列, 以及如何响应来自外界的各种事件. </p>
+<p>​    状态机这个概念大家都不陌生, 比如TCP 协议的状态机. 同时我们在编写相关业务逻辑的时候经常也会需要处理各种事件和状态的切换, 比如swith、if/else . 所以我们其实一致都在跟状态机打交道,只是可能都没有意识到而已. 在处理一些业务逻辑比较复杂的需求的时候, 可以先看看是否适用于一个有限状态机来描述, 如果可以把业务模型抽象成一个有限的状态机, 那么代码就会逻辑非常清晰, 结构特别规整. </p>
+<p>​    比如我们来简单描述一个订单. </p>
+<p>​    我们以支付为例, 一笔订单可能会有等待支付、支付中、已支付状态, 那么我们就可以先去把可能出现的状态以及状态的流程画出来。 </p>
+<p><img src="http://files.luyanan.com//img/20200115163617.png"></p>
+<p>状态机的两个作用: </p>
+<ul>
+<li>实现幂等</li>
+<li>通过状态驱动数据的变化</li>
+<li>业务流程以及逻辑更加清晰, 特别是应对复杂的业务场景. </li>
+</ul>
+<h2 id="3-什么是幂等"><a href="#3-什么是幂等" class="headerlink" title="3. 什么是幂等"></a>3. 什么是幂等</h2><p>   简单来说, 重复调用多次产生的业务结果与调用一次产生的业务结果相同; 在分布式架构中, 我们调用一个远程服务去完成一个操作, 除了成功和我失败以外, 还有未知状态, 那么针对这个未知状态, 我们会采用一些重试的行为. 或者在消息中间件的使用场景中, 消费者可能会重复收到消息. 对于这两种情况, 消费端或者服务端需要采取一定的手段, 也就是考虑到重发的情况下保证数据的安全性.我们一般常用的手段： </p>
+<ol>
+<li>状态机实现幂等</li>
+<li>数据库唯一约束实现幂等</li>
+<li>通过<code>tokenId</code> 的方式去识别每次请求判断是否重复. </li>
+</ol>
+<h2 id="4-开源的分布式事务解决方案"><a href="#4-开源的分布式事务解决方案" class="headerlink" title="4. 开源的分布式事务解决方案"></a>4. 开源的分布式事务解决方案</h2><h3 id="4-1-TransactionProducer（事务消息）"><a href="#4-1-TransactionProducer（事务消息）" class="headerlink" title="4.1 TransactionProducer（事务消息）"></a>4.1 TransactionProducer（事务消息）</h3><p>RocketMQ 和其他消息中间件最大的一个区别就是支持了事务消息, 这也是分布式事务中基于消息的最终一致性方案. </p>
+<h3 id="4-2-RocketMQ-消息的事务架构设计"><a href="#4-2-RocketMQ-消息的事务架构设计" class="headerlink" title="4.2  RocketMQ 消息的事务架构设计"></a>4.2  RocketMQ 消息的事务架构设计</h3><ol>
+<li>生产者执行本地事务, 修改订单支付状态, 并且提交事务</li>
+<li>生产者发送事务消息到broker上, 消息发送到broker 上在没有确认之前, 消息对于<code>consumer</code> 是 不可见的状态. </li>
+<li>生产者确认事务消息, 使得发送到broker上的事务消息对于消费者可见. </li>
+<li>消费者获取到消息进行消费,消费完之后执行ack 进行确认. </li>
+<li>这里可能会存在一个问题 , 生产者本地事务成功后,发送事务确认消息到broker 上失败了怎么办? 这个时候意味着消费者无法正常消费到这个消息, 所以RocketMQ 提供了消息回查机制, 如果事务消息一直处于中间状态,broker 会发起重试去查询broker 上这个事务的处理状态。一旦发送事务处理成功, 则把这条消息设置为可见. </li>
+</ol>
+<p><img src="http://files.luyanan.com//img/20200116094256.png"></p>
+<h3 id="4-3-事务消息的实践"><a href="#4-3-事务消息的实践" class="headerlink" title="4.3 事务消息的实践"></a>4.3 事务消息的实践</h3><p>通过一个下单以后扣减库存的数据一致性场景来演示RocketMQ的分布式事务特性. </p>
+<p>TransactionProducer</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.mq;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.exception.MQClientException;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.producer.TransactionMQProducer;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.common.message.Message;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.remoting.common.RemotingHelper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.UnsupportedEncodingException;</span><br><span class="line"><span class="keyword">import</span> java.util.UUID;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2020/1/16</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;事务生产者&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TransactionProducer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> MQClientException, UnsupportedEncodingException, InterruptedException </span>&#123;</span><br><span class="line"></span><br><span class="line">        TransactionMQProducer producer = <span class="keyword">new</span> TransactionMQProducer(<span class="string">&quot;tx_producer_group&quot;</span>);</span><br><span class="line">        producer.setNamesrvAddr(<span class="string">&quot;192.168.86.128:9876&quot;</span>);</span><br><span class="line">        <span class="comment">//  自定义线程池</span></span><br><span class="line">        ExecutorService executorService = Executors.newFixedThreadPool(<span class="number">10</span>);</span><br><span class="line">        producer.setExecutorService(executorService);</span><br><span class="line">        producer.setTransactionListener(<span class="keyword">new</span> TransactionListenerLocal());</span><br><span class="line">        producer.start();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++) &#123;</span><br><span class="line"></span><br><span class="line">            String orderId = UUID.randomUUID().toString();</span><br><span class="line">            String body = <span class="string">&quot;&#123;&#x27;operation&#x27;:&#x27;doOrder&#x27;,&#x27;orderId&#x27;:&#x27;&quot;</span> + orderId + <span class="string">&quot;&#x27;&#125;&quot;</span>;</span><br><span class="line">            Message message = <span class="keyword">new</span> Message(<span class="string">&quot;ex_topic&quot;</span>, <span class="string">&quot;TagA&quot;</span>, orderId, body.getBytes(RemotingHelper.DEFAULT_CHARSET));</span><br><span class="line">            producer.sendMessageInTransaction(message, orderId + <span class="string">&quot;&amp;&quot;</span> + i);</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>TransactionListenerLocal</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.mq;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.producer.LocalTransactionState;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.producer.TransactionListener;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.common.message.Message;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.common.message.MessageExt;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ConcurrentHashMap;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2020/1/16</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TransactionListenerLocal</span> <span class="keyword">implements</span> <span class="title">TransactionListener</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Map&lt;String, Boolean&gt; results = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;执行本地事务&lt;/p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> message</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> o</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@link</span> LocalTransactionState&#125;</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 2020/1/16</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LocalTransactionState <span class="title">executeLocalTransaction</span><span class="params">(Message message, Object o)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;执行本地事务:&quot;</span> + o.toString());</span><br><span class="line">        String orderId = o.toString();</span><br><span class="line">        <span class="comment">//模拟插入数据库操作</span></span><br><span class="line">        <span class="keyword">boolean</span> rs = saveOrder(orderId);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//这个返回状态表示broker 这个事务消息是否被确认,允许给到consumer 进行消费</span></span><br><span class="line">        <span class="comment">// LocalTransactionState.ROLLBACK_MESSAGE 回滚</span></span><br><span class="line">        <span class="comment">// LocalTransactionState.UNKNOW 未知</span></span><br><span class="line">        <span class="keyword">return</span> rs ? LocalTransactionState.COMMIT_MESSAGE : LocalTransactionState.UNKNOW;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">saveOrder</span><span class="params">(String orderId)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 如果订单取模等于0, 表示成功, 否则失败</span></span><br><span class="line">        <span class="keyword">boolean</span> success = Math.abs(orderId.hashCode()) % <span class="number">2</span> == <span class="number">0</span>;</span><br><span class="line">        results.put(orderId, success);</span><br><span class="line">        <span class="keyword">return</span> success;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LocalTransactionState <span class="title">checkLocalTransaction</span><span class="params">(MessageExt messageExt)</span> </span>&#123;</span><br><span class="line">        String orderId = messageExt.getKeys();</span><br><span class="line">        System.out.println(<span class="string">&quot;执行事务执行状态的回查:orderId:&quot;</span> + orderId);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">boolean</span> rs = Boolean.TRUE.equals(results.get(orderId));</span><br><span class="line">        System.out.println(<span class="string">&quot;回调：&quot;</span> + rs);</span><br><span class="line">        <span class="keyword">return</span> rs ? LocalTransactionState.COMMIT_MESSAGE : LocalTransactionState.ROLLBACK_MESSAGE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>消费者</p>
+<p>TransactionConsumer</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.mq;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.client.exception.MQClientException;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.common.consumer.ConsumeFromWhere;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.common.message.Message;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.common.message.MessageExt;</span><br><span class="line"><span class="keyword">import</span> org.apache.rocketmq.remoting.common.RemotingHelper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.UnsupportedEncodingException;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2020/1/16</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;事务 消费者&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TransactionConsumer</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> MQClientException, IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        DefaultMQPushConsumer consumer = <span class="keyword">new</span> DefaultMQPushConsumer(<span class="string">&quot;tx_consumer_group&quot;</span>);</span><br><span class="line">        consumer.setNamesrvAddr(<span class="string">&quot;192.168.86.128:9876&quot;</span>);</span><br><span class="line">        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);</span><br><span class="line">        consumer.subscribe(<span class="string">&quot;ex_topic&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">        consumer.registerMessageListener(<span class="keyword">new</span> MessageListenerConcurrently() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> ConsumeConcurrentlyStatus <span class="title">consumeMessage</span><span class="params">(List&lt;MessageExt&gt; list, ConsumeConcurrentlyContext consumeConcurrentlyContext)</span> </span>&#123;</span><br><span class="line">                list.stream().forEach(messageExt -&gt; &#123;</span><br><span class="line">                    String orderId = messageExt.getKeys();</span><br><span class="line">                    String body = <span class="keyword">null</span>;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        body = <span class="keyword">new</span> String(messageExt.getBody(), RemotingHelper.DEFAULT_CHARSET);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (UnsupportedEncodingException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                    System.out.println(<span class="string">&quot;收到消息:&quot;</span> + body + <span class="string">&quot;-&gt;开始扣钱库存:&quot;</span> + orderId);</span><br><span class="line">                &#125;);</span><br><span class="line">                <span class="keyword">return</span> ConsumeConcurrentlyStatus.CONSUME_SUCCESS;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        consumer.start();</span><br><span class="line">        System.in.read();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-4-RocketMQ-事务消息的三种状态"><a href="#4-4-RocketMQ-事务消息的三种状态" class="headerlink" title="4.4  RocketMQ 事务消息的三种状态"></a>4.4  RocketMQ 事务消息的三种状态</h3><ol>
+<li><code>ROLLBACK_MESSAGE</code>:  回滚事务</li>
+<li><code>COMMIT_MESSAGE</code>: 提交事务</li>
+<li><code>UNKNOW</code>: broker 会定时的回查producer 消息状态,知道彻底成功或者失败. </li>
+</ol>
+<p>当 <code>com.mq.TransactionListenerLocal#executeLocalTransaction</code> 方法返回<code>ROLLBACK_MESSAGE</code>的时候, 表示直接回滚事务, 当返回 <code>COMMIT_MESSAGE</code>的时候直接提交事务. </p>
+<p>当返回<code>UNKNOW</code>的时候,broker 会在一段时间之后查<code>com.mq.TransactionListenerLocal#checkLocalTransaction</code>, 根据<code>com.mq.TransactionListenerLocal#checkLocalTransaction</code> 返回状态执行事务的操作(提交或者回滚)</p>
+<p>​    如示例中,当返回<code>ROLLBACK_MESSAGE</code> 时消费者不会收到消息, 且不会调用回查函数, 当返回<code>COMMIT_MESSAGE</code> 时事务提交,消费者收到消息. 当返回<code>UNKNOW</code>的时候, 在一段时间之后调用回查函数, 并根据state 判断返回提交或者回滚状态,返回提交状态的消息将会被消费者消费, 所以此时消费者可以消费部分消息. </p>
+<h2 id="5-消息的存储和发送"><a href="#5-消息的存储和发送" class="headerlink" title="5. 消息的存储和发送"></a>5. 消息的存储和发送</h2><p>​    由于分布式消息队列对于可靠性的要求比较高, 所以需要保证生产者将消息发送到broker 之后, 保证消息是不会丢失的,因此消息队列就少不了对于可靠性存储的要求. </p>
+<h3 id="5-1-MQ消息存储选择"><a href="#5-1-MQ消息存储选择" class="headerlink" title="5.1 MQ消息存储选择"></a>5.1 MQ消息存储选择</h3><p>​    从主流的几种MQ 消息队列采用的存储方式来看, 主要会有几种: </p>
+<ol>
+<li>分布式KV存储, 比如使用ActiviteMQ中采用的LebelDB、Redis, 这种存储方式对于消息读写能力要求不高的情况下可以使用. </li>
+<li>文件系统存储, 常见的比如 kafka、RocketMQ、RabbitMQ 都是采用消息刷盘到所部署的机器上的文件系统来做持久化, 这种方案适用于对于有高吞吐量要求的消息中间件, 因为消息刷盘是一种高效率、高可靠、高性能的持久化方式, 除非磁盘出现故障, 否则一般是不会出现无法持久化问题的. </li>
+<li>关系型数据库,比如ActiviteMQ 可以采用Mysql 作为消息存储,关系型数据库在单表数量达到千万级的情况下IO性能会出现瓶颈, 所以ActiviteMQ 并不适用于高吞吐量的消息队列场景. </li>
+</ol>
+<h3 id="5-2-消息的存储结构"><a href="#5-2-消息的存储结构" class="headerlink" title="5.2 消息的存储结构"></a>5.2 消息的存储结构</h3><p>​    RocketMQ 就是采用文件系统的方式来存储消息, 消息的存储是由<code>ConsumeQueue</code>和<code>CommitLog</code> 配合完成的. <code>CommitLog</code> 是消息真正的物理存储文件。 <code>ConsumeQueue</code> 是消息的逻辑队列, 有点类似于数据库的索引文件, 里面存储的是指向<code>CommitLog</code>  文件中消息存储的地址. </p>
+<p>​    每个Topic 下的每个<code>Message Queue</code>都会对应一个<code>ConsumerQueue</code> 文件,文件的地址是<code>$&#123;store_home&#125;/consumequeue/$&#123;topicNmae&#125;/$&#123;queueId&#125;/$&#123;filename&#125;,</code>, 默认路径是<code>/root/store</code>. 在rocketMQ的文件存储目录下, 可以看到这样一个结构的文件</p>
+<p><img src="http://files.luyanan.com//img/20200116112604.png"></p>
+<p>我们只需要关心<code>Commitlog</code>、<code>Consumerqueue</code>、<code>Index</code></p>
+<h4 id="5-2-1-Commitlog"><a href="#5-2-1-Commitlog" class="headerlink" title="5.2.1 Commitlog"></a>5.2.1 Commitlog</h4><p><code>commitlog</code>是用来存放消息的物理文件, 每个broker 上的<code>commitlog</code>文件是当前机器上的所有<code>consumerqueue</code> 共享, 不做任何区分. </p>
+<p>​    <code>commitlog</code>中的文件默认大小为1G，可以动态配置; 当一个文件写满以后, 会生成一个新的<code>commitlog</code>文件. 所有的topic 数据是顺序写入在<code>commitlog</code> 文件中的. </p>
+<p>文件名的长度为20位, 左边补零, 剩余末起始偏移量,比如00000000000000000000 表示第一个文件， 文件大小为102410241024，当第一个文件写满之后，生 成第二个文件 000000000001073741824 表示第二个文件，起始偏移量为1073741824</p>
+<p>00000000000000000000 表示第一个文件， 文件大小为102410241024，当第一个文件写满之后，生 成第二个文件 000000000001073741824 表示第二个文件，起始偏移量为1073741824</p>
+<h4 id="5-2-2-consumeQueue"><a href="#5-2-2-consumeQueue" class="headerlink" title="5.2.2 consumeQueue"></a>5.2.2 consumeQueue</h4><p><code>consumeQueue</code> 表示消息 消费的逻辑队列, 这里面包含<code>messageQueue</code>在<code>commitlog</code> 中的真实物理地址偏移量ooffst,消息实体内容的大小和<code>Message Tag</code>的hash值。 对于实际物理存储来说, <code>consumerQueue</code> 对应每个topic 和<code>queueid</code>下的文件, 每个<code>consumerqueue</code>类型的文件也是有带大小的,每个文件默认大小为6000W字节,如果文件满了之后也会生成一个新的文件. </p>
+<h4 id="5-2-3-IndexFile"><a href="#5-2-3-IndexFile" class="headerlink" title="5.2.3 IndexFile"></a>5.2.3 IndexFile</h4><p>​    索引文件, 如果一个消息包含key值的话 ,会使用<code>indexFile</code>存储消息索引.Index 索引文件提交了对<code>Commitlog</code> 进行数据检索, 提供了一种通过key 或者时间区间来查找<code>commitlog</code> 中的消息的方法. 在物理存储中, 文件名是以创建的时间戳命名的, 固定的单个<code>indexFile</code> 大小大概为400M,一个<code>indexFile</code> 可以保存2000W个索引. </p>
+<h4 id="5-2-4-abort"><a href="#5-2-4-abort" class="headerlink" title="5.2.4 abort"></a>5.2.4 abort</h4><p>​    broker 就会在启动的时候创建一个名为abort的文件,并在<code>shutdown</code>的时候将其删除,用于标识进程是否正常退出,如果不是正常退出, 会在启动的时候做故障恢复. </p>
+<h3 id="5-3-消息存储的消息结构"><a href="#5-3-消息存储的消息结构" class="headerlink" title="5.3 消息存储的消息结构"></a>5.3 消息存储的消息结构</h3><p> <img src="http://files.luyanan.com//img/20200116134637.png"></p>
+<p>​    RrokerMQ 的消息存储采用的是混合型的存储结构, 也就是broker 单个实例下的所有队列公用一个日志数据文件<code>connitlog</code>. 这个是和kafka 的又一不同之处. </p>
+<p>​    为什么不采用kafka 的设计, 针对不同的<code>partition</code>存储一个独立的物理文件呢? 这是因为在kafka的设计中, 一旦kafka 中Topic的的<code>partition</code>数量过多, 队列文件会过多, 那么会给磁盘的IO读写造成比较大的压力, 也就造成了性能瓶颈. 所以RocketMQ 进行了优化, 消息主题统一存储在<code>commitlog</code>中. </p>
+<p>当然, 这种设计并不是银弹, 也是有他的优缺点: </p>
+<p><strong>优点</strong>: 由于消息主题都是通过<code>commitlog</code> 进行读写, <code>comsumerQueue</code> 中只存储了很少的数据, 所以队列更加的轻量化, 对于磁盘的访问是串行化从而避免了磁盘的竞争. </p>
+<p><strong>缺点</strong>: 消息写入磁盘虽然是基于顺序读写, 但是读的过程是随机的,读取一条消息会先读取<code>consumerQueue</code> , 在读<code>commitlog</code>, 会降低消息读的效率. </p>
+<h3 id="5-4-消息发送到消息接收的整体流程"><a href="#5-4-消息发送到消息接收的整体流程" class="headerlink" title="5.4 消息发送到消息接收的整体流程"></a>5.4 消息发送到消息接收的整体流程</h3><ol>
+<li><p>Producer 将消息发送到Broker 后, Broker 会采用同步或者异步的方式把消息写入到<code>commitlog</code>,RocketMQ 所有的消息都会存放在<code>commitlog</code>中, 为了保证消息存储不发生混乱, 对<code>commitlog</code> 写之前会加锁, 同时也可以使得消息能够被顺序写入到<code>commitlog</code>, 只要消息被持久化到磁盘文件<code>commitlog</code>,那么就可以保证producer 发送的消息不会丢失. </p>
+<p><img src="http://files.luyanan.com//img/20200116135615.png"></p>
+</li>
+<li><p><code>commitlog</code>持久化后, 会把里面的消息<code>Dispatch</code>到对应的<code>consumer queue</code>上, <code>consumer queue</code> 相当于kafka 的<code>partition</code>, 是一个逻辑队列, 存储了这个queue 在<code>commitlog</code> 中的其实offset、log大小和MessageTag的hashCode. </p>
+<p><img src="http://files.luyanan.com//img/20200116140325.png"></p>
+</li>
+<li><p>当消费者进行消息消费时,会先读取<code>consumerQueue</code>,逻辑消费队列<code>consumerQueue</code> 保存了指定topic 下的队列消息在<code>consumerLog</code> 中的起始物理偏移量offset、消息大小、和消息tag HashCode值. </p>
+<p><img src="http://files.luyanan.com//img/20200116140504.png"></p>
+</li>
+<li><p>直接从<code>consumerqueue</code> 中读取消息是没有数据的, 真正的消息主题是在<code>consumerlog</code>中, 所以换需要从<code>consumerlog</code> 中读取消息. </p>
+<p><img src="http://files.luyanan.com//img/20200116140934.png"></p>
+</li>
+</ol>
+<h2 id="6-什么时候清理物理消息文件"><a href="#6-什么时候清理物理消息文件" class="headerlink" title="6. 什么时候清理物理消息文件"></a>6. 什么时候清理物理消息文件</h2><p>那消息文件到底删不删? 什么时候删除呢? </p>
+<p>​    消息存储在<code>commitlog</code>之后, 的确是会被清理的,但是这个清理只会在以下任一条件成立后才会批量删除消息文件(<code>comitlog</code>)</p>
+<ol>
+<li>消息文件过期(默认72个小时),且到达清理时点(默认是凌晨4点),删除过期文件. </li>
+<li>消息文件过期(默认72个小时),且磁盘空间达到了水位线(默认75%), 删除过期文件</li>
+<li>磁盘已经达到了必须释放的上限(85%水位线)的时候, 则开始批量清理文件(无论是否过期), 直到空间充足. </li>
+</ol>
+<blockquote>
+<p>注意： 若磁盘空间达到危险水位线(90%), 处于保护自身的目的, broker 会拒绝写入服务. </p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/RocketMQ%20%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/RocketMQ%E9%97%AE%E9%A2%98/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#RocketMQ%E4%BA%8B%E5%8A%A1%E6%80%A7%E6%B6%88%E6%81%AF"><span class="nav-number">1.</span> <span class="nav-text">RocketMQ事务性消息</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%BB%8F%E5%85%B8%E7%9A%84X-OpenDTP%E4%BA%8B%E5%8A%A1%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">1. 经典的X&#x2F;OpenDTP事务模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-X-Open-DTP-%E8%A7%92%E8%89%B2"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 X&#x2F;Open DTP 角色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2PC"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2    2PC</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-1-%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">1.2.1 第一阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-2-%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">1.2.2 第二阶段</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-CAP%E7%90%86%E8%AE%BA"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.3 CAP理论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-Base-%E7%90%86%E8%AE%BA"><span class="nav-number">1.1.4.</span> <span class="nav-text">1.4 Base 理论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E5%B8%B8%E8%A7%81%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.2.</span> <span class="nav-text">2. 分布式事务常见解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E6%9C%80%E5%A4%A7%E5%8A%AA%E5%8A%9B%E9%80%9A%E7%9F%A5%E6%96%B9%E6%A1%88"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 最大努力通知方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-TCC-%E4%B8%A4%E9%98%B6%E6%AE%B5%E8%A1%A5%E5%81%BF%E6%96%B9%E6%A1%88"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 TCC 两阶段补偿方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-Try%E9%98%B6%E6%AE%B5"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">2.2.1 Try阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2Confirm%E9%98%B6%E6%AE%B5"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">2.2.2Confirm阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-3-Cancel%E9%98%B6%E6%AE%B5"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">2.2.3 Cancel阶段</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E5%85%B3%E4%BA%8E%E7%8A%B6%E6%80%81%E6%9C%BA"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 关于状态机</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%BB%80%E4%B9%88%E6%98%AF%E5%B9%82%E7%AD%89"><span class="nav-number">1.3.</span> <span class="nav-text">3. 什么是幂等</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%BC%80%E6%BA%90%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.4.</span> <span class="nav-text">4. 开源的分布式事务解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-TransactionProducer%EF%BC%88%E4%BA%8B%E5%8A%A1%E6%B6%88%E6%81%AF%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 TransactionProducer（事务消息）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-RocketMQ-%E6%B6%88%E6%81%AF%E7%9A%84%E4%BA%8B%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2  RocketMQ 消息的事务架构设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E4%BA%8B%E5%8A%A1%E6%B6%88%E6%81%AF%E7%9A%84%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 事务消息的实践</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-RocketMQ-%E4%BA%8B%E5%8A%A1%E6%B6%88%E6%81%AF%E7%9A%84%E4%B8%89%E7%A7%8D%E7%8A%B6%E6%80%81"><span class="nav-number">1.4.4.</span> <span class="nav-text">4.4  RocketMQ 事务消息的三种状态</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%B6%88%E6%81%AF%E7%9A%84%E5%AD%98%E5%82%A8%E5%92%8C%E5%8F%91%E9%80%81"><span class="nav-number">1.5.</span> <span class="nav-text">5. 消息的存储和发送</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-MQ%E6%B6%88%E6%81%AF%E5%AD%98%E5%82%A8%E9%80%89%E6%8B%A9"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1 MQ消息存储选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E6%B6%88%E6%81%AF%E7%9A%84%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="nav-number">1.5.2.</span> <span class="nav-text">5.2 消息的存储结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-1-Commitlog"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">5.2.1 Commitlog</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-2-consumeQueue"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">5.2.2 consumeQueue</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-3-IndexFile"><span class="nav-number">1.5.2.3.</span> <span class="nav-text">5.2.3 IndexFile</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-4-abort"><span class="nav-number">1.5.2.4.</span> <span class="nav-text">5.2.4 abort</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E6%B6%88%E6%81%AF%E5%AD%98%E5%82%A8%E7%9A%84%E6%B6%88%E6%81%AF%E7%BB%93%E6%9E%84"><span class="nav-number">1.5.3.</span> <span class="nav-text">5.3 消息存储的消息结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%88%B0%E6%B6%88%E6%81%AF%E6%8E%A5%E6%94%B6%E7%9A%84%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="nav-number">1.5.4.</span> <span class="nav-text">5.4 消息发送到消息接收的整体流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E6%B8%85%E7%90%86%E7%89%A9%E7%90%86%E6%B6%88%E6%81%AF%E6%96%87%E4%BB%B6"><span class="nav-number">1.6.</span> <span class="nav-text">6. 什么时候清理物理消息文件</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="分布式系统认证方案1. 什么是分布式系统随着软件环境和需求的变化,软件的架构由单体结构演变为分布式架构,具有分布式架构的系统叫做分布式系统, 分布式系统的运行通常依靠网络, 他将单体结构的系统分为若干服务, 服务之间通过网络交互来完成用户的业务处理, 当前流行的微服务架构就是分布式系统的结构,如下图:  分布式系统具体如下基本特点:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="分布式系统认证方案1. 什么是分布式系统随着软件环境和需求的变化,软件的架构由单体结构演变为分布式架构,具有分布式架构的系统叫做分布式系统, 分布式系统的运行通常依靠网络, 他将单体结构的系统分为若干服务, 服务之间通过网络交互来完成用户的业务处理, 当前流行的微服务架构就是分布式系统的结构,如下图:  分布式系统具体如下基本特点:">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729092813897.png">
+<meta property="og:image" content="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729092828596.png">
+<meta property="og:image" content="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729092837928.png">
+<meta property="og:image" content="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729092848445.png">
+<meta property="og:image" content="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729111804996.png">
+<meta property="og:image" content="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729124934032.png">
+<meta property="og:image" content="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729164939599.png">
+<meta property="article:published_time" content="2021-03-01T09:46:51.465Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.009Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729092813897.png">
+
+<link rel="canonical" href="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="分布式系统认证方案"><a href="#分布式系统认证方案" class="headerlink" title="分布式系统认证方案"></a>分布式系统认证方案</h1><h2 id="1-什么是分布式系统"><a href="#1-什么是分布式系统" class="headerlink" title="1. 什么是分布式系统"></a>1. 什么是分布式系统</h2><p>随着软件环境和需求的变化,软件的架构由单体结构演变为分布式架构,具有分布式架构的系统叫做分布式系统, 分布式系统的运行通常依靠网络, 他将单体结构的系统分为若干服务, 服务之间通过网络交互来完成用户的业务处理, 当前流行的微服务架构就是分布式系统的结构,如下图:</p>
+<p><img src="6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729092813897.png" alt="image-20200729092813897"></p>
+<p>分布式系统具体如下基本特点:</p>
+<ol>
+<li><strong>分布式:</strong> 每个部分都可以独立部署,服务之间交互通过网络进行通信,比如:订单服务、商品服务</li>
+<li><strong>伸缩性:</strong> 每个部分都可以集群方式部署,并可针对部分节点进行硬件和软件扩容,具有一定的伸缩能力, </li>
+<li><strong>共享性:</strong> 每个部分都可以作为共享资源并对外提供服务,多个部分可能有操作共享资源的情况</li>
+<li><strong>开放性:</strong> 每个部分根据需求都可以对外发布共享资源的访问接口, 并可允许第三方系统访问.</li>
+</ol>
+<h2 id="2-分布式纷争需求"><a href="#2-分布式纷争需求" class="headerlink" title="2  分布式纷争需求"></a>2  分布式纷争需求</h2><p>分布式系统的每个服务的都会有认证,授权的需求，如果每个服务都实现一套认证授权逻辑会非常冗余,考虑到分布式系统共享性的特点,需要由独立的认证服务处理系统认证授权的请求,考虑分布式系统开放性的特点,不仅对系统内部服务提供认证,对第三放系统也要提供认证. 分布式认证的需求如下:</p>
+<h3 id="2-1-统一认证授权"><a href="#2-1-统一认证授权" class="headerlink" title="2.1 统一认证授权"></a>2.1 统一认证授权</h3><p>提供独立的认证服务,统一处理认证授权</p>
+<p>无论是不同类型的用户,还是不同种类的客户端(<code>web</code>端,<code>H5</code>、<code>APP</code>),均采用一致的认证,权限、会话机制,实现统一认证授权. </p>
+<p>要实现统一则认证方式必须可扩展,支持各种认证需求,比如:用户名密码认证、短信验证码、二维码、人脸识别等认证方式,并可以非常灵活的却换, </p>
+<h3 id="2-2-应用接入认证"><a href="#2-2-应用接入认证" class="headerlink" title="2.2 应用接入认证"></a>2.2 应用接入认证</h3><p>应提供扩展和开放能力,提供安全的系统对接机制,并可开放部分<code>API</code>给接入第三方使用,一方应用(内部系统服务)和三方应用(第三方应用) 均采用统一机制接入. </p>
+<h2 id="3-分布式认证方案"><a href="#3-分布式认证方案" class="headerlink" title="3. 分布式认证方案"></a>3. 分布式认证方案</h2><h3 id="3-1-选型分析"><a href="#3-1-选型分析" class="headerlink" title="3.1 选型分析"></a>3.1 选型分析</h3><h4 id="3-1-1-基于session-的认证方式"><a href="#3-1-1-基于session-的认证方式" class="headerlink" title="3.1.1 基于session 的认证方式"></a>3.1.1 基于<code>session</code> 的认证方式</h4><p>在分布式环境下,基于<code>session</code> 的认证会出现一个问题,每个应用服务都需要在<code>session</code> 中存储用户身份信息,通过负载均衡将本地的请求分配到另外一个应用服务需要将<code>session</code> 信息带过去,否则会重新认证</p>
+<p><img src="6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729092828596.png" alt="image-20200729092828596"></p>
+<p>这个时候,通常的做法有下面几种:</p>
+<p><strong><code>session</code>复制:</strong> 多台应用服务器之间同步<code>session</code>, 使<code>session</code> 保持一致,对外透明</p>
+<p><strong><code>session</code> 黏贴:</strong> 当用户访问集群中某台服务器后,强制指定后续所有请求均落到此机器上.</p>
+<p><strong><code>session</code> 集中存储:</strong> 将<code>session</code> 存入分布式缓存中, 所有服务器应用实例统一从分布式缓存中存取<code>session</code></p>
+<p>总体来说,基于<code>session</code> 认证的认证方式, 可以更好的在服务端对会话进行控制, 且安全性较高。但是,<code>session</code> 机制方式基于<code>cookie</code>, 在复杂多样的移动客户端上不能有效的使用,并且无法跨域,另外随着系统的扩展需提高<code>session</code>的复制、黏贴、存储的容错性. </p>
+<h4 id="3-1-2-基于token的认证方式"><a href="#3-1-2-基于token的认证方式" class="headerlink" title="3.1.2 基于token的认证方式"></a>3.1.2 基于<code>token</code>的认证方式</h4><p>基于<code>token</code>的认证方式,服务端不用存储认证数据,易维护扩展性强, 客户端可以把<code>token</code> 存在任意地方,并且可以实现<code>web</code> 和<code>app</code> 统一认证机制. 其缺点也很明显,<code>token</code>由于自包含信息,因此一般数据量较大, 并且每次请求都需要传递,因此比较占带宽. 另外，<code>token</code> 的签名验签操作也会给<code>cpu</code> 带来额外的处理负担. </p>
+<p><img src="6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729092837928.png" alt="image-20200729092837928"></p>
+<h3 id="3-2-技术方案"><a href="#3-2-技术方案" class="headerlink" title="3.2 技术方案"></a>3.2 技术方案</h3><p>根据选型的分析,一般采用基于<code>token</code>的认证方式,它的优点是:</p>
+<ol>
+<li>适合统一认证的机制, 客户端、一方应用、三方应用都遵循一致的认证方案</li>
+<li><code>token</code>认证方式对第三方应用接入更适合,因为它更开放, 可使用当前有流行的开放协议<code>Oauth2.0</code>、<code>JWT</code>等. </li>
+<li>一般情况服务端无需存储会话信息,减轻了服务端的压力. </li>
+</ol>
+<p>分布式系统认证技术方案见下图:</p>
+<p><img src="6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729092848445.png" alt="image-20200729092848445"></p>
+<p>流程描述:</p>
+<ol>
+<li>用户通过接入方(应用)登陆, 接入方采用<code>Oauth2.0</code>方式 在统一认证服务(<code>UAA</code>) 中认证</li>
+<li>认证服务(<code>UAA</code>) 调用验证该用户的身份是否合法, 并获取用户权限信息</li>
+<li>认证服务(<code>UAA</code>) 获取接入方权限信息,并验证接入方是否合法. </li>
+<li>若登陆用户以及接入方都合法,认证服务生成<code>jwt</code> 令牌返回给接入方,其中<code>jwt</code> 中包含了用户权限以及接入方权限. </li>
+<li>后续, 接入方携带<code>jwt</code> 令牌对<code>API</code> 网关内的微服务资源进行访问. </li>
+<li><code>API</code> 网关对令牌解析,并验证接入方的权限是否能够访问本次请求的微服务</li>
+<li>如果接入方的权限没有问题,<code>API</code>网关将原请求<code>header</code> 中附加解析后的明文<code>token</code>,并将请求转发至微服务</li>
+<li>微服务收到请求,明文<code>token</code> 中包含登录用户的身份信息和权限信息,因此后续微服务自己可以干两件事情:<ol>
+<li>用户授权拦截(看当前用户是否有权限访问该资源)</li>
+<li>将用户信息存储到当前线程上下文中(有利于后续业务逻辑随时获取当前用户信息)</li>
+</ol>
+</li>
+</ol>
+<p>流程所涉及到<code>UAA</code>服务、<code>API</code> 网关服务、这些组件的职责如下: </p>
+<p> **统一认证服务<code>UAA</code> **</p>
+<blockquote>
+<p>它承载了<code>Oauth2.0</code> 接入方认证、登入用户的认证、授权以及生成令牌的职责, 完成实际的用户认证、授权哦功能</p>
+</blockquote>
+<p><strong><code>API</code> 网关</strong></p>
+<p>作为系统唯一的入口, <code>API</code> 网关为接入方提供定制的<code>API</code> 集合,它可能还具体有其他职责,如验证、监控、负载均衡、缓存等. <code>API</code> 网关方式的核心要点是所有的接入方和消费端都通过统一的网关接入服务，在网关层处理所有的非业务处理. </p>
+<h2 id="4-Oauth2-0"><a href="#4-Oauth2-0" class="headerlink" title="4. Oauth2.0"></a>4. <code>Oauth2.0</code></h2><p><code>Oauth</code>（开放授权）是一个开放标准,允许用户授权第三方应用访问他们存储在另外的服务提供者上的信息,而不需要将用户名和密码提供给第三方应用或者分享他们数据的所有内容.<code>Oauth2.0</code> 是<code>Oauth</code>协议的延续版本,但不向后兼容<code>Oauth1.0</code>,即完全废止了<code>Oauth1.0</code>. 很多大公司比如<code>Google</code>、<code>Yahoo</code>等都提供了<code>Oauth</code> 认证服务,这些都足以说明<code>Oauth</code> 标准逐渐成为开放资源授权的标准. </p>
+<p>参考: <a target="_blank" rel="noopener" href="https://baike.baidu.com/item/oAuth/7153134?fr=aladdin">https://baike.baidu.com/item/oAuth/7153134?fr=aladdin</a></p>
+<p><code>Oauth</code>协议: <a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc6749">https://tools.ietf.org/html/rfc6749</a></p>
+<p>下面分析一个<code>Oauth2.0</code> 认证的例子,通过例子去理解<code>Oauth2.0</code>协议的认证流程,本例子是<code>gitee</code> 网站使用微信去认证的过程, 这个过程简单的描述如下： </p>
+<p>用户借助微信认证登录码云网站,用户就不需要单独在码云网站上注册用户,怎么样才算认证成功呢? 码云网站需要成功从微信获取用户的身份信息则视为用户认证成功,那如何获取微信的用户信息呢? 用户信息的拥有者是用户本人,微信需要经过用户的同意方可为码云网站生成令牌,码云网站拿到此令牌方可从微信获取用户信息. </p>
+<ol>
+<li><p>客户端请求第三方授权</p>
+<p>用户进入码云的登录页面, 点击微信的图标进入微信账号登陆系统,用户是自己微信信息的资源拥有者</p>
+<p><img src="6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729111804996.png" alt="image-20200729111804996"></p>
+</li>
+</ol>
+<p>点击微信, 出现一个二维码,此时用户扫描二维码就开始给码云授权</p>
+<p><img src="6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729124934032.png" alt="image-20200729124934032"></p>
+<ol start="2">
+<li><p>资源拥有者同意给客户端授权</p>
+<p> 资源拥有者扫描二维码表示资源拥有者同意给客户端授权,微信会对资源拥有者的身份进行验证,验证通过后,微信会询问用户是否给授权码云访问自己的微信数据,用户点击”确认登录” 表示同意授权,微信认证服务器会颁发一个授权码,并重定向到码云的网站.</p>
+</li>
+<li><p>客户端获取到授权码, 请求认证服务器申请令牌</p>
+<p> 此过程用户看不到,客户端从应用程序请求认证服务器,请求携带授权码</p>
+</li>
+<li><p>认证服务器向客户端响应令牌<br> 微信认证服务器验证了客户端请求的授权码,如果合法则给客户端颁发令牌, 令牌是客户端访问资源的通行证,此交互过程用户看不到,当客户端拿到令牌后,用户在码云网站看已经登录成功了. </p>
+</li>
+<li><p>客户端请求资源服务器的资源</p>
+<p>  客户端携带令牌访问资源服务器的资源</p>
+<p> 码云网站写到令牌请求访问微信服务器获取用户的基本用户信息</p>
+</li>
+<li><p>资源服务器返回受保护的资源</p>
+<p> 资源服务器校验令牌的合法性,如果合法则向用户响应资源信息内容</p>
+</li>
+</ol>
+<p>通过上面的例子,我们已经大致了解了<code>Oauth2.0</code> 的认证过程,下面我们看<code>Oauth2.0</code>的认证过程</p>
+<p>引自<code>Oauth2.0</code>协议<code>rfc6749</code> <a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc6749">https://tools.ietf.org/html/rfc6749</a></p>
+<p><img src="6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729164939599.png" alt="image-20200729164939599"></p>
+<p> <code>Oauth2.0</code> 包括以下角色:</p>
+<ol>
+<li><p>客户端</p>
+<p> 本身不存储资源,需要通过资源拥有者的授权去请求资源服务器的资源,比如<code>Android</code> 客户端,<code>web</code> 客户端,微信客户端 </p>
+</li>
+<li><p>资源拥有者</p>
+<p> 通常为用户,也可以是应用程序,即该资源的拥有者</p>
+</li>
+<li><p>授权服务器(也成为认证服务器)</p>
+<p>用于服务提供商对资源拥有者的身份进行认证,对访问资源进行授权,认证成功后会给客户端发放令牌(<code>access_token</code>),作为客户端访问资源服务器的凭据,本例中微信为认证服务器.</p>
+</li>
+<li><p>资源服务器</p>
+<p>存储资源的服务器,本例子为微信存储的用户信息</p>
+<p>现在还有一个问题,服务提供商能允许随便一个客户端就接入到它的授权服务商吗? 答案是否定的,服务提供商会给准入的接入方一个身份,用户接入的凭据</p>
+<p><code>client_id</code> 客户端标识</p>
+<p><code>client_secret</code>: 客户端秘钥</p>
+<p>因此,准确的来说,授权服务器对两种<code>Oauth2.0</code> 中的两个角色进行认证授权,分别是资源拥有者和客户端. </p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/5.Spring%20Security%20%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83%E9%AB%98%E7%BA%A7%E7%AF%87/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/7.Spring%20Cloud%20Security%20Oauth2.0%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81%E6%96%B9%E6%A1%88"><span class="nav-number">1.</span> <span class="nav-text">分布式系统认证方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AF%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.1.</span> <span class="nav-text">1. 什么是分布式系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BA%B7%E4%BA%89%E9%9C%80%E6%B1%82"><span class="nav-number">1.2.</span> <span class="nav-text">2  分布式纷争需求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E7%BB%9F%E4%B8%80%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 统一认证授权</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%BA%94%E7%94%A8%E6%8E%A5%E5%85%A5%E8%AE%A4%E8%AF%81"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 应用接入认证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A4%E8%AF%81%E6%96%B9%E6%A1%88"><span class="nav-number">1.3.</span> <span class="nav-text">3. 分布式认证方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E9%80%89%E5%9E%8B%E5%88%86%E6%9E%90"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 选型分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-1-%E5%9F%BA%E4%BA%8Esession-%E7%9A%84%E8%AE%A4%E8%AF%81%E6%96%B9%E5%BC%8F"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">3.1.1 基于session 的认证方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-2-%E5%9F%BA%E4%BA%8Etoken%E7%9A%84%E8%AE%A4%E8%AF%81%E6%96%B9%E5%BC%8F"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">3.1.2 基于token的认证方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 技术方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Oauth2-0"><span class="nav-number">1.4.</span> <span class="nav-text">4. Oauth2.0</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

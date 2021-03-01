@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="长轮询的时间间隔我们知道客户端会有一个长训轮的任务去检查服务器端的配置是否发生了变化, 如果发生了变更, 那么客户端会拿到变更的groupKey 再根据 groupKey 去获取配置项的最新值 跟新到本地的缓存以及文件中,那么这种每次都靠客户端去请求, 那请求的时间间隔设置多少合适呢?  如果间隔时间设置的太长的话有可能无法及时获取服务端的变更, 如果间隔时间设置的太短的话, 那么频繁的请求对于服">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="长轮询的时间间隔我们知道客户端会有一个长训轮的任务去检查服务器端的配置是否发生了变化, 如果发生了变更, 那么客户端会拿到变更的groupKey 再根据 groupKey 去获取配置项的最新值 跟新到本地的缓存以及文件中,那么这种每次都靠客户端去请求, 那请求的时间间隔设置多少合适呢?  如果间隔时间设置的太长的话有可能无法及时获取服务端的变更, 如果间隔时间设置的太短的话, 那么频繁的请求对于服">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com//img/20191210211140.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20191212102604.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20191212111937.png">
+<meta property="article:published_time" content="2021-03-01T09:46:52.806Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:50.091Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com//img/20191210211140.png">
+
+<link rel="canonical" href="http://luyanan.com/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="长轮询的时间间隔"><a href="#长轮询的时间间隔" class="headerlink" title="长轮询的时间间隔"></a>长轮询的时间间隔</h1><p>我们知道客户端会有一个长训轮的任务去检查服务器端的配置是否发生了变化, 如果发生了变更, 那么客户端会拿到变更的<code>groupKey</code> 再根据 <code>groupKey</code> 去获取配置项的最新值 跟新到本地的缓存以及文件中,那么这种每次都靠客户端去请求, 那请求的时间间隔设置多少合适呢? </p>
+<p>如果间隔时间设置的太长的话有可能无法及时获取服务端的变更, 如果间隔时间设置的太短的话, 那么频繁的请求对于服务端来说无疑也是一种负担,所以最好的方式是客户端每隔一段长度适中的时间去服务端请求, 而在这期间如果配置发生了变更, 服务端能够主动将变更后的结果推送给客户端, 这样既能够保证客户端能够实时感知到配置的变化, 也降低了服务端的压力, 我们来看看nacos 设置的间隔时间是多久? </p>
+<h2 id="长轮询的概念"><a href="#长轮询的概念" class="headerlink" title="长轮询的概念"></a>长轮询的概念</h2><p>那么在讲解原理之前, 先给大家解释一下什么叫长轮询. </p>
+<p>客户端发起一个请求到服务端, 服务端收到客户端的请求后, 并不会立即响应给客户端, 而是先把请求hold住, 然后服务端会在hold 住的这段时间内检查数据是否有更新, 如果有, 则响应给客户端. 如果一直没有数据变更, 则达到一定时间(长轮询时间间隔)才返回. </p>
+<p>长轮询典型的场景有: 扫码登陆、扫码支付. </p>
+<p><img src="http://files.luyanan.com//img/20191210211140.png"></p>
+<h2 id="客户端长轮询"><a href="#客户端长轮询" class="headerlink" title="客户端长轮询"></a>客户端长轮询</h2><p>我们在 <code>ClientWorker</code>  这个类中, 找到<code>checkUpdateConfigStr</code> 这个方法, 这里面就是去服务端查询发生变化的  groupKey</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 从Server获取值变化了的DataID列表。返回的对象里只有dataId和group是有效的。 保证不返回NULL。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function">List&lt;String&gt; <span class="title">checkUpdateConfigStr</span><span class="params">(String probeUpdateString, <span class="keyword">boolean</span> isInitializingCacheList)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">		List&lt;String&gt; params = Arrays.asList(Constants.PROBE_MODIFY_REQUEST, probeUpdateString);</span><br><span class="line">		<span class="keyword">long</span> timeout = TimeUnit.SECONDS.toMillis(<span class="number">30L</span>);</span><br><span class="line"></span><br><span class="line">		List&lt;String&gt; headers = <span class="keyword">new</span> ArrayList&lt;String&gt;(<span class="number">2</span>);</span><br><span class="line">		headers.add(<span class="string">&quot;Long-Pulling-Timeout&quot;</span>);</span><br><span class="line">		headers.add(<span class="string">&quot;&quot;</span> + timeout);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// told server do not hang me up if new initializing cacheData added in</span></span><br><span class="line">		<span class="keyword">if</span> (isInitializingCacheList) &#123;</span><br><span class="line">			headers.add(<span class="string">&quot;Long-Pulling-Timeout-No-Hangup&quot;</span>);</span><br><span class="line">			headers.add(<span class="string">&quot;true&quot;</span>);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (StringUtils.isBlank(probeUpdateString)) &#123;</span><br><span class="line">			<span class="keyword">return</span> Collections.emptyList();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			HttpResult result = agent.httpPost(Constants.CONFIG_CONTROLLER_PATH + <span class="string">&quot;/listener&quot;</span>, headers, params,</span><br><span class="line">					agent.getEncode(), timeout);</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (HttpURLConnection.HTTP_OK == result.code) &#123;</span><br><span class="line">				setHealthServer(<span class="keyword">true</span>);</span><br><span class="line">				<span class="keyword">return</span> parseUpdateDataIdResponse(result.content);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				setHealthServer(<span class="keyword">false</span>);</span><br><span class="line">				<span class="keyword">if</span> (result.code == HttpURLConnection.HTTP_INTERNAL_ERROR) &#123;</span><br><span class="line">					log.error(<span class="string">&quot;NACOS-0007&quot;</span>, LoggerHelper.getErrorCodeStr(<span class="string">&quot;Nacos&quot;</span>, <span class="string">&quot;Nacos-0007&quot;</span>, <span class="string">&quot;环境问题&quot;</span>,</span><br><span class="line">							<span class="string">&quot;[check-update] get changed dataId error&quot;</span>));</span><br><span class="line">				&#125;</span><br><span class="line">				log.error(agent.getName(), <span class="string">&quot;NACOS-XXXX&quot;</span>, <span class="string">&quot;[check-update] get changed dataId error, code=&#123;&#125;&quot;</span>,</span><br><span class="line">						result.code);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">			setHealthServer(<span class="keyword">false</span>);</span><br><span class="line">			log.error(agent.getName(), <span class="string">&quot;NACOS-XXXX&quot;</span>, <span class="string">&quot;[check-update] get changed dataId exception, msg=&#123;&#125;&quot;</span>,</span><br><span class="line">					e.toString());</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> Collections.emptyList();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个方法最终会发起http请求, 注意这里面有个 <code>timeout</code> 属性. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HttpResult result = agent.httpPost(Constants.CONFIG_CONTROLLER_PATH + <span class="string">&quot;/listener&quot;</span>, headers, params,</span><br><span class="line">					agent.getEncode(), timeout);</span><br></pre></td></tr></table></figure>
+
+
+
+<p> timeout 是在init这个方法中赋值的, 默认情况下是30秒, 可以通过 <code>configLongPollTimeout</code> 进行修改, </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(Properties properties)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">       timeout = Math.max(NumberUtils.toInt(properties.getProperty(PropertyKeyConst.CONFIG_LONG_POLL_TIMEOUT),</span><br><span class="line">           Constants.CONFIG_LONG_POLL_TIMEOUT), Constants.MIN_CONFIG_LONG_POLL_TIMEOUT);</span><br><span class="line"></span><br><span class="line">       taskPenaltyTime = NumberUtils.toInt(properties.getProperty(PropertyKeyConst.CONFIG_RETRY_TIME), Constants.CONFIG_RETRY_TIME);</span><br><span class="line"></span><br><span class="line">       enableRemoteSyncConfig = Boolean.parseBoolean(properties.getProperty(PropertyKeyConst.ENABLE_REMOTE_SYNC_CONFIG));</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>所有从这里得出的一个基本结论是:</p>
+<blockquote>
+<p>客户端发起一个轮询请求,超时时间是 30s, 那么客户端为什么要等待30s 才超时呢？不是越快越好吗?</p>
+</blockquote>
+<h2 id="客户端长轮询的时间间隔"><a href="#客户端长轮询的时间间隔" class="headerlink" title="客户端长轮询的时间间隔"></a>客户端长轮询的时间间隔</h2><p>我们可以在nacos 的日志目录下 <code>$NACOS_HOME/nacos/logs/config-client-request.log</code> 文件中: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">2019-08-04 13:22:19,736|0|nohangup|127.0.0.1|polling|1|55|0</span><br><span class="line">2019-08-04 13:22:49,443|29504|timeout|127.0.0.1|polling|1|55</span><br><span class="line">2019-08-04 13:23:18,983|29535|timeout|127.0.0.1|polling|1|55</span><br><span class="line">2019-08-04 13:23:48,493|29501|timeout|127.0.0.1|polling|1|55</span><br><span class="line">2019-08-04 13:24:18,003|29500|timeout|127.0.0.1|polling|1|55</span><br><span class="line">2019-08-04 13:24:47,509|29501|timeout|127.0.0.1|polling|1|55</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>可以看到一个现象, 在配置没有发生变化的情况下, 客户端会等待29.5s以上, 才请求到服务端的结果. 然后客户端拿到服务器端的结果后, 在做后续的操作. </p>
+<p>如果在配置发生变更的情况下, 由于客户端基于长轮询的连接保持, 所以返回的时间会非常短. 我摁可以做个小实验, 在<code>nacos console</code> 中频繁修改数据在观察一下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">2019-08-04 13:30:17,016|0|inadvance|127.0.0.1|polling|1|55|example+DEFAULT_GROUP</span><br><span class="line">2019-08-04</span><br><span class="line">13:30:17,022|3|null|127.0.0.1|get|example|DEFAULT_GROUP||e10e4d5973c497e490a8d7a</span><br><span class="line">9e4e9be64|unknown</span><br><span class="line">2019-08-04</span><br><span class="line">13:30:20,807|10|true|0:0:0:0:0:0:0:1|publish|example|DEFAULT_GROUP||81360b7e732a</span><br><span class="line">5dbb37d62d81cebb85d2|null</span><br><span class="line">2019-08-04 13:30:20,843|0|inadvance|127.0.0.1|polling|1|55|example+DEFAULT_GROUP</span><br><span class="line">2019-08-04</span><br><span class="line">13:30:20,848|1|null|127.0.0.1|get|example|DEFAULT_GROUP||81360b7e732a5dbb37d62d8</span><br><span class="line">1cebb85d2|unknown</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="http://files.luyanan.com//img/20191212102604.png"></p>
+<h2 id="服务端的处理"><a href="#服务端的处理" class="headerlink" title="服务端的处理"></a>服务端的处理</h2><p>分析完客户端之后, 随着好奇心的驱使, 服务端是如何处理客户端的请求呢? 那么同样, 我们需要思考几个问题:</p>
+<ul>
+<li>客户端的长轮询响应时间是受到哪些因素的影响</li>
+<li>客户端的超时时间为什么要设置30s</li>
+</ul>
+<p>客户端发送请求的地址是 <code>/v1/cs/configs/listener</code>, 找到服务端对应的方法. </p>
+<h3 id="ConfigController"><a href="#ConfigController" class="headerlink" title="ConfigController"></a>ConfigController</h3><p>nacos 是使用 spring mvc 提供的rest api, 这里会调用<code>inner.doPollingConfig</code> 进行处理. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 比较MD5</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="meta">@RequestMapping(value = &quot;/listener&quot;, method = RequestMethod.POST)</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">listener</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span></span></span><br><span class="line"><span class="function">       <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">       request.setAttribute(<span class="string">&quot;org.apache.catalina.ASYNC_SUPPORTED&quot;</span>, <span class="keyword">true</span>);</span><br><span class="line">       String probeModify = request.getParameter(<span class="string">&quot;Listening-Configs&quot;</span>);</span><br><span class="line">       <span class="keyword">if</span> (StringUtils.isBlank(probeModify)) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;invalid probeModify&quot;</span>);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       probeModify = URLDecoder.decode(probeModify, Constants.ENCODE);</span><br><span class="line"></span><br><span class="line">       Map&lt;String, String&gt; clientMd5Map;</span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           clientMd5Map = MD5Util.getClientMd5Map(probeModify);</span><br><span class="line">       &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;invalid probeModify&quot;</span>);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// do long-polling</span></span><br><span class="line">       inner.doPollingConfig(request, response, clientMd5Map, probeModify.length());</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="doPollingConfig"><a href="#doPollingConfig" class="headerlink" title="doPollingConfig"></a>doPollingConfig</h3><p>这个方法中,兼容了长轮询和短轮询的逻辑, 我们只需要关注长轮询的部分, 再次进入到 <code>longPollingService.addLongPollingClient</code> </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 轮询接口</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">doPollingConfig</span><span class="params">(HttpServletRequest request, HttpServletResponse response,</span></span></span><br><span class="line"><span class="function"><span class="params">                                Map&lt;String, String&gt; clientMd5Map, <span class="keyword">int</span> probeRequestSize)</span></span></span><br><span class="line"><span class="function">      <span class="keyword">throws</span> IOException, ServletException </span>&#123;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 长轮询</span></span><br><span class="line">      <span class="keyword">if</span> (LongPollingService.isSupportLongPolling(request)) &#123;</span><br><span class="line">          longPollingService.addLongPollingClient(request, response, clientMd5Map, probeRequestSize);</span><br><span class="line">          <span class="keyword">return</span> HttpServletResponse.SC_OK + <span class="string">&quot;&quot;</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// else 兼容短轮询逻辑</span></span><br><span class="line">      List&lt;String&gt; changedGroups = MD5Util.compareMd5(request, response, clientMd5Map);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 兼容短轮询result</span></span><br><span class="line">      String oldResult = MD5Util.compareMd5OldResult(changedGroups);</span><br><span class="line">      String newResult = MD5Util.compareMd5ResultString(changedGroups);</span><br><span class="line"></span><br><span class="line">      String version = request.getHeader(Constants.CLIENT_VERSION_HEADER);</span><br><span class="line">      <span class="keyword">if</span> (version == <span class="keyword">null</span>) &#123;</span><br><span class="line">          version = <span class="string">&quot;2.0.0&quot;</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">int</span> versionNum = Protocol.getVersionNumber(version);</span><br><span class="line"></span><br><span class="line">      <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * 2.0.4版本以前, 返回值放入header中</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      <span class="keyword">if</span> (versionNum &lt; START_LONGPOLLING_VERSION_NUM) &#123;</span><br><span class="line">          response.addHeader(Constants.PROBE_MODIFY_RESPONSE, oldResult);</span><br><span class="line">          response.addHeader(Constants.PROBE_MODIFY_RESPONSE_NEW, newResult);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          request.setAttribute(<span class="string">&quot;content&quot;</span>, newResult);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 禁用缓存</span></span><br><span class="line">      response.setHeader(<span class="string">&quot;Pragma&quot;</span>, <span class="string">&quot;no-cache&quot;</span>);</span><br><span class="line">      response.setDateHeader(<span class="string">&quot;Expires&quot;</span>, <span class="number">0</span>);</span><br><span class="line">      response.setHeader(<span class="string">&quot;Cache-Control&quot;</span>, <span class="string">&quot;no-cache,no-store&quot;</span>);</span><br><span class="line">      response.setStatus(HttpServletResponse.SC_OK);</span><br><span class="line">      <span class="keyword">return</span> HttpServletResponse.SC_OK + <span class="string">&quot;&quot;</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="longPollingService-addLongPollingClient"><a href="#longPollingService-addLongPollingClient" class="headerlink" title="longPollingService.addLongPollingClient"></a>longPollingService.addLongPollingClient</h3><p>从方法的名字上可以推出, 这个方法应该是把客户端的长轮询请求添加到某个任务中. </p>
+<ul>
+<li>获得客户端传递过来的超时时间, 并且进行本地计算, 提前500s 返回响应, 这就能解释为什么客户端响应超时时间是29.5+了, 当然如果 <code>isFixedPolling=true</code> 的情况下, 不会提前返回响应. </li>
+<li>根据客户端请求过来的md5和服务端对应的group 下对应内容的md5 进行比较, 如果不一致, 则通过<code>generateResponse</code>  将结果返回. </li>
+<li>如果配置文件没有发生变化, 则通过 <code>scheduler.execute</code>   启动了一个定时任务, 将客户端的长轮询请求封装成一个叫<code> ClientLongPolling</code> 的任务, 交给 <code> scheduler</code> 去执行. </li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addLongPollingClient</span><span class="params">(HttpServletRequest req, HttpServletResponse rsp, Map&lt;String, String&gt; clientMd5Map,</span></span></span><br><span class="line"><span class="function"><span class="params">                                   <span class="keyword">int</span> probeRequestSize)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">      String str = req.getHeader(LongPollingService.LONG_POLLING_HEADER);</span><br><span class="line">      String noHangUpFlag = req.getHeader(LongPollingService.LONG_POLLING_NO_HANG_UP_HEADER);</span><br><span class="line">      String appName = req.getHeader(RequestUtil.CLIENT_APPNAME_HEADER);</span><br><span class="line">      String tag = req.getHeader(<span class="string">&quot;Vipserver-Tag&quot;</span>);</span><br><span class="line">      <span class="keyword">int</span> delayTime = SwitchService.getSwitchInteger(SwitchService.FIXED_DELAY_TIME, <span class="number">500</span>);</span><br><span class="line">      <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * 提前500ms返回响应，为避免客户端超时 <span class="doctag">@qiaoyi</span>.dingqy 2013.10.22改动  add delay time for LoadBalance</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      <span class="keyword">long</span> timeout = Math.max(<span class="number">10000</span>, Long.parseLong(str) - delayTime);</span><br><span class="line">      <span class="keyword">if</span> (isFixedPolling()) &#123;</span><br><span class="line">          timeout = Math.max(<span class="number">10000</span>, getFixedPollingInterval());</span><br><span class="line">          <span class="comment">// do nothing but set fix polling timeout</span></span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">          List&lt;String&gt; changedGroups = MD5Util.compareMd5(req, rsp, clientMd5Map);</span><br><span class="line">          <span class="keyword">if</span> (changedGroups.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">              generateResponse(req, rsp, changedGroups);</span><br><span class="line">              LogUtil.clientLog.info(<span class="string">&quot;&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;&quot;</span>,</span><br><span class="line">                  System.currentTimeMillis() - start, <span class="string">&quot;instant&quot;</span>, RequestUtil.getRemoteIp(req), <span class="string">&quot;polling&quot;</span>,</span><br><span class="line">                  clientMd5Map.size(), probeRequestSize, changedGroups.size());</span><br><span class="line">              <span class="keyword">return</span>;</span><br><span class="line">          &#125; <span class="keyword">else</span> <span class="keyword">if</span> (noHangUpFlag != <span class="keyword">null</span> &amp;&amp; noHangUpFlag.equalsIgnoreCase(TRUE_STR)) &#123;</span><br><span class="line">              LogUtil.clientLog.info(<span class="string">&quot;&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;&quot;</span>, System.currentTimeMillis() - start, <span class="string">&quot;nohangup&quot;</span>,</span><br><span class="line">                  RequestUtil.getRemoteIp(req), <span class="string">&quot;polling&quot;</span>, clientMd5Map.size(), probeRequestSize,</span><br><span class="line">                  changedGroups.size());</span><br><span class="line">              <span class="keyword">return</span>;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      String ip = RequestUtil.getRemoteIp(req);</span><br><span class="line">      <span class="comment">// 一定要由HTTP线程调用，否则离开后容器会立即发送响应</span></span><br><span class="line">      <span class="keyword">final</span> AsyncContext asyncContext = req.startAsync();</span><br><span class="line">      <span class="comment">// AsyncContext.setTimeout()的超时时间不准，所以只能自己控制</span></span><br><span class="line">      asyncContext.setTimeout(<span class="number">0L</span>);</span><br><span class="line"></span><br><span class="line">      scheduler.execute(</span><br><span class="line">          <span class="keyword">new</span> ClientLongPolling(asyncContext, clientMd5Map, ip, probeRequestSize, timeout, appName, tag));</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="ClientLongPolling"><a href="#ClientLongPolling" class="headerlink" title="ClientLongPolling"></a>ClientLongPolling</h3><p>我们来分析一下, ClientLongPolling 到底做了什么操作? 或者说我们可以先猜测一下应该会做什么事情? </p>
+<ul>
+<li>这个任务是要阻塞 29.5s 才能执行, 以为立马执行没有任何意思, 毕竟前面已经执行过一次了</li>
+<li>如果在29.5s+ 之内, 数据发生变化, 需要提前通知, 需要有一种监控机制. </li>
+</ul>
+<p>基于这些猜想, 我们来看看他的实现过程. </p>
+<p>从代码粗粒度来看 ，它的实现似乎跟我们的猜想一致, 在run方法中, 通过<code>scheduler.schedule</code> 实现了一个定时任务, 它的delay 时间正好是前面计算的29.5s. 在这个任务中, 会通过<code>MD5Util.compareMd5</code> 来进行计算. </p>
+<p>那另外一个, 当数据发生变化以后, 肯定不能得到 29.5s 之后才通知呀, 那怎么办呢? 我们发现有一个 <code>allsubs</code> 的东西, 它似乎和发布订阅有关系,那是不是有可能当前的<code>clientLongPolling</code> 订阅了数据变化的时间呢? </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">          asyncTimeoutFuture = scheduler.schedule(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">              <span class="meta">@Override</span></span><br><span class="line">              <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                  <span class="keyword">try</span> &#123;</span><br><span class="line">                      getRetainIps().put(ClientLongPolling.<span class="keyword">this</span>.ip, System.currentTimeMillis());</span><br><span class="line">                      <span class="comment">/**</span></span><br><span class="line"><span class="comment">                       * 删除订阅关系</span></span><br><span class="line"><span class="comment">                       */</span></span><br><span class="line">                      allSubs.remove(ClientLongPolling.<span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">                      <span class="keyword">if</span> (isFixedPolling()) &#123;</span><br><span class="line">                          LogUtil.clientLog.info(<span class="string">&quot;&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;&quot;</span>,</span><br><span class="line">                              (System.currentTimeMillis() - createTime),</span><br><span class="line">                              <span class="string">&quot;fix&quot;</span>, RequestUtil.getRemoteIp((HttpServletRequest)asyncContext.getRequest()),</span><br><span class="line">                              <span class="string">&quot;polling&quot;</span>,</span><br><span class="line">                              clientMd5Map.size(), probeRequestSize);</span><br><span class="line">                          List&lt;String&gt; changedGroups = MD5Util.compareMd5(</span><br><span class="line">                              (HttpServletRequest)asyncContext.getRequest(),</span><br><span class="line">                              (HttpServletResponse)asyncContext.getResponse(), clientMd5Map);</span><br><span class="line">                          <span class="keyword">if</span> (changedGroups.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                              sendResponse(changedGroups);</span><br><span class="line">                          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                              sendResponse(<span class="keyword">null</span>);</span><br><span class="line">                          &#125;</span><br><span class="line">                      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                          LogUtil.clientLog.info(<span class="string">&quot;&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;&quot;</span>,</span><br><span class="line">                              (System.currentTimeMillis() - createTime),</span><br><span class="line">                              <span class="string">&quot;timeout&quot;</span>, RequestUtil.getRemoteIp((HttpServletRequest)asyncContext.getRequest()),</span><br><span class="line">                              <span class="string">&quot;polling&quot;</span>,</span><br><span class="line">                              clientMd5Map.size(), probeRequestSize);</span><br><span class="line">                          sendResponse(<span class="keyword">null</span>);</span><br><span class="line">                      &#125;</span><br><span class="line">                  &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                      LogUtil.defaultLog.error(<span class="string">&quot;long polling error:&quot;</span> + t.getMessage(), t.getCause());</span><br><span class="line">                  &#125;</span><br><span class="line"></span><br><span class="line">              &#125;</span><br><span class="line"></span><br><span class="line">          &#125;, timeoutTime, TimeUnit.MILLISECONDS);</span><br><span class="line"></span><br><span class="line">          allSubs.add(<span class="keyword">this</span>);</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="allSubs"><a href="#allSubs" class="headerlink" title="allSubs"></a>allSubs</h3><p>allSubs 是一个队列, 队列里面存放了 <code>ClientLongPolling</code> 这个对象, 这个队列似乎和配置变更有某种关联关系. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 长轮询订阅关系</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">final</span> Queue&lt;ClientLongPolling&gt; allSubs;	</span><br></pre></td></tr></table></figure>
+
+
+
+<p>那这个时候, 我的第一想法是, 先去看一下当前类的类图, 发现 <code>LongPollingService</code> 继承了<code>AbstractEventListener</code>,事件监听. </p>
+<p><img src="http://files.luyanan.com//img/20191212111937.png"></p>
+<h3 id="AbstractEventListener"><a href="#AbstractEventListener" class="headerlink" title="AbstractEventListener"></a>AbstractEventListener</h3><p>这里面有个抽象的onEvent方法, 明显是用来处理事件的方法, 而抽象方法必须由子类实现, 所以意味着<code>LongPollingService</code> 里面肯定实现了onEvent 方法. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractEventListener</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="title">AbstractEventListener</span><span class="params">()</span> </span>&#123;</span><br><span class="line">          <span class="comment">/**</span></span><br><span class="line"><span class="comment">           * automatic register</span></span><br><span class="line"><span class="comment">           */</span></span><br><span class="line">          EventDispatcher.addEventListener(<span class="keyword">this</span>);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * 感兴趣的事件列表</span></span><br><span class="line"><span class="comment">       *</span></span><br><span class="line"><span class="comment">       * <span class="doctag">@return</span> event list</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      <span class="keyword">abstract</span> <span class="keyword">public</span> List&lt;Class&lt;? extends Event&gt;&gt; interest();</span><br><span class="line"></span><br><span class="line">      <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * 处理事件</span></span><br><span class="line"><span class="comment">       *</span></span><br><span class="line"><span class="comment">       * <span class="doctag">@param</span> event event</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      <span class="function"><span class="keyword">abstract</span> <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Event event)</span></span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="LongPollingService-onEvent"><a href="#LongPollingService-onEvent" class="headerlink" title="LongPollingService.onEvent"></a>LongPollingService.onEvent</h3><p>这个事件的实现方法中: </p>
+<ul>
+<li>判断事件类型是否为<code>LocalDataChangeEvent</code></li>
+<li>通过<code>scheduler.execute</code> 执行 <code>DataChangeTask</code> 这个任务. </li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(Event event)</span> </span>&#123;</span><br><span class="line">     <span class="keyword">if</span> (isFixedPolling()) &#123;</span><br><span class="line">         <span class="comment">// ignore</span></span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">         <span class="keyword">if</span> (event <span class="keyword">instanceof</span> LocalDataChangeEvent) &#123;</span><br><span class="line">             LocalDataChangeEvent evt = (LocalDataChangeEvent)event;</span><br><span class="line">             scheduler.execute(<span class="keyword">new</span> DataChangeTask(evt.groupKey, evt.isBeta, evt.betaIps));</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="DataChangeTask-run"><a href="#DataChangeTask-run" class="headerlink" title="DataChangeTask.run"></a>DataChangeTask.run</h3><p>从名字来看, 这个是数据变化的任务, 最让人兴奋的是, 这里面有一个循环迭代器, 从 <code>allsubs</code> 里面获取<code>ClientLongPolling</code></p>
+<p>最后通过<code>clientSub.sendResponse</code>把数据返回到客户端, 所以这也就能理解为啥数据变化能够实时触发更新了. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            ConfigService.getContentBetaMd5(groupKey);</span><br><span class="line">            <span class="keyword">for</span> (Iterator&lt;ClientLongPolling&gt; iter = allSubs.iterator(); iter.hasNext(); ) &#123;</span><br><span class="line">                ClientLongPolling clientSub = iter.next();</span><br><span class="line">                <span class="keyword">if</span> (clientSub.clientMd5Map.containsKey(groupKey)) &#123;</span><br><span class="line">                    <span class="comment">// 如果beta发布且不在beta列表直接跳过</span></span><br><span class="line">                    <span class="keyword">if</span> (isBeta &amp;&amp; !betaIps.contains(clientSub.ip)) &#123;</span><br><span class="line">                        <span class="keyword">continue</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 如果tag发布且不在tag列表直接跳过</span></span><br><span class="line">                    <span class="keyword">if</span> (StringUtils.isNotBlank(tag) &amp;&amp; !tag.equals(clientSub.tag)) &#123;</span><br><span class="line">                        <span class="keyword">continue</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    getRetainIps().put(clientSub.ip, System.currentTimeMillis());</span><br><span class="line">                    iter.remove(); <span class="comment">// 删除订阅关系</span></span><br><span class="line">                    LogUtil.clientLog.info(<span class="string">&quot;&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;|&#123;&#125;&quot;</span>,</span><br><span class="line">                        (System.currentTimeMillis() - changeTime),</span><br><span class="line">                        <span class="string">&quot;in-advance&quot;</span>,</span><br><span class="line">                        RequestUtil.getRemoteIp((HttpServletRequest)clientSub.asyncContext.getRequest()),</span><br><span class="line">                        <span class="string">&quot;polling&quot;</span>,</span><br><span class="line">                        clientSub.clientMd5Map.size(), clientSub.probeRequestSize, groupKey);</span><br><span class="line">                    clientSub.sendResponse(Arrays.asList(groupKey));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">            LogUtil.defaultLog.error(<span class="string">&quot;data change error:&quot;</span> + t.getMessage(), t.getCause());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>那么接下来的一个疑问是, 数据变化之后是如何触发事件的呢? 所以我们定位到数据变化的请求类中, 在 <code>configController</code> 这个类中, 找到POST 请求的方法. </p>
+<p>找到配置变更的位置, 发现数据持久化之后 , 会通过<code>EventDispatcher</code> 进行事件发布, <code>EventDispatcher.fireEvent</code>. 但这个事件似乎不是我们所关心的时间, 原因是这里发布的事件是 <code>ConfigDataChangeEvent</code>,而<code>LongPollingService</code> 最感兴趣的事件是 <code>LocalDataChangeEvent</code>. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 增加或更新非聚合数据。</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@throws</span> NacosException</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="meta">@RequestMapping(method = RequestMethod.POST)</span></span><br><span class="line">  <span class="meta">@ResponseBody</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Boolean <span class="title">publishConfig</span><span class="params">(HttpServletRequest request, HttpServletResponse response,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="meta">@RequestParam(&quot;dataId&quot;)</span> String dataId, <span class="meta">@RequestParam(&quot;group&quot;)</span> String group,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="meta">@RequestParam(value = &quot;tenant&quot;, required = false, defaultValue = StringUtils.EMPTY)</span></span></span></span><br><span class="line"><span class="function"><span class="params">                                   String tenant,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="meta">@RequestParam(&quot;content&quot;)</span> String content,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="meta">@RequestParam(value = &quot;tag&quot;, required = false)</span> String tag,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="meta">@RequestParam(value = &quot;appName&quot;, required = false)</span> String appName,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="meta">@RequestParam(value = &quot;src_user&quot;, required = false)</span> String srcUser,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="meta">@RequestParam(value = &quot;config_tags&quot;, required = false)</span> String configTags,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="meta">@RequestParam(value = &quot;desc&quot;, required = false)</span> String desc,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="meta">@RequestParam(value = &quot;use&quot;, required = false)</span> String use,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="meta">@RequestParam(value = &quot;effect&quot;, required = false)</span> String effect,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="meta">@RequestParam(value = &quot;type&quot;, required = false)</span> String type,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="meta">@RequestParam(value = &quot;schema&quot;, required = false)</span> String schema)</span></span></span><br><span class="line"><span class="function">      <span class="keyword">throws</span> NacosException </span>&#123;</span><br><span class="line">      <span class="keyword">final</span> String srcIp = RequestUtil.getRemoteIp(request);</span><br><span class="line">      String requestIpApp = RequestUtil.getAppName(request);</span><br><span class="line">      ParamUtils.checkParam(dataId, group, <span class="string">&quot;datumId&quot;</span>, content);</span><br><span class="line">      ParamUtils.checkParam(tag);</span><br><span class="line"></span><br><span class="line">      Map&lt;String, Object&gt; configAdvanceInfo = <span class="keyword">new</span> HashMap&lt;String, Object&gt;(<span class="number">10</span>);</span><br><span class="line">      <span class="keyword">if</span> (configTags != <span class="keyword">null</span>) &#123;</span><br><span class="line">          configAdvanceInfo.put(<span class="string">&quot;config_tags&quot;</span>, configTags);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (desc != <span class="keyword">null</span>) &#123;</span><br><span class="line">          configAdvanceInfo.put(<span class="string">&quot;desc&quot;</span>, desc);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (use != <span class="keyword">null</span>) &#123;</span><br><span class="line">          configAdvanceInfo.put(<span class="string">&quot;use&quot;</span>, use);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (effect != <span class="keyword">null</span>) &#123;</span><br><span class="line">          configAdvanceInfo.put(<span class="string">&quot;effect&quot;</span>, effect);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (type != <span class="keyword">null</span>) &#123;</span><br><span class="line">          configAdvanceInfo.put(<span class="string">&quot;type&quot;</span>, type);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (schema != <span class="keyword">null</span>) &#123;</span><br><span class="line">          configAdvanceInfo.put(<span class="string">&quot;schema&quot;</span>, schema);</span><br><span class="line">      &#125;</span><br><span class="line">      ParamUtils.checkParam(configAdvanceInfo);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (AggrWhitelist.isAggrDataId(dataId)) &#123;</span><br><span class="line">          log.warn(<span class="string">&quot;[aggr-conflict] &#123;&#125; attemp to publish single data, &#123;&#125;, &#123;&#125;&quot;</span>,</span><br><span class="line">              RequestUtil.getRemoteIp(request), dataId, group);</span><br><span class="line">          <span class="keyword">throw</span> <span class="keyword">new</span> NacosException(NacosException.NO_RIGHT, <span class="string">&quot;dataId:&quot;</span> + dataId + <span class="string">&quot; is aggr&quot;</span>);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">final</span> Timestamp time = TimeUtils.getCurrentTime();</span><br><span class="line">      String betaIps = request.getHeader(<span class="string">&quot;betaIps&quot;</span>);</span><br><span class="line">      ConfigInfo configInfo = <span class="keyword">new</span> ConfigInfo(dataId, group, tenant, appName, content);</span><br><span class="line">      <span class="keyword">if</span> (StringUtils.isBlank(betaIps)) &#123;</span><br><span class="line">          <span class="keyword">if</span> (StringUtils.isBlank(tag)) &#123;</span><br><span class="line">              persistService.insertOrUpdate(srcIp, srcUser, configInfo, time, configAdvanceInfo, <span class="keyword">false</span>);</span><br><span class="line">              EventDispatcher.fireEvent(<span class="keyword">new</span> ConfigDataChangeEvent(<span class="keyword">false</span>, dataId, group, tenant, time.getTime()));</span><br><span class="line">          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">              persistService.insertOrUpdateTag(configInfo, tag, srcIp, srcUser, time, <span class="keyword">false</span>);</span><br><span class="line">              EventDispatcher.fireEvent(<span class="keyword">new</span> ConfigDataChangeEvent(<span class="keyword">false</span>, dataId, group, tenant, tag, time.getTime()));</span><br><span class="line">          &#125;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123; <span class="comment">// beta publish</span></span><br><span class="line">          persistService.insertOrUpdateBeta(configInfo, betaIps, srcIp, srcUser, time, <span class="keyword">false</span>);</span><br><span class="line">          EventDispatcher.fireEvent(<span class="keyword">new</span> ConfigDataChangeEvent(<span class="keyword">true</span>, dataId, group, tenant, time.getTime()));</span><br><span class="line">      &#125;</span><br><span class="line">      ConfigTraceService.logPersistenceEvent(dataId, group, tenant, requestIpApp, time.getTime(),</span><br><span class="line">          LOCAL_IP, ConfigTraceService.PERSISTENCE_EVENT_PUB, content);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>后来我发现, 在 Nacos中有一个 <code>DumpService</code>, 它会定时把变更后的数据 dump 到磁盘上, <code>DumpService</code> 在spring 启动后, 会调用init 方法 启动几个 dump任务, 然后在任务结束后, 会触发一个 <code>LocalDataChangeEvent</code> 的事件. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostConstruct</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       LogUtil.defaultLog.warn(<span class="string">&quot;DumpService start&quot;</span>);</span><br><span class="line">       DumpProcessor processor = <span class="keyword">new</span> DumpProcessor(<span class="keyword">this</span>);</span><br><span class="line">       DumpAllProcessor dumpAllProcessor = <span class="keyword">new</span> DumpAllProcessor(<span class="keyword">this</span>);</span><br><span class="line">       DumpAllBetaProcessor dumpAllBetaProcessor = <span class="keyword">new</span> DumpAllBetaProcessor(<span class="keyword">this</span>);</span><br><span class="line">       DumpAllTagProcessor dumpAllTagProcessor = <span class="keyword">new</span> DumpAllTagProcessor(<span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">       dumpTaskMgr = <span class="keyword">new</span> TaskManager(</span><br><span class="line">           <span class="string">&quot;com.alibaba.nacos.server.DumpTaskManager&quot;</span>);</span><br><span class="line">       dumpTaskMgr.setDefaultTaskProcessor(processor);</span><br><span class="line"></span><br><span class="line">       dumpAllTaskMgr = <span class="keyword">new</span> TaskManager(</span><br><span class="line">           <span class="string">&quot;com.alibaba.nacos.server.DumpAllTaskManager&quot;</span>);</span><br><span class="line">       dumpAllTaskMgr.setDefaultTaskProcessor(dumpAllProcessor);</span><br><span class="line"></span><br><span class="line">       Runnable dumpAll = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">           <span class="meta">@Override</span></span><br><span class="line">           <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">               dumpAllTaskMgr.addTask(DumpAllTask.TASK_ID, <span class="keyword">new</span> DumpAllTask());</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;;</span><br><span class="line"></span><br><span class="line">       Runnable dumpAllBeta = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">           <span class="meta">@Override</span></span><br><span class="line">           <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">               dumpAllTaskMgr.addTask(DumpAllBetaTask.TASK_ID, <span class="keyword">new</span> DumpAllBetaTask());</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;;</span><br><span class="line"></span><br><span class="line">       Runnable clearConfigHistory = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">           <span class="meta">@Override</span></span><br><span class="line">           <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">               log.warn(<span class="string">&quot;clearConfigHistory start&quot;</span>);</span><br><span class="line">               <span class="keyword">if</span> (ServerListService.isFirstIp()) &#123;</span><br><span class="line">                   <span class="keyword">try</span> &#123;</span><br><span class="line">                       Timestamp startTime = getBeforeStamp(TimeUtils.getCurrentTime(), <span class="number">24</span> * getRetentionDays());</span><br><span class="line">                       <span class="keyword">int</span> totalCount = persistService.findConfigHistoryCountByTime(startTime);</span><br><span class="line">                       <span class="keyword">if</span> (totalCount &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                           <span class="keyword">int</span> pageSize = <span class="number">1000</span>;</span><br><span class="line">                           <span class="keyword">int</span> removeTime = (totalCount + pageSize - <span class="number">1</span>) / pageSize;</span><br><span class="line">                           log.warn(<span class="string">&quot;clearConfigHistory, getBeforeStamp:&#123;&#125;, totalCount:&#123;&#125;, pageSize:&#123;&#125;, removeTime:&#123;&#125;&quot;</span>,</span><br><span class="line">                               <span class="keyword">new</span> Object[] &#123;startTime, totalCount, pageSize, removeTime&#125;);</span><br><span class="line">                           <span class="keyword">while</span> (removeTime &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                               <span class="comment">// 分页删除，以免批量太大报错</span></span><br><span class="line">                               persistService.removeConfigHistory(startTime, pageSize);</span><br><span class="line">                               removeTime--;</span><br><span class="line">                           &#125;</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">                       log.error(<span class="string">&quot;clearConfigHistory error&quot;</span>, e);</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           dumpConfigInfo(dumpAllProcessor);</span><br><span class="line"></span><br><span class="line">           <span class="comment">// 更新beta缓存</span></span><br><span class="line">           LogUtil.defaultLog.info(<span class="string">&quot;start clear all config-info-beta.&quot;</span>);</span><br><span class="line">           DiskUtil.clearAllBeta();</span><br><span class="line">           <span class="keyword">if</span> (persistService.isExistTable(BETA_TABLE_NAME)) &#123;</span><br><span class="line">               dumpAllBetaProcessor.process(DumpAllBetaTask.TASK_ID, <span class="keyword">new</span> DumpAllBetaTask());</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="comment">// 更新Tag缓存</span></span><br><span class="line">           LogUtil.defaultLog.info(<span class="string">&quot;start clear all config-info-tag.&quot;</span>);</span><br><span class="line">           DiskUtil.clearAllTag();</span><br><span class="line">           <span class="keyword">if</span> (persistService.isExistTable(TAG_TABLE_NAME)) &#123;</span><br><span class="line">               dumpAllTagProcessor.process(DumpAllTagTask.TASK_ID, <span class="keyword">new</span> DumpAllTagTask());</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           <span class="comment">// add to dump aggr</span></span><br><span class="line">           List&lt;ConfigInfoChanged&gt; configList = persistService.findAllAggrGroup();</span><br><span class="line">           <span class="keyword">if</span> (configList != <span class="keyword">null</span> &amp;&amp; !configList.isEmpty()) &#123;</span><br><span class="line">               total = configList.size();</span><br><span class="line">               List&lt;List&lt;ConfigInfoChanged&gt;&gt; splitList = splitList(configList, INIT_THREAD_COUNT);</span><br><span class="line">               <span class="keyword">for</span> (List&lt;ConfigInfoChanged&gt; list : splitList) &#123;</span><br><span class="line">                   MergeAllDataWorker work = <span class="keyword">new</span> MergeAllDataWorker(list);</span><br><span class="line">                   work.start();</span><br><span class="line">               &#125;</span><br><span class="line">               log.info(<span class="string">&quot;server start, schedule merge end.&quot;</span>);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">           LogUtil.fatalLog.error(</span><br><span class="line">               <span class="string">&quot;Nacos Server did not start because dumpservice bean construction failure :\n&quot;</span> + e.getMessage(),</span><br><span class="line">               e.getCause());</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</span><br><span class="line">               <span class="string">&quot;Nacos Server did not start because dumpservice bean construction failure :\n&quot;</span> + e.getMessage());</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">if</span> (!STANDALONE_MODE) &#123;</span><br><span class="line">           Runnable heartbeat = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                   String heartBeatTime = TimeUtils.getCurrentTime().toString();</span><br><span class="line">                   <span class="comment">// write disk</span></span><br><span class="line">                   <span class="keyword">try</span> &#123;</span><br><span class="line">                       DiskUtil.saveHeartBeatToDisk(heartBeatTime);</span><br><span class="line">                   &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                       LogUtil.fatalLog.error(<span class="string">&quot;save heartbeat fail&quot;</span> + e.getMessage());</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;;</span><br><span class="line"></span><br><span class="line">           TimerTaskService.scheduleWithFixedDelay(heartbeat, <span class="number">0</span>, <span class="number">10</span>, TimeUnit.SECONDS);</span><br><span class="line"></span><br><span class="line">           <span class="keyword">long</span> initialDelay = <span class="keyword">new</span> Random().nextInt(INITIAL_DELAY_IN_MINUTE) + <span class="number">10</span>;</span><br><span class="line">           LogUtil.defaultLog.warn(<span class="string">&quot;initialDelay:&#123;&#125;&quot;</span>, initialDelay);</span><br><span class="line"></span><br><span class="line">           TimerTaskService.scheduleWithFixedDelay(dumpAll, initialDelay, DUMP_ALL_INTERVAL_IN_MINUTE,</span><br><span class="line">               TimeUnit.MINUTES);</span><br><span class="line"></span><br><span class="line">           TimerTaskService.scheduleWithFixedDelay(dumpAllBeta, initialDelay, DUMP_ALL_INTERVAL_IN_MINUTE,</span><br><span class="line">               TimeUnit.MINUTES);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       TimerTaskService.scheduleWithFixedDelay(clearConfigHistory, <span class="number">10</span>, <span class="number">10</span>, TimeUnit.MINUTES);</span><br><span class="line"></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="简单总结"><a href="#简单总结" class="headerlink" title="简单总结"></a>简单总结</h2><p>简单总结一i下刚才分析的过程: </p>
+<ul>
+<li><p>客户端发起长轮询请求. </p>
+</li>
+<li><p>服务端收到i请求后, 先比较服务端缓存中的数据是否相同,如果不同, 则直接返回. </p>
+</li>
+<li><p>如果相同, 则通过 <code>schedule</code> 延迟29.5s 之后再执行比较. </p>
+</li>
+<li><p>为了保证当服务端在 29.5s之内数据发生变化能够及时的通知给客户端, 服务端采用事件订阅的方式来监听服务端本地数据变化的事件, 一旦收到事件, 则触发<code>ClientLongPolling</code> , 把结果写回到客户端, 就完成了一次数据的推送. </p>
+</li>
+<li><p>如果 <code>ClientLongPolling</code> 任务完成了数据的推送之后, ClientLongPolling 中的调度任务又开始执行了怎么办？</p>
+<p>  很见到那, 只要在进行推送操作之前, 先将原来等待执行的调度任务取消就行了,这样就方式了推送操作写完响应数据之后， 调用任务又去写响应数据, 这时肯定报错. 所以, 在<code>ClientLongPolling</code> 方法中, 最开始的一个步骤就是删除订阅事件. </p>
+</li>
+</ul>
+<p>所以总的来说, Nacos 采用推+拉的方式, 来解决最开始关于长轮询事件间隔的问题, 当然, 30s 这个时间是可以设置的, 之所以设置成30s, 应该是一个经验值, </p>
+<h1 id="集群选举问题"><a href="#集群选举问题" class="headerlink" title="集群选举问题"></a>集群选举问题</h1><p>Nacos 支持集群模式,很显然, . </p>
+<p>而一旦涉及到集群, 就涉及到主从, 那么nacos 是一种什么样的机制来实现集群的呢? </p>
+<p>nacos 的集群模式类似于zookeeper, 它分为leader 角色和 follower角色, 那么从这个角色的名字可以看出, 这个集群存在选举的机制, 因为如果自己不具备选举功能, 角色的命名可能就是master/slave了. </p>
+<h2 id="选举算法"><a href="#选举算法" class="headerlink" title="选举算法"></a>选举算法</h2><p>nacos集群采用<code>raft</code> 算法来实现, 它是相对于zookeeper 的选举算法来说比较简单的一种. </p>
+<p>选举算法的核心在 <code>RaftCore</code>中, 包括数据的处理和数据的同步. </p>
+<p>在Raft 算法中, 节点有三种角色: </p>
+<ul>
+<li>Leader : 负责接受客户端的请求. </li>
+<li>Candidate: 用于选举Leader 的一种角色</li>
+<li>Follower: 负责响应来自leader  或者Candidate 的请求. </li>
+</ul>
+<p>选举分为两个节点:</p>
+<ul>
+<li>服务启动的时候</li>
+<li>leader 挂了的时候</li>
+</ul>
+<p>所有节点启动的时候, 都是 folower 状态, 如果在一段时间内如果没有收到leader 的心跳(可能是没有leader 或者leader 挂了), 那么folower 会变成Candidate . 然后发起选举, 在选举之前, 会增加term, 这个term 和zookeeper 中的epoch 的道理是一样的. </p>
+<ul>
+<li>folower 会投自己一票, 并且给其他节点发送票据<code>vote</code>, 等待其他节点回复. </li>
+<li>在这个过程中, 可能出现几种情况: <ul>
+<li>收到过半的票数通过, 则成为leader</li>
+<li>被告知其他节点已经成为了leader, 则自己切换为 folower</li>
+<li>一段时间内没有收到过半的投票, 则重新发起选举. </li>
+</ul>
+</li>
+<li>约束条件在任一term中, 单个节点最多只能投一票. </li>
+</ul>
+<p>选举的几种情况: </p>
+<ul>
+<li>第一种情况:  赢得选举后, leader 会给所有节点发送消息, 避免其他节点触发新的选举. </li>
+<li>第二种情况: 比如有三个节点A、B、C。 A、B 同时发起选举, 而A的选举消息先达到C,C给A 投了一票, 当B 的消息达到C时, 已经不能满足上面提到的第一个约束, 而C不会给B投票, 而A和B显然都不会给对方投票. A 胜出之后, 会给B、C 发送心跳消息, 节点B发现节点A的term 不低于自己的term, 知道已经有了leader, 于是转换为folower. </li>
+<li>第三种情况: 没有任何节点获得投票, 可能是平票的情况. 加入总共有四个节点, (A/B/C/D). NodeC、NodeD 同时成为了 candidate.但NodeA  投了NodeD 一票,NodeB 投了NodeC 一票. 这就出现了凭票 spilt vote 的情况. 这个时候大家都在等呀等呀. 知道超时后重新发起选举, 如果出现平票的情况, 那么就延长了系统不可用的时间, 于是raft 就引入了<code>randomized election timeouts</code>  来尽量避免平票的情况. </li>
+</ul>
+<h2 id="数据的处理"><a href="#数据的处理" class="headerlink" title="数据的处理"></a>数据的处理</h2><p>对于事务操作, 请求会转发给leader. </p>
+<p>非事务操作, 可以任意一个节点来处理. </p>
+<p>下面这段代码摘自 RaftCore,.在发布内容的时候, 做了两个事情. </p>
+<ul>
+<li>如果当前的节点不是leader, 则转发给leader 节点处理. </li>
+<li>如果是, 则向所有节点发送 onPublish</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">signalPublish</span><span class="params">(String key, Record value)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (!isLeader()) &#123;</span><br><span class="line">           JSONObject params = <span class="keyword">new</span> JSONObject();</span><br><span class="line">           params.put(<span class="string">&quot;key&quot;</span>, key);</span><br><span class="line">           params.put(<span class="string">&quot;value&quot;</span>, value);</span><br><span class="line">           Map&lt;String, String&gt; parameters = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">1</span>);</span><br><span class="line">           parameters.put(<span class="string">&quot;key&quot;</span>, key);</span><br><span class="line"></span><br><span class="line">           raftProxy.proxyPostLarge(getLeader().ip, API_PUB, params.toJSONString(), parameters);</span><br><span class="line">           <span class="keyword">return</span>;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           OPERATE_LOCK.lock();</span><br><span class="line">           <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">           <span class="keyword">final</span> Datum datum = <span class="keyword">new</span> Datum();</span><br><span class="line">           datum.key = key;</span><br><span class="line">           datum.value = value;</span><br><span class="line">           <span class="keyword">if</span> (getDatum(key) == <span class="keyword">null</span>) &#123;</span><br><span class="line">               datum.timestamp.set(<span class="number">1L</span>);</span><br><span class="line">           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">               datum.timestamp.set(getDatum(key).timestamp.incrementAndGet());</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           JSONObject json = <span class="keyword">new</span> JSONObject();</span><br><span class="line">           json.put(<span class="string">&quot;datum&quot;</span>, datum);</span><br><span class="line">           json.put(<span class="string">&quot;source&quot;</span>, peers.local());</span><br><span class="line"></span><br><span class="line">           onPublish(datum, peers.local());</span><br><span class="line"></span><br><span class="line">           <span class="keyword">final</span> String content = JSON.toJSONString(json);</span><br><span class="line"></span><br><span class="line">           <span class="keyword">final</span> CountDownLatch latch = <span class="keyword">new</span> CountDownLatch(peers.majorityCount());</span><br><span class="line">           <span class="keyword">for</span> (<span class="keyword">final</span> String server : peers.allServersIncludeMyself()) &#123;</span><br><span class="line">               <span class="keyword">if</span> (isLeader(server)) &#123;</span><br><span class="line">                   latch.countDown();</span><br><span class="line">                   <span class="keyword">continue</span>;</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">final</span> String url = buildURL(server, API_ON_PUB);</span><br><span class="line">               HttpClient.asyncHttpPostLarge(url, Arrays.asList(<span class="string">&quot;key=&quot;</span> + key), content, <span class="keyword">new</span> AsyncCompletionHandler&lt;Integer&gt;() &#123;</span><br><span class="line">                   <span class="meta">@Override</span></span><br><span class="line">                   <span class="function"><span class="keyword">public</span> Integer <span class="title">onCompleted</span><span class="params">(Response response)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                       <span class="keyword">if</span> (response.getStatusCode() != HttpURLConnection.HTTP_OK) &#123;</span><br><span class="line">                           Loggers.RAFT.warn(<span class="string">&quot;[RAFT] failed to publish data to peer, datumId=&#123;&#125;, peer=&#123;&#125;, http code=&#123;&#125;&quot;</span>,</span><br><span class="line">                               datum.key, server, response.getStatusCode());</span><br><span class="line">                           <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                       &#125;</span><br><span class="line">                       latch.countDown();</span><br><span class="line">                       <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">                   &#125;</span><br><span class="line"></span><br><span class="line">                   <span class="meta">@Override</span></span><br><span class="line">                   <span class="function"><span class="keyword">public</span> STATE <span class="title">onContentWriteCompleted</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                       <span class="keyword">return</span> STATE.CONTINUE;</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;);</span><br><span class="line"></span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           <span class="keyword">if</span> (!latch.await(UtilsAndCommons.RAFT_PUBLISH_TIMEOUT, TimeUnit.MILLISECONDS)) &#123;</span><br><span class="line">               <span class="comment">// only majority servers return success can we consider this update success</span></span><br><span class="line">               Loggers.RAFT.error(<span class="string">&quot;data publish failed, caused failed to notify majority, key=&#123;&#125;&quot;</span>, key);</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;data publish failed, caused failed to notify majority, key=&quot;</span> + key);</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">           Loggers.RAFT.info(<span class="string">&quot;signalPublish cost &#123;&#125; ms, key: &#123;&#125;&quot;</span>, (end - start), key);</span><br><span class="line">       &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">           OPERATE_LOCK.unlock();</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E5%92%8C%E5%AE%9E%E8%B7%B5%E7%BB%8F%E9%AA%8C/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%95%BF%E8%BD%AE%E8%AF%A2%E7%9A%84%E6%97%B6%E9%97%B4%E9%97%B4%E9%9A%94"><span class="nav-number">1.</span> <span class="nav-text">长轮询的时间间隔</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%95%BF%E8%BD%AE%E8%AF%A2%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">长轮询的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%95%BF%E8%BD%AE%E8%AF%A2"><span class="nav-number">1.2.</span> <span class="nav-text">客户端长轮询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%95%BF%E8%BD%AE%E8%AF%A2%E7%9A%84%E6%97%B6%E9%97%B4%E9%97%B4%E9%9A%94"><span class="nav-number">1.3.</span> <span class="nav-text">客户端长轮询的时间间隔</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">1.4.</span> <span class="nav-text">服务端的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ConfigController"><span class="nav-number">1.4.1.</span> <span class="nav-text">ConfigController</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#doPollingConfig"><span class="nav-number">1.4.2.</span> <span class="nav-text">doPollingConfig</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#longPollingService-addLongPollingClient"><span class="nav-number">1.4.3.</span> <span class="nav-text">longPollingService.addLongPollingClient</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ClientLongPolling"><span class="nav-number">1.4.4.</span> <span class="nav-text">ClientLongPolling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#allSubs"><span class="nav-number">1.4.5.</span> <span class="nav-text">allSubs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AbstractEventListener"><span class="nav-number">1.4.6.</span> <span class="nav-text">AbstractEventListener</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LongPollingService-onEvent"><span class="nav-number">1.4.7.</span> <span class="nav-text">LongPollingService.onEvent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DataChangeTask-run"><span class="nav-number">1.4.8.</span> <span class="nav-text">DataChangeTask.run</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E6%80%BB%E7%BB%93"><span class="nav-number">1.5.</span> <span class="nav-text">简单总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E9%80%89%E4%B8%BE%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">集群选举问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E4%B8%BE%E7%AE%97%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">选举算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">2.2.</span> <span class="nav-text">数据的处理</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

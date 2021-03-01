@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Docker 之网络篇3.1   计算机网络模型  3.2 Linux网卡">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序员报社">
+<meta property="og:url" content="http://luyanan.com/3.Docker%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%AF%87/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="Docker 之网络篇3.1   计算机网络模型  3.2 Linux网卡">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com//img/20200415113128.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200415113520.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200415140658.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200415140919.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200416204624.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200416205041.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200416205339.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200416210124.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200416210316.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200416213622.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200416213634.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200416213645.png">
+<meta property="article:published_time" content="2021-03-01T08:05:15.124Z">
+<meta property="article:modified_time" content="2020-12-24T09:34:49.978Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com//img/20200415113128.png">
+
+<link rel="canonical" href="http://luyanan.com/3.Docker%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%AF%87/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title> | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/3.Docker%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%AF%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-01 16:05:15" itemprop="dateCreated datePublished" datetime="2021-03-01T16:05:15+08:00">2021-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-24 17:34:49" itemprop="dateModified" datetime="2020-12-24T17:34:49+08:00">2020-12-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Docker-之网络篇"><a href="#Docker-之网络篇" class="headerlink" title="Docker 之网络篇"></a><a target="_blank" rel="noopener" href="https://docs.docker.com/network/">Docker 之网络</a>篇</h1><h2 id="3-1-计算机网络模型"><a href="#3-1-计算机网络模型" class="headerlink" title="3.1   计算机网络模型"></a>3.1   计算机网络模型</h2><p><img src="http://files.luyanan.com//img/20200415113128.png" alt="10"></p>
+<p><img src="http://files.luyanan.com//img/20200415113520.png" alt="11"></p>
+<h2 id="3-2-Linux网卡"><a href="#3-2-Linux网卡" class="headerlink" title="3.2 Linux网卡"></a>3.2 Linux网卡</h2><h3 id="3-2-1-查看网卡-网络接口"><a href="#3-2-1-查看网卡-网络接口" class="headerlink" title="3.2.1  查看网卡(网络接口)"></a>3.2.1  查看网卡(网络接口)</h3><ul>
+<li><code>ip link show</code></li>
+<li><code>ls /sys/class/net</code></li>
+<li><code>ip a</code></li>
+</ul>
+<h3 id="3-2-2-网卡"><a href="#3-2-2-网卡" class="headerlink" title="3.2.2  网卡"></a>3.2.2  网卡</h3><h4 id="3-2-2-1-ip-a-解读"><a href="#3-2-2-1-ip-a-解读" class="headerlink" title="3.2.2.1 ip a 解读"></a>3.2.2.1 <code>ip a</code> 解读</h4><ul>
+<li>状态：<code>UP</code>/<code>DOWN</code>/<code>UNKOWN</code>等 </li>
+<li><code>link</code>/<code>ether</code>：<code>MAC</code>地址 </li>
+<li><code>inet</code>：绑定的IP地址</li>
+</ul>
+<h4 id="3-2-2-2-配置文件"><a href="#3-2-2-2-配置文件" class="headerlink" title="3.2.2.2  配置文件"></a>3.2.2.2  配置文件</h4><p>在<code>linux</code> 中网卡对应的其实就是文件, 所以找到对应的网卡文件即可. </p>
+<p>比如 <code>cat /etc/sysconfig/network-scripts/ifcfg-eth0</code></p>
+<h4 id="3-2-2-3-给网卡添加ip地址"><a href="#3-2-2-3-给网卡添加ip地址" class="headerlink" title="3.2.2.3 给网卡添加ip地址"></a>3.2.2.3 给网卡添加ip地址</h4><p>当然, 这块也可以直接修改<code>ifcfg.*</code> 文件, 但是我们通过命令添加试试</p>
+<ul>
+<li> <code>ip addr add 192.168.0.100/24 dev eth0</code></li>
+<li> 删除ip地址  <code>ip addr delete 192.168.0.100/24 dev eth0</code></li>
+</ul>
+<h4 id="3-2-2-4-网卡的启动和关闭"><a href="#3-2-2-4-网卡的启动和关闭" class="headerlink" title="3.2.2.4  网卡的启动和关闭"></a>3.2.2.4  网卡的启动和关闭</h4><p>重启网卡</p>
+<p><code>service network restart</code> / <code>systemctl restart network</code></p>
+<p>启动/关闭某个网卡</p>
+<p><code>ifup/ifdown eth0 or ip link set eth0 up/down</code></p>
+<h2 id="3-3-Network-Namespace"><a href="#3-3-Network-Namespace" class="headerlink" title="3.3  Network Namespace"></a>3.3  <code>Network Namespace</code></h2><p>在linux上,网络的隔离通过<code>network workspace</code> 来管理,不同的<code>Network Namespace</code>是相互隔离的, </p>
+<p><code>ip netns list</code>: 可以查看机器上的<code>的network namespace</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ip netns list <span class="comment">#查看</span></span><br><span class="line">ip netns add ns1 <span class="comment">#添加</span></span><br><span class="line">ip netns delete ns1 <span class="comment">#删除</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-1-namespace-实战"><a href="#3-3-1-namespace-实战" class="headerlink" title="3.3.1   namespace 实战"></a>3.3.1  <code> namespace</code> 实战</h3><ol>
+<li><p>创建一个 <code>network namespace</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip netns add ns1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看该<code>namespace</code> 下网卡的情况</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip netns <span class="built_in">exec</span> ns1 ip a</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动<code>ns1</code> 上的<code>lo</code> 网卡</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ip netns <span class="built_in">exec</span> ns1 ifup lo</span><br><span class="line">or</span><br><span class="line">ip netns <span class="built_in">exec</span> ns1 ip link <span class="built_in">set</span> lo up</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>再次查看,可以发现<code>state</code> 已经变成了<code>UNKOWN</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip netns <span class="built_in">exec</span> ns1 ip a</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>再次创建一个<code>network namespace</code></p>
+<p><img src="http://files.luyanan.com//img/20200415140658.png" alt="12"></p>
+</li>
+<li><p>此时想让两个<code>namespace</code> 网络连通起来</p>
+<p><code>veth pair</code>: <code>Virtual Ethernet Pair</code>,是一个成对的端口,可以实现上述功能. </p>
+<p><img src="http://files.luyanan.com//img/20200415140919.png" alt="13"></p>
+</li>
+<li><p>创建一对<code>link</code>, 也就是接下来要通过<code>过veth pair</code> 连接的<code>link</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip link add veth-ns1 <span class="built_in">type</span> veth peer name veth-ns2</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看<code>link</code> 情况</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip link</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将<code>veth-ns1</code>  加入到<code>ns1</code>,将<code>veth-ns2</code> 加入到<code>ns2</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ip link <span class="built_in">set</span> veth-ns1 netns ns1</span><br><span class="line">ip link <span class="built_in">set</span> veth-ns2 netns ns2</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看宿主机和<code>ns1</code>、<code>ns2</code>的<code>link</code> 情况</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ip link</span><br><span class="line">ip netns <span class="built_in">exec</span> ns1 ip link</span><br><span class="line">ip netns <span class="built_in">exec</span> ns2 ip link</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>此时<code>veth-ns1</code> 和<code>veth-ns2</code> 还没有<code>ip</code>地址,显然通讯还缺少点条件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ip netns <span class="built_in">exec</span> ns1 ip addr add 192.168.0.11/24 dev veth-ns1</span><br><span class="line">ip netns <span class="built_in">exec</span> ns2 ip addr add 192.168.0.12/24 dev veth-ns2</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>再次查看,发现<code>state</code> 是<code>DOWN</code>,并且还是没有<code>ip</code>地址</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip netns <span class="built_in">exec</span> ns1 ip link</span><br><span class="line">ip netns <span class="built_in">exec</span> ns2 ip link</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动<code>veth-ns1</code>和<code>veth-ns2</code> </p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip netns <span class="built_in">exec</span> ns1 ip link <span class="built_in">set</span> veth-ns1 up</span><br><span class="line">ip netns <span class="built_in">exec</span> ns2 ip link <span class="built_in">set</span> veth-ns2 up</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>再次查看, 发现<code>state</code>是<code>UP</code>,同时有ip</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip netns <span class="built_in">exec</span> ns1 ip a</span><br><span class="line">ip netns <span class="built_in">exec</span> ns2 ip a</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>此时两次 <code>network namespace</code> 互相<code>ping</code> 一下,发现是可以<code>ping</code>通</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip netns <span class="built_in">exec</span> ns1 ping 192.168.0.12</span><br><span class="line">ip netns <span class="built_in">exec</span> ns2 ping 192.168.0.11</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h3 id="3-3-2-Contailer的NS"><a href="#3-3-2-Contailer的NS" class="headerlink" title="3.3.2 Contailer的NS"></a>3.3.2 <code>Contailer</code>的<code>NS</code></h3><p>按照上面的描述,实际上每一个<code>contailer</code>,都会有自己的<code>network  namespace</code>,并且是独立的,我们可以进入到容器中进行验证</p>
+<ol>
+<li><p>不妨创建两个<code>contailer</code> 看看? </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name tomcat01 -p 8081:8080 tomcat</span><br><span class="line">docker run -d --name tomcat02 -p 8082:8080 tomcat</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>进入到两个容器中, 分别查看ip</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it tomcat01 ip a</span><br><span class="line">docker <span class="built_in">exec</span> -it tomcat02 ip a</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>互相<code>ping</code> 一下是可以<code>ping</code>通的</p>
+</li>
+</ol>
+<p>值得我们思考的是,此时<code>tomcat01</code>和<code>tomcat02</code> 属于两个<code>network namespace</code>, 是如何能够<code>ping</code>通的, 有些小伙伴可能会想, 不就跟上面的<code>namespace</code> 实战是一样的吗? 注意这里并没有<code>veth-pair</code> 技术</p>
+<h2 id="3-4-深入分析contailer-网络-Bridge"><a href="#3-4-深入分析contailer-网络-Bridge" class="headerlink" title="3.4 深入分析contailer 网络-Bridge"></a>3.4 深入分析<code>contailer</code> 网络-<code>Bridge</code></h2><h3 id="3-4-1-docker0-默认bridge"><a href="#3-4-1-docker0-默认bridge" class="headerlink" title="3.4.1 docker0 默认bridge"></a>3.4.1 <code>docker0</code> 默认<code>bridge</code></h3><ol>
+<li><p>查看<code>centos</code>的网络, <code>ip a</code> , 可以发现</p>
+<p><img src="http://files.luyanan.com//img/20200416204624.png" alt="image-20200416204611664"></p>
+</li>
+<li><p>查看<code>tomcat01</code>的网络, <code>docker exec -it tomcat01 ip a</code>, 可以发现</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon ~]<span class="comment"># docker exec -it tomcat01 ip a</span></span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">      valid_lft forever preferred_lft forever</span><br><span class="line">7: eth0@if8: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default</span><br><span class="line">    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid 0</span><br><span class="line">    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0</span><br><span class="line">      valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在<code>centos</code> 中<code>ping</code> 一下<code>tomcat01</code>的网络, 发现可以<code>ping</code> 通</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ping 172.17.0.2</span><br><span class="line">[root@bogon ~]<span class="comment"># ping 172.17.0.2</span></span><br><span class="line">PING 172.17.0.2 (172.17.0.2) 56(84) bytes of data.</span><br><span class="line">64 bytes from 172.17.0.2: icmp_seq=1 ttl=64 time=0.120 ms</span><br><span class="line">64 bytes from 172.17.0.2: icmp_seq=2 ttl=64 time=0.060 ms</span><br><span class="line">64 bytes from 172.17.0.2: icmp_seq=3 ttl=64 time=0.056 ms</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>既然可以<code>ping</code> 通, 而且<code>centos</code> 和<code>tomcat01</code> 又属于不同的<code>netrwork namespace</code>,是怎么连接的? </p>
+<p> 很显然,跟之前的实战是一样的, 画个图</p>
+<p><img src="http://files.luyanan.com//img/20200416205041.png" alt="14"></p>
+</li>
+<li><p>也就是说,在<code>tomcat01</code> 中有一个<code>eth0</code>和<code>centos</code>的<code>docker0</code> 中有一个<code>veth3</code>是成对的,类似于之前实战中的<code>veth-ns1</code>和<code>veth-ns2</code>,不妨再通过一个命令确认一下<code>brctl</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">安装一下：yum install bridge-utils</span><br><span class="line">brctl show</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>那为什么<code>tomcat01</code> 和<code>tomcat02</code>是可以互通的呢? 不多说, 直接上图</p>
+<p> <img src="http://files.luyanan.com//img/20200416205339.png" alt="15"></p>
+</li>
+<li><p>这种网络连接方式我们称之为<code>bridge</code>,其实也可以通过命令查看<code>docker</code> 中的网络模式,<code>docker network ls</code>. <code>bridge</code> 也是<code>docker</code> 默认的网络模式.</p>
+</li>
+<li><p>不妨检查一下<code>bridge</code>: <code>docker network inspect bridge</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;Containers&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;6ad312b32f62b48935f3c95c58ae061df710bfebbd3d721b467507b9516eeb81&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;EndpointID&quot;</span>: <span class="string">&quot;aa9c612c79f867e874d0cae1aab45374373b61e9cdbe79925d07ae2e89a1cca0&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;IPv4Address&quot;</span>: <span class="string">&quot;172.17.0.3/16&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;IPv6Address&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;MacAddress&quot;</span>: <span class="string">&quot;02:42:ac:11:00:03&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Name&quot;</span>: <span class="string">&quot;tomcat02&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;f49fc396d8e04f2b330163d91bb5d1482715202b4e2fd0c7f42833722787742a&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;EndpointID&quot;</span>: <span class="string">&quot;c5440b063e8fc0c9c44f3f61bf68f577283417eb23cfa9a361d37973d01a8ba5&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;IPv4Address&quot;</span>: <span class="string">&quot;172.17.0.2/16&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;IPv6Address&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;MacAddress&quot;</span>: <span class="string">&quot;02:42:ac:11:00:02&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Name&quot;</span>: <span class="string">&quot;tomcat01&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在<code>tomcat01</code> 容器中是可以访问互联网的, 顺便把这张图画一下,<code>NAT</code>是通过<code>iptable</code> 实现</p>
+</li>
+</ol>
+<p><img src="http://files.luyanan.com//img/20200416210124.png" alt="16"></p>
+<h3 id="3-4-2-创建自己的network"><a href="#3-4-2-创建自己的network" class="headerlink" title="3.4.2  创建自己的network"></a>3.4.2  创建自己的<code>network</code></h3><ol>
+<li><p>创建自己的<code>network</code>, 类型为<code>bridge</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker network create tomcat-net</span><br><span class="line">or</span><br><span class="line">docker network create --subnet=172.18.0.0/24 tomcat-net</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看已有的<code>network</code>: <code>docker network ls</code></p>
+<p><img src="http://files.luyanan.com//img/20200416210316.png" alt="image-20200416210313245"></p>
+</li>
+<li><p>查看<code>tomcat-net</code> 详细信息</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network inspect tomcat-net</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建<code>tomcat</code>的容器, 并且指定使用<code>tomcat-net</code></p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name custom-net-tomcat --network tomcat-net tomcat</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看<code>custom-net-tomcat</code> 的网络信息</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it custom-net-tomcat ip a</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看网卡信息</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip a</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看网卡接口</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">brctl show</span><br><span class="line">bridge     name     bridge id     STP enabled     interfaces</span><br><span class="line">br-3012e3afd264     8000.02429780e75d     no     vethf223a4b</span><br><span class="line">docker0     8000.0242437b1bbd     no     veth3b72761</span><br><span class="line">veth9d8c470</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>此时, 在<code>custom-net-tomcat</code> 容器中<code>ping</code> 一下<code>tomcat01</code>的<code>ip</code> 会如何? 发现无法<code>ping</code> 通</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it custom-net-tomcat ping 172.17.0.2</span><br><span class="line">PING 172.17.0.2 (172.17.0.2) 56(84) bytes of data.</span><br><span class="line">^C</span><br><span class="line">--- 172.17.0.2 ping statistics ---</span><br><span class="line">4 packets transmitted, 0 received, 100% packet loss, time 3000ms</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>此时如果<code>tomcat01</code> 容器能够连接到<code>tomcat-net</code> 上应该就可以 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker network connect tomcat-net tomcat01</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看<code>tomcat-net</code> 网络,可以发现<code>tomcat01</code>  这个容器也在其中</p>
+</li>
+<li><p>此时进入到<code>tomcat01</code> 或者<code>custom-net-tomcat</code>中, 不仅可以通过<code>ping</code> 通, 而且可以通过名字<code>ping</code>到, 这时候因为连接到了用户自定义的 <code>tomcat-net bridge</code> 上. </p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it tomcat01 bash</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@f49fc396d8e0:/usr/<span class="built_in">local</span>/tomcat<span class="comment"># ping 172.18.0.2</span></span><br><span class="line">PING 172.18.0.2 (172.18.0.2) 56(84) bytes of data.</span><br><span class="line">64 bytes from 172.18.0.2: icmp_seq=1 ttl=64 time=0.048 ms</span><br><span class="line">64 bytes from 172.18.0.2: icmp_seq=2 ttl=64 time=0.040 ms</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@f49fc396d8e0:/usr/<span class="built_in">local</span>/tomcat<span class="comment"># ping custom-net-tomcat</span></span><br><span class="line">PING custom-net-tomcat (172.18.0.2) 56(84) bytes of data.</span><br><span class="line">64 bytes from custom-net-tomcat.tomcat-net (172.18.0.2): icmp_seq=1 ttl=64 time=0.030 ms</span><br><span class="line">64 bytes from custom-net-tomcat.tomcat-net (172.18.0.2): icmp_seq=2 ttl=64 time=0.264 ms</span><br></pre></td></tr></table></figure>
+
+<p>但是<code>ping</code> <code>tomcat02</code> 是不通的</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@f49fc396d8e0:/usr/<span class="built_in">local</span>/tomcat<span class="comment"># ping 172.17.0.3</span></span><br><span class="line">PING 172.17.0.3 (172.17.0.3) 56(84) bytes of data.</span><br><span class="line">64 bytes from 172.17.0.3: icmp_seq=1 ttl=64 time=0.045 ms</span><br><span class="line">64 bytes from 172.17.0.3: icmp_seq=2 ttl=64 time=0.066 ms</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@f49fc396d8e0:/usr/<span class="built_in">local</span>/tomcat<span class="comment"># ping tomcat02</span></span><br><span class="line">PING tomcat02 (220.250.64.26) 56(84) bytes of data.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h2 id="3-5-深入分析Contailer-网络-Host-amp-None"><a href="#3-5-深入分析Contailer-网络-Host-amp-None" class="headerlink" title="3.5  深入分析Contailer 网络-Host &amp; None"></a>3.5  深入分析<code>Contailer</code> 网络-<code>Host</code> &amp; <code>None</code></h2><h3 id="3-5-1-Host"><a href="#3-5-1-Host" class="headerlink" title="3.5.1 Host"></a>3.5.1 <code>Host</code></h3><ol>
+<li><p>创建一个<code>tomcat</code> 容器,并且指定网络为<code>host</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name my-tomcat-host --network host tomcat</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看<code>ip</code>地址</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it my-tomcat-host ip a</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>可以发现和<code>centos</code> 是一样的</p>
+</li>
+<li><p>检查<code>host</code> 网络</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;Containers&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;e1f00d47db344b6688e99c0f5b393e232309fbe1a4d9c3fc3e1ce7c107f3312d&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;EndpointID&quot;</span>: <span class="string">&quot;f08456d9dca024cf6f911f8d32329ba2587ea89554c96b77c32698ace6998525&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;IPv4Address&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;IPv6Address&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;MacAddress&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Name&quot;</span>: <span class="string">&quot;my-tomcat-host&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="3-5-2-None"><a href="#3-5-2-None" class="headerlink" title="3.5.2 None"></a>3.5.2 <code>None</code></h3><ol>
+<li><p>创建一个<code>tomcat</code> 容器, 并且指定网络为<code>none</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name my-tomcat-none --network none tomcat</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看<code>ip</code> 地址</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it my-tomcat-none ip a</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">      valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>检查<code>None</code> 网络</p>
+ <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;Containers&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;bb3f0db4fa76a25b5377da9c3bbf087ac7ef0de0a3f9c37a4ae959983d33105c&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;EndpointID&quot;</span>: <span class="string">&quot;26055c08c968f9d6d03d10b3b66dfea004c35f5d2bd4067a2306566973e92f9e&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;IPv4Address&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;IPv6Address&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;MacAddress&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Name&quot;</span>: <span class="string">&quot;my-tomcat-none&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+</li>
+</ol>
+<h2 id="3-6-端口映射以及折腾"><a href="#3-6-端口映射以及折腾" class="headerlink" title="3.6 端口映射以及折腾"></a>3.6 端口映射以及折腾</h2><h3 id="3-6-1-端口映射"><a href="#3-6-1-端口映射" class="headerlink" title="3.6.1 端口映射"></a>3.6.1 端口映射</h3><ol>
+<li><p>创建一个<code>tomcat</code> 容器,名字为<code>port-tomcat</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name port-tomcat tomcat</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>思考一下要访问该<code>tomcat</code> 怎么办? 肯定是通过<code>ip:port</code>的方式</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it port-tomcat bash</span><br><span class="line">curl localhost:8080</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>那如果是在<code>centos7</code> 访问呢?</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it port-tomcat ip a ----&gt;得到其ip地址，比如172.17.0.4</span><br><span class="line">curl 172.17.0.4:8080</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p><strong>小结:</strong> 之所以能够访问成功,是因为<code>centos</code> 上的<code>docker0</code> 连接了<code>port-tomcat</code>的<code>network namespace</code></p>
+<ol start="4">
+<li><p>那如果还要在<code>centos7</code>通过<code>curl localhost</code>方式访问呢? 显然要将<code>port-tomcat</code> 的8080端口映射到<code>centos</code> 上. </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker rm -f port-tomcat</span><br><span class="line">docker run -d --name port-tomcat -p 8090:8080 tomcat</span><br><span class="line">curl localhost:8090</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="3-6-2-折腾"><a href="#3-6-2-折腾" class="headerlink" title="3.6.2  折腾"></a>3.6.2  折腾</h3><ol>
+<li><p><code>centos7</code> 是运行在<code>win10</code> 上的虚拟机上,  如果想要在<code>win10</code> 上通过<code>ip:port</code> 方式访问呢? </p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#此时需要centos和win网络在同一个网段，所以在Vagrantfile文件中</span><br><span class="line">#这种方式等同于桥接网络。也可以给该网络指定使用物理机哪一块网卡，比如</span><br><span class="line">#config.vm.network&quot;public_network&quot;,:bridge=&gt;&#x27;en1: Wi-Fi (AirPort)&#x27;</span><br><span class="line">config.vm.network&quot;public_network&quot;</span><br><span class="line">centos7: ip a ---&gt;192.168.8.118</span><br><span class="line">win10:浏览器访问 192.168.8.118:9080</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果也想要把<code>centos7</code> 上的8090映射到<code>win10</code>的某个端口上呢? 然后浏览器访问<code>localhost:port</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#此时需要将centos7上的端口和win10上的端口做映射</span></span><br><span class="line">config.vm.network<span class="string">&quot;forwarded_port&quot;</span>,guest:8098,host:8090</span><br><span class="line"><span class="comment">#记得vagrant reload生效一下</span></span><br><span class="line">win10：浏览器访问 localhost：8098</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h3 id="3-6-3-画个图强化一下"><a href="#3-6-3-画个图强化一下" class="headerlink" title="3.6.3 画个图强化一下"></a>3.6.3 画个图强化一下</h3><p><img src="http://files.luyanan.com//img/20200416213622.png" alt="image-20200416213621301"></p>
+<h2 id="3-7-多机之间的contailer-通信"><a href="#3-7-多机之间的contailer-通信" class="headerlink" title="3.7  多机之间的contailer 通信"></a>3.7  多机之间的<code>contailer</code> 通信</h2><p>在同一台<code>centos7</code> 机器上, 发现无论怎么折腾, 我们一定有办法让两个<code>contailer</code> 通信. </p>
+<p>那如果是在两台<code>centos7</code> 机器上的呢? </p>
+<p><img src="http://files.luyanan.com//img/20200416213634.png" alt="image-20200416213632513"></p>
+<ol>
+<li><p>使得两边的<code>etho</code> 能够通信</p>
+</li>
+<li><p>前提要确保两边的<code>ip</code> 地址不一样</p>
+</li>
+<li><p>将一边的所有信息当成<code>etho</code> 传输给另外一端的信息</p>
+</li>
+<li><p>具体通过<code>vxlan</code> 技术实现</p>
+<p> <a target="_blank" rel="noopener" href="http://www.evoila.de/2015/11/06/what-is-vxlan-and-how-it-works">http://www.evoila.de/2015/11/06/what-is-vxlan-and-how-it-works</a></p>
+</li>
+<li><p>处在<code>vxlan</code>的底层:<code>underlay</code></p>
+<p>处在<code>xxlan</code>的上层:<code>overlay</code></p>
+</li>
+</ol>
+<p><img src="http://files.luyanan.com//img/20200416213645.png" alt="image-20200416213643754"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2.Docker%E5%9F%BA%E7%A1%80(%E4%BA%8C)/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/4.Docker%E6%8C%81%E4%B9%85%E5%8C%96/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-%E4%B9%8B%E7%BD%91%E7%BB%9C%E7%AF%87"><span class="nav-number">1.</span> <span class="nav-text">Docker 之网络篇</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">3.1   计算机网络模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Linux%E7%BD%91%E5%8D%A1"><span class="nav-number">1.2.</span> <span class="nav-text">3.2 Linux网卡</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-%E6%9F%A5%E7%9C%8B%E7%BD%91%E5%8D%A1-%E7%BD%91%E7%BB%9C%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.2.1.</span> <span class="nav-text">3.2.1  查看网卡(网络接口)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-%E7%BD%91%E5%8D%A1"><span class="nav-number">1.2.2.</span> <span class="nav-text">3.2.2  网卡</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-1-ip-a-%E8%A7%A3%E8%AF%BB"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">3.2.2.1 ip a 解读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-2-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">3.2.2.2  配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-3-%E7%BB%99%E7%BD%91%E5%8D%A1%E6%B7%BB%E5%8A%A0ip%E5%9C%B0%E5%9D%80"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">3.2.2.3 给网卡添加ip地址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-4-%E7%BD%91%E5%8D%A1%E7%9A%84%E5%90%AF%E5%8A%A8%E5%92%8C%E5%85%B3%E9%97%AD"><span class="nav-number">1.2.2.4.</span> <span class="nav-text">3.2.2.4  网卡的启动和关闭</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Network-Namespace"><span class="nav-number">1.3.</span> <span class="nav-text">3.3  Network Namespace</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-1-namespace-%E5%AE%9E%E6%88%98"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.3.1   namespace 实战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-2-Contailer%E7%9A%84NS"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.3.2 Contailer的NS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90contailer-%E7%BD%91%E7%BB%9C-Bridge"><span class="nav-number">1.4.</span> <span class="nav-text">3.4 深入分析contailer 网络-Bridge</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-1-docker0-%E9%BB%98%E8%AE%A4bridge"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.4.1 docker0 默认bridge</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-2-%E5%88%9B%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84network"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.4.2  创建自己的network</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90Contailer-%E7%BD%91%E7%BB%9C-Host-amp-None"><span class="nav-number">1.5.</span> <span class="nav-text">3.5  深入分析Contailer 网络-Host &amp; None</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-1-Host"><span class="nav-number">1.5.1.</span> <span class="nav-text">3.5.1 Host</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-2-None"><span class="nav-number">1.5.2.</span> <span class="nav-text">3.5.2 None</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-6-%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84%E4%BB%A5%E5%8F%8A%E6%8A%98%E8%85%BE"><span class="nav-number">1.6.</span> <span class="nav-text">3.6 端口映射以及折腾</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-1-%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84"><span class="nav-number">1.6.1.</span> <span class="nav-text">3.6.1 端口映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-2-%E6%8A%98%E8%85%BE"><span class="nav-number">1.6.2.</span> <span class="nav-text">3.6.2  折腾</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-3-%E7%94%BB%E4%B8%AA%E5%9B%BE%E5%BC%BA%E5%8C%96%E4%B8%80%E4%B8%8B"><span class="nav-number">1.6.3.</span> <span class="nav-text">3.6.3 画个图强化一下</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-7-%E5%A4%9A%E6%9C%BA%E4%B9%8B%E9%97%B4%E7%9A%84contailer-%E9%80%9A%E4%BF%A1"><span class="nav-number">1.7.</span> <span class="nav-text">3.7  多机之间的contailer 通信</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>
