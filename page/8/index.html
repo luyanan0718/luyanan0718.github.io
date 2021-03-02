@@ -206,6 +206,570 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">Nacos长轮询和集群分析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/nacos/" itemprop="url" rel="index"><span itemprop="name">nacos</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="长轮询的时间间隔"><a href="#长轮询的时间间隔" class="headerlink" title="长轮询的时间间隔"></a>长轮询的时间间隔</h1><p>我们知道客户端会有一个长训轮的任务去检查服务器端的配置是否发生了变化, 如果发生了变更, 那么客户端会拿到变更的<code>groupKey</code> 再根据 <code>groupKey</code> 去获取配置项的最新值 跟新到本地的缓存以及文件中,那么这种每次都靠客户端去请求, 那请求的时间间隔设置多少合适呢? </p>
+<p>如果间隔时间设置的太长的话有可能无法及时获取服务端的变更, 如果间隔时间设置的太短的话, 那么频繁的请求对于服务端来说无疑也是一种负担,所以最好的方式是客户端每隔一段长度适中的时间去服务端请求, 而在这期间如果配置发生了变更, 服务端能够主动将变更后的结果推送给客户端, 这样既能够保证客户端能够实时感知到配置的变化, 也降低了服务端的压力, 我们来看看nacos 设置的间隔时间是多久? </p>
+<h2 id="长轮询的概念"><a href="#长轮询的概念" class="headerlink" title="长轮询的概念"></a>长轮询的概念</h2><p>那么在讲解原理之前, 先给大家解释一下什么叫长轮询. </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">Nacos基本原理以及实战</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/nacos/" itemprop="url" rel="index"><span itemprop="name">nacos</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Nacos-原理分析以及实战"><a href="#Nacos-原理分析以及实战" class="headerlink" title="Nacos 原理分析以及实战"></a>Nacos 原理分析以及实战</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Nacos 致力于帮助您发现、配置和管理微服务。Nacos 提供了一组简单易用的特性集，帮助您快速实现动态服务发现、服务配置、服务元数据及流量管理。</p>
+<p>Nacos 帮助您更敏捷和容易地构建、交付和管理微服务平台。 Nacos 是构建以“服务”为中心的现代应用架构 (例如微服务范式、云原生范式) 的服务基础设施。                                                                </p>
+<p>​                                                                                                                                     –&gt; copy 自官网. </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">分布式消息通信值Kafka的实现原理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/" itemprop="url" rel="index"><span itemprop="name">kafka</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="分布式消息通信之Kafka-的实现原理"><a href="#分布式消息通信之Kafka-的实现原理" class="headerlink" title="分布式消息通信之Kafka 的实现原理"></a>分布式消息通信之Kafka 的实现原理</h1><h2 id="消息中间件能做什么"><a href="#消息中间件能做什么" class="headerlink" title="消息中间件能做什么?"></a>消息中间件能做什么?</h2><p>消息中间件主要解决的就是分布式系统之间消息的传递问题, 它能够屏蔽各种平台以及协议之间的特性,实现应用程序之间的协同. 举个简单的例子, 就拿一个电商平台的注册功能来简单分析一下,用户注册这一个服务,不仅仅只是insert 一条数据库里面就完事了, 还需要发送激活邮件、发送新人红包或者积分、发送营销短信等一些列操作. 假如说这里面的每一个操作都需要消耗1s , 那么整个注册过程就需要耗时4s 才能响应给用户.</p>
+<p><img src="http://files.luyanan.com//img/20191227142436.png"></p>
+<p>但是我们从注册这个服务可以看到, 每一个子操作都是相对独立的. 同时, 基于领域划分后, 发送激活邮件、发送营销短信、赠送积分以及红包都属于不同的子域. 所以我们可以读这些子操作进行实现异步化执行, 类似于多线程并行处理的概念. </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/" class="post-title-link" itemprop="url">分布式消息通信之Kafka的基本应用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/" itemprop="url" rel="index"><span itemprop="name">kafka</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="分布式消息通信之Kafka的基本应用"><a href="#分布式消息通信之Kafka的基本应用" class="headerlink" title="分布式消息通信之Kafka的基本应用"></a>分布式消息通信之Kafka的基本应用</h1><h2 id="消息中间件的背景分析"><a href="#消息中间件的背景分析" class="headerlink" title="消息中间件的背景分析"></a>消息中间件的背景分析</h2><h3 id="场景分析"><a href="#场景分析" class="headerlink" title="场景分析"></a>场景分析</h3><p>我们可以使用阻塞队列+线程池的方式来实现生产者和消费者的模式 . 比如在一个应用中, A 方法调用B方法去执行一些任务处理, 我们可以同步调用, 但是如果这个时候请求比较多的情况下, 同步调用会比较耗时会导致请求阻塞. 我们会使用阻塞队列+线程池的方式来实现异步任务的处理. </p>
+<p><img src="http://files.luyanan.com//img/20191224155658.png"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/" class="post-title-link" itemprop="url">分布式消息通信之Kafka 的实现原理2</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/" itemprop="url" rel="index"><span itemprop="name">kafka</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="分布式消息通信之Kafka-的实现原理2"><a href="#分布式消息通信之Kafka-的实现原理2" class="headerlink" title="分布式消息通信之Kafka 的实现原理2"></a>分布式消息通信之Kafka 的实现原理2</h1><h2 id="分区的副本机制"><a href="#分区的副本机制" class="headerlink" title="分区的副本机制"></a>分区的副本机制</h2><p>我们已经知道kafka的每个topic 都可以分为多个partition, 并且多个partition 会均匀分布在集群中的各个节点下.虽然这种方式能够有效的对数据进行分片, 但是对于每个partition而言, 都是单点的. 当其中某个partition不可用的时候, 那么这部分消息就没办法消费. 所以kafka为了提高partition 的可靠性而提供了副本的概念(Replica),通过副本机制来实现冗余备份. </p>
+<p>每个分区可以有多个副本, 并且在副本集合中会存在一个leader 的副本, 所有的读写请求都是由leader 副本来进行处理. 剩余的其他副本都作为follower 副本. follower 副本会从leader 副本同步消息日志. 这个有点类似于zookeeper 中的leader 和follower 的概念. 但是具体的实现方式还是有比较大的差异的. 所以我们可以认为，副本集会存在一主多从的关系. </p>
+<p>一般情况下,同一个分区的多个副本会被均匀的分配到集群中的不同broker 上. 当leader 副本所在的broker 出现故障后, 可以重新选举新的leader 副本继续对外提供服务. 通过这样的副本机制来提高kafka 集群的可用性. </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E4%B9%8BApache%20Dubbo%20%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E4%B9%8BApache%20Dubbo%20%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86/" class="post-title-link" itemprop="url">微服务治理之Apache Dubbo 的基本认识</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/" itemprop="url" rel="index"><span itemprop="name">dubbo</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="微服务治理之Apache-Dubbo-的基本认识"><a href="#微服务治理之Apache-Dubbo-的基本认识" class="headerlink" title="微服务治理之Apache Dubbo 的基本认识"></a>微服务治理之Apache Dubbo 的基本认识</h1><h2 id="为什么要使用dubbo"><a href="#为什么要使用dubbo" class="headerlink" title="为什么要使用dubbo"></a>为什么要使用dubbo</h2><h3 id="远程通信背景"><a href="#远程通信背景" class="headerlink" title="远程通信背景"></a>远程通信背景</h3><p>技术架构的发展从单体到分布式，是一种顺势而为的架构演进,也是一种被逼无奈的技术变革. 架构的复杂度能够体现公司的业务的复杂度,也能从侧面体现公司的产品的发展势头是向上的. </p>
+<p>和传统的单体架构相比,分布式多了一个远程服务之间的通信,不管是soa还是微服务,他们本质上都是对于业务服务的提炼和复用. 那么远程服务之间的调用才是实现分布式的关键因素. </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E4%B9%8BApache%20Dubbo%20%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/SpringBoot%E4%B8%8EDubbo%E7%9A%84%E6%95%B4%E5%90%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/SpringBoot%E4%B8%8EDubbo%E7%9A%84%E6%95%B4%E5%90%88/" class="post-title-link" itemprop="url">SpringBoot与Dubbo的整合</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/" itemprop="url" rel="index"><span itemprop="name">dubbo</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="SpringBoot-与Dubbo-的整合"><a href="#SpringBoot-与Dubbo-的整合" class="headerlink" title="SpringBoot 与Dubbo 的整合"></a>SpringBoot 与Dubbo 的整合</h1><h2 id="新建项目"><a href="#新建项目" class="headerlink" title="新建项目"></a>新建项目</h2><p>我们先新建一个基于Springboot 的项目</p>
+<h2 id="jar包"><a href="#jar包" class="headerlink" title="jar包"></a>jar包</h2><p>添加dubbo 和zookeeper 的jar</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/SpringBoot%E4%B8%8EDubbo%E7%9A%84%E6%95%B4%E5%90%88/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://luyanan.com/Dubbo%E6%BA%90%E7%A0%81%E4%B9%8B%E6%9C%8D%E5%8A%A1%E9%80%9A%E4%BF%A1%E4%BB%A5%E5%8F%8A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -229,8 +793,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -285,85 +850,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Dubbo%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E5%8A%9F%E8%83%BD%E4%BB%A5%E5%8F%8A%E6%96%B0%E7%89%B9%E6%80%A7%E8%AE%B2%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Dubbo%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E5%8A%9F%E8%83%BD%E4%BB%A5%E5%8F%8A%E6%96%B0%E7%89%B9%E6%80%A7%E8%AE%B2%E8%A7%A3/" class="post-title-link" itemprop="url">Dubbo服务治理功能以及新特性讲解</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/" itemprop="url" rel="index"><span itemprop="name">dubbo</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Dubbo-服务治理以及新功能讲解"><a href="#Dubbo-服务治理以及新功能讲解" class="headerlink" title="Dubbo 服务治理以及新功能讲解"></a>Dubbo 服务治理以及新功能讲解</h1><h2 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h2><h3 id="负载均衡的背景"><a href="#负载均衡的背景" class="headerlink" title="负载均衡的背景"></a>负载均衡的背景</h3><p>到目前为止,Dubbo 集成zookeeper 解决了服务注册以及服务动态感知的问题, 那么当服务端存在多个节点的集群的时候, zookeeper 上会维护不同集群节点, 对于客户端而言,它需要一种负载均衡来实现目标服务的请求负载. 通过负载均衡, 可以让每个服务器节点获得适合自己处理能力的负载. </p>
-<p>负载均衡可以分为软负载和硬件负载, 在实际开发中, 我们基础软件负载比较多, 比如nginx, 硬件负载现在用的比较少,而且需要有专门的人维护. </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Dubbo%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E5%8A%9F%E8%83%BD%E4%BB%A5%E5%8F%8A%E6%96%B0%E7%89%B9%E6%80%A7%E8%AE%B2%E8%A7%A3/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://luyanan.com/Dubbo%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%BB%A5%E5%8F%8A%E6%9C%8D%E5%8A%A1%E6%B6%88%E8%B4%B9%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -387,8 +873,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -448,7 +935,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Dubbo%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Dubbo%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E5%8A%9F%E8%83%BD%E4%BB%A5%E5%8F%8A%E6%96%B0%E7%89%B9%E6%80%A7%E8%AE%B2%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -462,7 +949,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Dubbo%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/" class="post-title-link" itemprop="url">Dubbo性能调优</a>
+            <a href="/Dubbo%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E5%8A%9F%E8%83%BD%E4%BB%A5%E5%8F%8A%E6%96%B0%E7%89%B9%E6%80%A7%E8%AE%B2%E8%A7%A3/" class="post-title-link" itemprop="url">Dubbo服务治理功能以及新特性讲解</a>
         </h2>
 
         <div class="post-meta">
@@ -471,8 +958,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -499,552 +987,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Dubbo-性能调优"><a href="#Dubbo-性能调优" class="headerlink" title="Dubbo 性能调优"></a>Dubbo 性能调优</h1><h2 id="常用的性能调优参数"><a href="#常用的性能调优参数" class="headerlink" title="常用的性能调优参数"></a>常用的性能调优参数</h2><table>
-<thead>
-<tr>
-<th>参数名</th>
-<th>作用范围</th>
-<th>默认值</th>
-<th>说明</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>threads</td>
-<td>provider</td>
-<td>200</td>
-<td>业务处理线程大小</td>
-<td></td>
-</tr>
-<tr>
-<td>iothreads</td>
-<td>provider</td>
-<td>cpu个数+1</td>
-<td>io线程池大小</td>
-<td></td>
-</tr>
-<tr>
-<td>queues</td>
-<td>provider</td>
-<td>0</td>
-<td>线程池队列大小,当线程池满的时候, 排队等待执行的队列大小, 建议不要设置，当线程池满时,应该立即失败,重试其他服务提供机器,而不是排队,除非有特殊的要求</td>
-<td></td>
-</tr>
-<tr>
-<td>coeections</td>
-<td>consumer</td>
-<td>0</td>
-<td>对每个提供者的最大连接数,rmi、http、hessian等短连接协议表示限制连接数, Dubbo 等长连接协议表示建立的长连接个数</td>
-<td>Dubbo协议默认共享一个长连接</td>
-</tr>
-<tr>
-<td>actives</td>
-<td>consumer</td>
-<td>0</td>
-<td>每个服务消费者每个服务每个方法最大并发调用数</td>
-<td>0 表示不限制</td>
-</tr>
-<tr>
-<td>accepts</td>
-<td>provider</td>
-<td>0</td>
-<td>服务提供方最大可接受连接数</td>
-<td>0 表示不限制</td>
-</tr>
-<tr>
-<td>executes</td>
-<td>provider</td>
-<td>0</td>
-<td>服务提供者每服务每方法最大可并行执行请求数</td>
-<td>0 表示不限制</td>
-</tr>
-</tbody></table>
-<p>​    </p>
-<h2 id="每个参数的作用"><a href="#每个参数的作用" class="headerlink" title="每个参数的作用"></a>每个参数的作用</h2>
+          <h1 id="Dubbo-服务治理以及新功能讲解"><a href="#Dubbo-服务治理以及新功能讲解" class="headerlink" title="Dubbo 服务治理以及新功能讲解"></a>Dubbo 服务治理以及新功能讲解</h1><h2 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h2><h3 id="负载均衡的背景"><a href="#负载均衡的背景" class="headerlink" title="负载均衡的背景"></a>负载均衡的背景</h3><p>到目前为止,Dubbo 集成zookeeper 解决了服务注册以及服务动态感知的问题, 那么当服务端存在多个节点的集群的时候, zookeeper 上会维护不同集群节点, 对于客户端而言,它需要一种负载均衡来实现目标服务的请求负载. 通过负载均衡, 可以让每个服务器节点获得适合自己处理能力的负载. </p>
+<p>负载均衡可以分为软负载和硬件负载, 在实际开发中, 我们基础软件负载比较多, 比如nginx, 硬件负载现在用的比较少,而且需要有专门的人维护. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Dubbo%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Dubbo%E4%B9%8B%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0%E5%8F%91%E5%B8%83%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Dubbo%E4%B9%8B%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0%E5%8F%91%E5%B8%83%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">Dubbo之服务发现发布源码分析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/" itemprop="url" rel="index"><span itemprop="name">dubbo</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Dubbo-服务发布源码分析"><a href="#Dubbo-服务发布源码分析" class="headerlink" title="Dubbo 服务发布源码分析"></a>Dubbo 服务发布源码分析</h1><h2 id="Dubbo-对于Spring-的扩展"><a href="#Dubbo-对于Spring-的扩展" class="headerlink" title="Dubbo 对于Spring 的扩展"></a>Dubbo 对于Spring 的扩展</h2><p>最早我们使用spring 的配置来实现dubbo 服务的发布, 方便大家的同时也意味着Dubbo 里面和Spring 肯定有那种说不清的关系. </p>
-<h3 id="Spring-的标签扩展"><a href="#Spring-的标签扩展" class="headerlink" title="Spring 的标签扩展"></a>Spring 的标签扩展</h3><p>在Spring中定义了两个接口, </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Dubbo%E4%B9%8B%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0%E5%8F%91%E5%B8%83%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Dubbo%E4%B9%8BSPI%E6%9C%BA%E5%88%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Dubbo%E4%B9%8BSPI%E6%9C%BA%E5%88%B6/" class="post-title-link" itemprop="url">Dubbo之SPI机制</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/" itemprop="url" rel="index"><span itemprop="name">dubbo</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Dubbo之API机制"><a href="#Dubbo之API机制" class="headerlink" title="Dubbo之API机制"></a>Dubbo之API机制</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>本文的源码是基于Dubbo 2.7.2 版本进行分析的.这里, 我们首先将Dubbo 里面用的比较多的SPI 机制做一个详细的分析</p>
-<h2 id="Dubbo-中的SPI机制"><a href="#Dubbo-中的SPI机制" class="headerlink" title="Dubbo 中的SPI机制"></a>Dubbo 中的SPI机制</h2><h3 id="关于Java-SPI"><a href="#关于Java-SPI" class="headerlink" title="关于Java SPI"></a>关于Java SPI</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Dubbo%E4%B9%8BSPI%E6%9C%BA%E5%88%B6/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/" class="post-title-link" itemprop="url">Spring Cloud Alibaba之naocs配置中心</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Spring-Cloud/" itemprop="url" rel="index"><span itemprop="name">Spring Cloud</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Spring-Cloud-Alibaba之naocs配置中心"><a href="#Spring-Cloud-Alibaba之naocs配置中心" class="headerlink" title="Spring Cloud Alibaba之naocs配置中心"></a>Spring Cloud Alibaba之naocs配置中心</h1><h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1.  介绍"></a>1.  介绍</h2><blockquote>
-<p>动态配置服务可以让您以中心化、外部化和动态化的方式管理所有环境的应用配置和服务配置。</p>
-<p>动态配置消除了配置变更时重新部署应用和服务的需要，让配置管理变得更加高效和敏捷。</p>
-<p>配置中心化管理让实现无状态服务变得更简单，让服务按需弹性扩展变得更容易。</p>
-<p>Nacos 提供了一个简洁易用的UI (<a target="_blank" rel="noopener" href="http://console.nacos.io/nacos/index.html">控制台样例 Demo</a>) 帮助您管理所有的服务和应用的配置。Nacos 还提供包括配置版本跟踪、金丝雀发布、一键回滚配置以及客户端配置更新状态跟踪在内的一系列开箱即用的配置管理特性，帮助您更安全地在生产环境中管理配置变更和降低配置变更带来的风险。</p>
-</blockquote>
-<h2 id="2-项目实战"><a href="#2-项目实战" class="headerlink" title="2.  项目实战"></a>2.  项目实战</h2><h3 id="2-1-nacos-启动"><a href="#2-1-nacos-启动" class="headerlink" title="2.1  nacos  启动"></a>2.1  nacos  启动</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" class="post-title-link" itemprop="url">Spring Cloud Alibaba之naocs注册中心</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Spring-Cloud/" itemprop="url" rel="index"><span itemprop="name">Spring Cloud</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Spring-Cloud-Alibaba之naocs注册中心"><a href="#Spring-Cloud-Alibaba之naocs注册中心" class="headerlink" title="Spring Cloud Alibaba之naocs注册中心"></a>Spring Cloud Alibaba之naocs注册中心</h1><h2 id="1-确定版本"><a href="#1-确定版本" class="headerlink" title="1. 确定版本"></a>1. 确定版本</h2><p>我们先要确定下载的<code>nacos</code>的版本号, </p>
-<p><code>spring cloud alibaba</code>的官网表明了各个组件的版本依赖关系和与<code>Spring cloud</code>和<code>Spring Boot</code>的依赖关系</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba/wiki/%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E#%E7%BB%84%E4%BB%B6%E7%89%88%E6%9C%AC%E5%85%B3%E7%B3%BB">https://github.com/alibaba/spring-cloud-alibaba/wiki/%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E#%E7%BB%84%E4%BB%B6%E7%89%88%E6%9C%AC%E5%85%B3%E7%B3%BB</a></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Sentinel%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8%E4%BB%A5%E5%8F%8A%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Sentinel%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8%E4%BB%A5%E5%8F%8A%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">Sentinel的基本应用以及原理分析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Sentinel/" itemprop="url" rel="index"><span itemprop="name">Sentinel</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Sentinel的基本应用以及原理分析"><a href="#Sentinel的基本应用以及原理分析" class="headerlink" title="Sentinel的基本应用以及原理分析"></a>Sentinel的基本应用以及原理分析</h1><h2 id="限流的基本认识"><a href="#限流的基本认识" class="headerlink" title="限流的基本认识"></a>限流的基本认识</h2><h3 id="场景分析"><a href="#场景分析" class="headerlink" title="场景分析"></a>场景分析</h3><p>一个互联网产品, 打算搞一次大促来增加销量以及曝光. 公司的架构师基于往期的流量情况做了一个活动流量的预估. 然后整个公司的各个技术团队开始按照这个目标进行设计和优化, 最终在大家的不懈努力下,达到了链路压测的目标流量峰值. 到了活动开始那天, 大家都盯着监控面板, 看着流量像洪水一样涌进来, 由于前期的宣传工作做得非常好, 使得这个流程远远超过预期的峰值, 后端服务开始不稳定, CPU、内存各种爆表. 部分服务开始出现无响应的情况. 最后, 整个系统开始崩溃, 用户无法正常访问服务, 最后导致公司巨大的损失. </p>
-<h3 id="引入限流"><a href="#引入限流" class="headerlink" title="引入限流"></a>引入限流</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Sentinel%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8%E4%BB%A5%E5%8F%8A%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RocketMQ%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/RocketMQ%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">RocketMQ问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/RocketMQ/" itemprop="url" rel="index"><span itemprop="name">RocketMQ</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="RocketMQ-问题"><a href="#RocketMQ-问题" class="headerlink" title="RocketMQ 问题"></a>RocketMQ 问题</h1><h2 id="rocketmq-连接异常-sendDefaultImpl-call-timeout"><a href="#rocketmq-连接异常-sendDefaultImpl-call-timeout" class="headerlink" title="rocketmq 连接异常 sendDefaultImpl call timeout"></a>rocketmq 连接异常 sendDefaultImpl call timeout</h2><p>需要将broker 的ip 换成本地的ip<br>在<code>conf/broker.conf</code> 里面加上 <code>brokerIP1=[本机ip]</code></p>
-<p>然后重启</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup sh bin/mqbroker -n localhost:9876 -c conf/broker.conf autoCreateTopicEnable=<span class="literal">true</span> &amp;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/RocketMQ%E9%97%AE%E9%A2%98/#more" rel="contents">
+              <a class="btn" href="/Dubbo%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E5%8A%9F%E8%83%BD%E4%BB%A5%E5%8F%8A%E6%96%B0%E7%89%B9%E6%80%A7%E8%AE%B2%E8%A7%A3/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

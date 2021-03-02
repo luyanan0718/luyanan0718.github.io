@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/window10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%EF%BC%88WSL%EF%BC%89%E5%8F%8A%E8%BF%81%E7%A7%BB%E5%88%B0%E9%9D%9E%E7%B3%BB%E7%BB%9F%E7%9B%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/" class="post-title-link" itemprop="url">6</a>
+            <a href="/window10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%EF%BC%88WSL%EF%BC%89%E5%8F%8A%E8%BF%81%E7%A7%BB%E5%88%B0%E9%9D%9E%E7%B3%BB%E7%BB%9F%E7%9B%98/" class="post-title-link" itemprop="url">window10安装Linux子系统（WSL）及迁移到非系统盘</a>
         </h2>
 
         <div class="post-meta">
@@ -229,8 +229,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -238,7 +239,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Security/" itemprop="url" rel="index"><span itemprop="name">Security</span></a>
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
                 </span>
             </span>
 
@@ -253,12 +254,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="分布式系统认证方案"><a href="#分布式系统认证方案" class="headerlink" title="分布式系统认证方案"></a>分布式系统认证方案</h1><h2 id="1-什么是分布式系统"><a href="#1-什么是分布式系统" class="headerlink" title="1. 什么是分布式系统"></a>1. 什么是分布式系统</h2><p>随着软件环境和需求的变化,软件的架构由单体结构演变为分布式架构,具有分布式架构的系统叫做分布式系统, 分布式系统的运行通常依靠网络, 他将单体结构的系统分为若干服务, 服务之间通过网络交互来完成用户的业务处理, 当前流行的微服务架构就是分布式系统的结构,如下图:</p>
-<p><img src="6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200729092813897.png" alt="image-20200729092813897"></p>
-<p>分布式系统具体如下基本特点:</p>
+          <h1 id="window10安装Linux子系统（WSL）及迁移到非系统盘"><a href="#window10安装Linux子系统（WSL）及迁移到非系统盘" class="headerlink" title="window10安装Linux子系统（WSL）及迁移到非系统盘"></a>window10安装Linux子系统（WSL）及迁移到非系统盘</h1><h2 id="痛点："><a href="#痛点：" class="headerlink" title="痛点："></a>痛点：</h2><p>在电脑上想要使用linux又想使用windows系统只能安装双系统，因为虚拟机的性能差且使用麻烦，双系统使用起来倒是也还行，ubuntu的桌面系统现在用起来也可以，但是来回切换比较麻烦，故想尝试一下windows自带的这个WSL功能使用起来如何。<br>记录一下安装过程。</p>
+<h2 id="Linux子系统"><a href="#Linux子系统" class="headerlink" title="Linux子系统"></a>Linux子系统</h2><p>WSL（Windows Subsystem for Linux）详细介绍见官网：<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-au/windows/wsl/about">https://docs.microsoft.com/en-au/windows/wsl/about</a></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/6.%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/#more" rel="contents">
+              <a class="btn" href="/window10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%EF%BC%88WSL%EF%BC%89%E5%8F%8A%E8%BF%81%E7%A7%BB%E5%88%B0%E9%9D%9E%E7%B3%BB%E7%BB%9F%E7%9B%98/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -282,7 +282,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/5.Spring%20Security%20%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83%E9%AB%98%E7%BA%A7%E7%AF%87/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/window10%E4%B8%8B%E5%AD%90%E7%B3%BB%E7%BB%9Fubuntu%E5%AE%89%E8%A3%85Docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -296,7 +296,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/5.Spring%20Security%20%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83%E9%AB%98%E7%BA%A7%E7%AF%87/" class="post-title-link" itemprop="url">5</a>
+            <a href="/window10%E4%B8%8B%E5%AD%90%E7%B3%BB%E7%BB%9Fubuntu%E5%AE%89%E8%A3%85Docker/" class="post-title-link" itemprop="url">window10下子系统ubuntu安装Docker</a>
         </h2>
 
         <div class="post-meta">
@@ -305,8 +305,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -314,7 +315,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Security/" itemprop="url" rel="index"><span itemprop="name">Security</span></a>
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
                 </span>
             </span>
 
@@ -329,11 +330,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Spring-Security-认证授权高级篇"><a href="#Spring-Security-认证授权高级篇" class="headerlink" title="Spring Security 认证授权高级篇"></a>Spring Security 认证授权高级篇</h1><h2 id="1-自定义认证"><a href="#1-自定义认证" class="headerlink" title="1. 自定义认证"></a>1. 自定义认证</h2><p><code>Spring Security</code> 提供了非常好的认证方法, 比如: 快速上手将用户信息保存到内存中,实际开发中用户信息通常是放到数据库中,<code>Spring Security</code>   可以实现从数据库中读取用户信息,<code>Spring Security</code> 还支持多种授权方法.</p>
-<h3 id="1-1-自定义登陆页面"><a href="#1-1-自定义登陆页面" class="headerlink" title="1.1  自定义登陆页面"></a>1.1  自定义登陆页面</h3><p><code>Spring Security</code> 会根据启用的功能自动生成一个登录页面URL, 并使用默认<code>URL</code> 处理登陆的提交内容,登录i后跳转到默认的<code>URL</code>等,尽管自动生成的登陆页面很方便快速启动和运行,但大多数应用程序都希望定义自己的登录页面.</p>
+          <h1 id="window10下子系统ubuntu安装Docker"><a href="#window10下子系统ubuntu安装Docker" class="headerlink" title="window10下子系统ubuntu安装Docker"></a>window10下子系统ubuntu安装Docker</h1><p>准备工作<br>开启window子系统<br>网上有很多教程，这里不做过多的记录，可使用以下教程:Win10安装Ubuntu子系统教程（附安装图形化界面）</p>
+<p><img src="https://img-blog.csdnimg.cn/20190704180341303.png" alt="img"></p>
+<p>下载Docker for Window安装包<br>进入docker官网下载页面</p>
+<p><img src="https://img-blog.csdnimg.cn/20190704180156291.png" alt="img"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/5.Spring%20Security%20%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83%E9%AB%98%E7%BA%A7%E7%AF%87/#more" rel="contents">
+              <a class="btn" href="/window10%E4%B8%8B%E5%AD%90%E7%B3%BB%E7%BB%9Fubuntu%E5%AE%89%E8%A3%85Docker/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -357,7 +360,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/4.Spring%20Security%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/linux%20%E5%91%BD%E4%BB%A4%E5%A4%A7%E5%85%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -371,7 +374,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/4.Spring%20Security%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">4</a>
+            <a href="/linux%20%E5%91%BD%E4%BB%A4%E5%A4%A7%E5%85%A8/" class="post-title-link" itemprop="url">linux 命令大全</a>
         </h2>
 
         <div class="post-meta">
@@ -380,8 +383,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -389,7 +393,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Security/" itemprop="url" rel="index"><span itemprop="name">Security</span></a>
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
                 </span>
             </span>
 
@@ -404,12 +408,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Spring-Security的工作原理"><a href="#Spring-Security的工作原理" class="headerlink" title="Spring Security的工作原理"></a>Spring Security的工作原理</h1><h2 id="1-结构总览"><a href="#1-结构总览" class="headerlink" title="1 结构总览"></a>1 结构总览</h2><p><code>Spring Security</code> 所解决的问题就是<code>安全访问控制</code>, 而安全访问控制其实就是对所有进入系统的请求进行拦截,校验每个请求是否能够访问它所期望的资源,我们可以通过<code>Filter</code> 或者<code>AOP</code> 等技术进行实现,<code>Spring Security</code> 对<code>Web</code> 资源的保护是通过<code>Filter</code> 实现的,所以从这个<code>Filter</code> 来入手,逐步深入<code>Spring Security</code> 的原理.</p>
-<p>当初始化<code>Spring Security</code>的时候, 会创建一个名为<code>org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration#springSecurityFilterChain</code>的<code>Servlet</code> 过滤器, 类型为<code>org.springframework.security.web.FilterChainProxy</code>,它实现了<code>javax.servlet.Filter</code>, 因此外部的请求会经过此类,下图是<code>Spring Security</code> 的过滤器链结构图</p>
-<p><img src="4.Spring%20Security%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.assets/image-20200724150042320.png" alt="image-20200724150042320"></p>
+          <p>[TOC]</p>
+<h4 id="1-查看-HTTP-链接情况"><a href="#1-查看-HTTP-链接情况" class="headerlink" title="1. 查看  HTTP  链接情况"></a>1. 查看  HTTP  链接情况</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -n | awk &#39;&#x2F;^tcp&#x2F; &#123;++S[$NF]&#125; END &#123;for(a in S) print a, S[a]&#125;&#39;</span><br></pre></td></tr></table></figure>
+<h4 id="2-查看当前IP个数和每IP连接数"><a href="#2-查看当前IP个数和每IP连接数" class="headerlink" title="2. 查看当前IP个数和每IP连接数"></a>2. 查看当前IP个数和每IP连接数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -an | grep 80 | awk &#39;&#123;print $5&#125;&#39; | awk &#39;BEGIN &#123;FS&#x3D;&quot;:&quot;&#125; NF&#x3D;&#x3D;2 &#123;print $1&#125; NF&#x3D;&#x3D;5 &#123;print $4&#125;&#39; | sort | uniq -c | sort -n</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/4.Spring%20Security%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/#more" rel="contents">
+              <a class="btn" href="/linux%20%E5%91%BD%E4%BB%A4%E5%A4%A7%E5%85%A8/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -433,7 +437,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/3.%20%E5%9F%BA%E4%BA%8ESpring%20Security%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Centos7%E8%AE%BE%E7%BD%AE%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -447,7 +451,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/3.%20%E5%9F%BA%E4%BA%8ESpring%20Security%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83/" class="post-title-link" itemprop="url">3</a>
+            <a href="/Centos7%E8%AE%BE%E7%BD%AE%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/" class="post-title-link" itemprop="url">Centos7设置定时任务</a>
         </h2>
 
         <div class="post-meta">
@@ -456,8 +460,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -465,7 +470,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Security/" itemprop="url" rel="index"><span itemprop="name">Security</span></a>
+                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
                 </span>
             </span>
 
@@ -480,11 +485,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="基于Spring-Security-认证授权"><a href="#基于Spring-Security-认证授权" class="headerlink" title="基于Spring Security 认证授权"></a>基于Spring Security 认证授权</h1><h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p><code>Spring Security</code> 是一个能够为基于<code>Spring</code>的企业应用系统提升声明式的安全访问控制解决方案的安全框架.由于他是<code>Spring</code> 生态系统中的一员,因为他伴随着整个<code>Spring</code> 生态系统的不断修正、升级,在<code>Spring Boot</code> 项目中加入<code>Spring Security</code> 更是十分简单,使用<code>Spring Security</code> 减少了为企业系统安全控制编写了大量重复代码的工作. </p>
-<h2 id="2-实战"><a href="#2-实战" class="headerlink" title="2. 实战"></a>2. 实战</h2><h3 id="2-1-pom依赖"><a href="#2-1-pom依赖" class="headerlink" title="2.1 pom依赖"></a>2.1 <code>pom依赖</code></h3>
+          <h1 id="Centos7-设置定时任务"><a href="#Centos7-设置定时任务" class="headerlink" title="Centos7 设置定时任务"></a>Centos7 设置定时任务</h1><p><strong>1、安装 crontabs服务并设置开机自启：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yum install crontabs</span><br><span class="line">systemctl <span class="built_in">enable</span> crond</span><br><span class="line">systemctl start crond</span><br></pre></td></tr></table></figure>
+
+<p><strong>2、配置定时规则</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim &#x2F;etc&#x2F;crontab</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/3.%20%E5%9F%BA%E4%BA%8ESpring%20Security%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83/#more" rel="contents">
+              <a class="btn" href="/Centos7%E8%AE%BE%E7%BD%AE%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -508,7 +516,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/2.%20%E5%9F%BA%E4%BA%8ESession%E8%BF%9B%E8%A1%8C%E8%AE%A4%E8%AF%81/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/8.kubernetes%E7%BB%84%E4%BB%B6%E4%B9%8BStorage/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -522,7 +530,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2.%20%E5%9F%BA%E4%BA%8ESession%E8%BF%9B%E8%A1%8C%E8%AE%A4%E8%AF%81/" class="post-title-link" itemprop="url">2</a>
+            <a href="/8.kubernetes%E7%BB%84%E4%BB%B6%E4%B9%8BStorage/" class="post-title-link" itemprop="url">8</a>
         </h2>
 
         <div class="post-meta">
@@ -531,8 +539,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -540,7 +549,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Security/" itemprop="url" rel="index"><span itemprop="name">Security</span></a>
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
                 </span>
             </span>
 
@@ -555,39 +564,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="基于Session进行认证"><a href="#基于Session进行认证" class="headerlink" title="基于Session进行认证"></a>基于Session进行认证</h1><h2 id="1-认证流程"><a href="#1-认证流程" class="headerlink" title="1. 认证流程"></a>1. 认证流程</h2><p>用户认证成功后,在服务端生成用户相关的数据, 并保存在<code>session</code> 会话中,而发给客户端的<code>session_id</code> 保存在浏览器的<code>cookie</code>中, 当客户端请求的时候带上<code>session_id</code> ,服务端就可以通过验证<code>session_id</code>是否存在和<code>session</code> 数据来完成用户的合法性校验了. 当用户退出系统或者<code>session</code> 销毁的时候, 只需要清空会话的<code>session</code> 即可. 这样客户端的<code>session_id</code>也就无效了. </p>
-<p>基于<code>session</code>的认证机制是由<code>Servlet</code> 规范定制的,<code>servlet</code>已经实现,用户可以通过<code>HttpSession</code> 的操作方法就可以实现,如下是<code>HttpSession</code> 相关的操作API</p>
-<table>
-<thead>
-<tr>
-<th>方法</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>HttpSession getSession(Boolean create)</code></td>
-<td>获取当前的<code>session</code>对象</td>
-</tr>
-<tr>
-<td><code>void setAttribute(String name,Object value)</code></td>
-<td>往<code>session</code> 中存放数据</td>
-</tr>
-<tr>
-<td><code>object getAttribute(String name)</code></td>
-<td>从<code>session</code>中获取数据</td>
-</tr>
-<tr>
-<td><code>void removeAttribute(String name);</code></td>
-<td>移除<code>session</code>对象</td>
-</tr>
-<tr>
-<td><code>void invalidate()</code></td>
-<td>使得<code>HttpSession</code>失效</td>
-</tr>
-</tbody></table>
+          <h1 id="kubernetes组件之Storage"><a href="#kubernetes组件之Storage" class="headerlink" title="kubernetes组件之Storage"></a>kubernetes组件之Storage</h1><h2 id="1-Volume"><a href="#1-Volume" class="headerlink" title="1 Volume"></a>1 <a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/storage/volumes/"><code>Volume</code></a></h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">On-disk files in a Container are ephemeral, which presents some problems for non-trivial applications when running in Containers. First, when a Container crashes, kubelet will restart it, but the files will be lost - the Container starts with a clean state. Second, when running Containers together in a Pod it is often necessary to share files between those Containers. The Kubernetes Volume abstraction solves both of these problems.</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-Host-类型volume-实战"><a href="#2-Host-类型volume-实战" class="headerlink" title="2 Host 类型volume 实战"></a>2 <code>Host</code> 类型<code>volume</code> 实战</h2><blockquote>
+<p>背景： 定义一个<code>Pod</code>, 其中包含两个<code>contailer</code>,都使用<code>pod</code>的<code>vloume</code></p>
+</blockquote>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2.%20%E5%9F%BA%E4%BA%8ESession%E8%BF%9B%E8%A1%8C%E8%AE%A4%E8%AF%81/#more" rel="contents">
+              <a class="btn" href="/8.kubernetes%E7%BB%84%E4%BB%B6%E4%B9%8BStorage/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -611,7 +597,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/1.Spring%20Security%20Oauth2%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/7.%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84CICD/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -625,7 +611,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/1.Spring%20Security%20Oauth2%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="post-title-link" itemprop="url">1</a>
+            <a href="/7.%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84CICD/" class="post-title-link" itemprop="url">7</a>
         </h2>
 
         <div class="post-meta">
@@ -634,8 +620,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -643,7 +630,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Security/" itemprop="url" rel="index"><span itemprop="name">Security</span></a>
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
                 </span>
             </span>
 
@@ -658,12 +645,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Spring-Security-Oauth2的基本概念"><a href="#Spring-Security-Oauth2的基本概念" class="headerlink" title="Spring Security Oauth2的基本概念"></a>Spring Security Oauth2的基本概念</h1><h2 id="1-什么是认证"><a href="#1-什么是认证" class="headerlink" title="1. 什么是认证"></a>1. 什么是认证</h2><p>在移动互联网时代,我们经常要登陆各种各样的软件, 比如微信、支付宝、淘宝等,我们拿登陆淘宝来举例子来说明一下认证的基本概念, 当我们在初次使用淘宝的时候, 需要注册为淘宝的会员,然后输入账号密码登录淘宝,这个使用账号密码登陆淘宝的过程就是认证. </p>
-<p>系统 为什么要认证呢? </p>
-<p>认证是为了保护系统的隐私数据与资源, 用户的身份合法才可以访问该系统的资源. </p>
+          <h1 id="基于kubernetes的CICD-md"><a href="#基于kubernetes的CICD-md" class="headerlink" title="基于kubernetes的CICD.md"></a>基于kubernetes的CICD.md</h1><blockquote>
+<p>思考: 当我们需要部署一个项目到k8s中的时候,需要编写<code>Dockerfile</code>-&gt; 打包-&gt; <code>push</code> 镜像-&gt; 编写k8s 配置文件-&gt; 在进行启动等等。 </p>
+<p>当我们需要对这个项目的某些代码进行修改的时候,还要重新打包-&gt;push镜像-&gt;k8s启动等等. </p>
+</blockquote>
+<p><img src="http://files.luyanan.com//img/20200430100422.png" alt="image-20200430100403943"></p>
+<blockquote>
+<p>思考: 如果能够按照上述图解一样,在本地进行开发,然后<code>git push</code> 到<code>guthub</code>, 就能访问最终的应用多好. </p>
+</blockquote>
+<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a>1. 环境准备</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/1.Spring%20Security%20Oauth2%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/#more" rel="contents">
+              <a class="btn" href="/7.%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84CICD/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -687,7 +680,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/9.%E5%A4%A7%E5%90%8D%E9%BC%8E%E9%BC%8E%E7%9A%84EventLoop/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/6.kubectl%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -701,7 +694,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/9.%E5%A4%A7%E5%90%8D%E9%BC%8E%E9%BC%8E%E7%9A%84EventLoop/" class="post-title-link" itemprop="url">9</a>
+            <a href="/6.kubectl%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">6</a>
         </h2>
 
         <div class="post-meta">
@@ -710,8 +703,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -719,7 +713,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
                 </span>
             </span>
 
@@ -734,11 +728,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="大名鼎鼎的EventLoop"><a href="#大名鼎鼎的EventLoop" class="headerlink" title="大名鼎鼎的EventLoop"></a>大名鼎鼎的EventLoop</h1><h2 id="1-EventLoopGroup-和Reactor"><a href="#1-EventLoopGroup-和Reactor" class="headerlink" title="1. EventLoopGroup 和Reactor"></a>1. EventLoopGroup 和Reactor</h2><p>一个Netty 在启动的时候, 至少要指定一个EventLoopGroup(如果使用的是Nio, 一般指定的是NioEventLoopGroup),那么, 这回NioEventLoopGroup 在Netty中 到底扮演着什么样的角色呢? 我们知道, Netty 是Reactor 模型的一个实现, 我们就从Reactor 的线程模型开始</p>
-<h3 id="1-浅谈Reactor-线程模型"><a href="#1-浅谈Reactor-线程模型" class="headerlink" title="1. 浅谈Reactor 线程模型"></a>1. 浅谈Reactor 线程模型</h3><p>Reactor 线程模型有三种: 单线程模型、多线程模型、主从线程模型. 首先来看一下单线程模型, 如下图所示:<br><img src="http://files.luyanan.com//img/20190928171643.png"></p>
+          <h2 id="1、查看集群状态"><a href="#1、查看集群状态" class="headerlink" title="1、查看集群状态"></a>1、查看集群状态</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl version --short=<span class="literal">true</span> 查看客户端及服务端程序版本信息</span><br><span class="line">kubectl cluster-info 查看集群信息</span><br></pre></td></tr></table></figure>
+
+<h2 id="2、创建资源对象"><a href="#2、创建资源对象" class="headerlink" title="2、创建资源对象"></a><strong>2、创建资源对象</strong></h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl run name --image=(镜像名) --replicas=(备份数) --port=(容器要暴露的端口) --labels=(设定自定义标签)</span><br><span class="line">kubectl create -f **.yaml  陈述式对象配置管理方式</span><br><span class="line">kubectl apply -f **.yaml  声明式对象配置管理方式（也适用于更新等）</span><br></pre></td></tr></table></figure>
+
+<h2 id="3、查看资源对象"><a href="#3、查看资源对象" class="headerlink" title="3、查看资源对象"></a>3、查看资源对象</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/9.%E5%A4%A7%E5%90%8D%E9%BC%8E%E9%BC%8E%E7%9A%84EventLoop/#more" rel="contents">
+              <a class="btn" href="/6.kubectl%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -762,7 +759,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/7.%20%E6%8F%AD%E5%BC%80Bootstrap%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/10.kubernetes%E7%B3%BB%E7%BB%9F%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -776,7 +773,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/7.%20%E6%8F%AD%E5%BC%80Bootstrap%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1/" class="post-title-link" itemprop="url">7</a>
+            <a href="/10.kubernetes%E7%B3%BB%E7%BB%9F%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/" class="post-title-link" itemprop="url">10</a>
         </h2>
 
         <div class="post-meta">
@@ -785,8 +782,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -794,7 +792,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
                 </span>
             </span>
 
@@ -809,11 +807,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="揭开Bootstrap-的神秘面纱"><a href="#揭开Bootstrap-的神秘面纱" class="headerlink" title="揭开Bootstrap 的神秘面纱"></a>揭开Bootstrap 的神秘面纱</h1><h2 id="1-客户端Bootstrap"><a href="#1-客户端Bootstrap" class="headerlink" title="1. 客户端Bootstrap"></a>1. 客户端Bootstrap</h2><h3 id="1-Channel简介"><a href="#1-Channel简介" class="headerlink" title="1. Channel简介"></a>1. Channel简介</h3><p>在Netty中,Channel是一个Socket的抽象, 它为用户提升了关于Socket状态(是否是连接还是断开) 以及对Socket的读写等操作, 每当Netty 建立一个连接后， 都创建一个对应的Channel 实例.</p>
-<p>除了TCP协议外, Netty 还支持很多的其他的连接协议, 并且每种协议还有NIO(非阻塞IO) 和OLO( Old - io,即传统的IO ）版本的区别. 不同 协议不同的阻塞类型的连接都有不同的Channel 类型与之对应. 下面是一些常见的Channel 类型</p>
+          <h1 id="kubernetes系统核心组件"><a href="#kubernetes系统核心组件" class="headerlink" title="kubernetes系统核心组件"></a>kubernetes系统核心组件</h1><h2 id="1-Master和Node"><a href="#1-Master和Node" class="headerlink" title="1. Master和Node"></a>1. <code>Master</code>和<code>Node</code></h2><blockquote>
+<p>官网:<a target="_blank" rel="noopener" href="https://kubernetes.io/zh/docs/concepts/architecture/master-node-communication/">https://kubernetes.io/zh/docs/concepts/architecture/master-node-communication/</a></p>
+</blockquote>
+<p>k8s 集群中的控制节点,负责整个集群的管理和控制,可以做成高可用,防止一台<code>master</code> 宕机或者不可用,其中有一些关键的组件, 比如<code>API Server</code>、<code>Controller Manage</code> 、<code>Scheduler</code>等. </p>
+<blockquote>
+<p>Node</p>
+</blockquote>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/7.%20%E6%8F%AD%E5%BC%80Bootstrap%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1/#more" rel="contents">
+              <a class="btn" href="/10.kubernetes%E7%B3%BB%E7%BB%9F%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -837,7 +840,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/8.%20%E6%8F%AD%E5%BC%80ServerBootstrap%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/1.Kubernetes%E4%B9%8B%E5%85%A5%E9%97%A8%E7%AF%87/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -851,7 +854,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/8.%20%E6%8F%AD%E5%BC%80ServerBootstrap%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1/" class="post-title-link" itemprop="url">8</a>
+            <a href="/1.Kubernetes%E4%B9%8B%E5%85%A5%E9%97%A8%E7%AF%87/" class="post-title-link" itemprop="url">1</a>
         </h2>
 
         <div class="post-meta">
@@ -860,8 +863,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -869,7 +873,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
                 </span>
             </span>
 
@@ -884,13 +888,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="揭开ServerBootstrap-的神秘面纱"><a href="#揭开ServerBootstrap-的神秘面纱" class="headerlink" title="揭开ServerBootstrap 的神秘面纱"></a>揭开ServerBootstrap 的神秘面纱</h1><h2 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h2><p>我们首先来看一下 ServerBootstrap 服务端的启动代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">(<span class="keyword">int</span> port)</span> </span>&#123;</span><br><span class="line">       EventLoopGroup bossGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">       EventLoopGroup workerGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           ServerBootstrap bootstrap = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">           bootstrap.channel(NioServerSocketChannel.class)</span><br><span class="line">                   .group(bossGroup, workerGroup)</span><br><span class="line">                   .childHandler(<span class="keyword">new</span> ChannelInitializer&lt;SocketChannel&gt;() &#123;</span><br><span class="line">                       <span class="meta">@Override</span></span><br><span class="line">                       <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel ch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;)</span><br><span class="line">                   .option(ChannelOption.SO_BACKLOG, <span class="number">128</span>)</span><br><span class="line">                   .childOption(ChannelOption.SO_KEEPALIVE, <span class="keyword">true</span>);</span><br><span class="line">           <span class="comment">// 绑定端口, 开始接受进来的请求</span></span><br><span class="line">           ChannelFuture future = bootstrap.bind(port).sync();</span><br><span class="line">           future.channel().closeFuture().sync();</span><br><span class="line">       &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">           e.printStackTrace();</span><br><span class="line">       &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">           bossGroup.shutdownGracefully();</span><br><span class="line">           workerGroup.shutdownGracefully();</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">new</span> NIOChatServer().start(<span class="number">8080</span>);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
-<p>服务端基本写法和客户端的代码相比, 没有很大的差别, 基本上也是进行了如下几个部分的初始化：</p>
+          <h1 id="Kubernetes之入门篇"><a href="#Kubernetes之入门篇" class="headerlink" title="Kubernetes之入门篇"></a>Kubernetes之入门篇</h1><h2 id="1-K8S核心组件和架构图"><a href="#1-K8S核心组件和架构图" class="headerlink" title="1. K8S核心组件和架构图"></a>1. K8S核心组件和架构图</h2><p><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/">K8S Docs Concepts</a></p>
+<ol>
+<li><p>先从<code>contailer</code> 开始, K8S 既然是容器编排工具, 那么一定会有<code>contailer</code></p>
+<p> <img src="http://files.luyanan.com//img/20200420103423.png" alt="image-20200420103421591"></p>
+</li>
+<li><p>那k8s 如何操作这些<code>contailer</code>呢?  k8s 不想直接操作这些<code>contailer</code>, 因为操作<code>contailer</code> 是<code>docker</code> 做的事情,k8s 中有自己的操作单位,称之为<code>Prod</code></p>
+<p> 说白了, <code>Prod</code> 就是一个或者多个<code>contailer</code>的集合. </p>
+<p><img src="http://files.luyanan.com//img/20200420103706.png" alt="image-20200420103705134"></p>
+<p>看看官网是怎么描述的? <a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/workloads/pods/pod/">https://kubernetes.io/docs/concepts/workloads/pods/pod/</a></p>
+</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A Pod (as in a pod of whales or pea pod) is a group of one or more containers (such as Docker containers), with shared storage/network, and a specification for how to run the containers. A Pod’s contents are always co-located and co-scheduled, and run in a shared context. A Pod models an application-specific “logical host” - it contains one or more application containers which are relatively tightly coupled — in a pre-container world, being executed on the same physical or virtual machine would mean being executed on the same logical host</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/8.%20%E6%8F%AD%E5%BC%80ServerBootstrap%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1/#more" rel="contents">
+              <a class="btn" href="/1.Kubernetes%E4%B9%8B%E5%85%A5%E9%97%A8%E7%AF%87/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -914,7 +926,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/5.%20%E4%BD%BF%E7%94%A8NIO%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%8A%9F%E8%83%BD/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/5.JVM%E4%B9%8B%E8%B0%83%E4%BC%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -928,7 +940,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/5.%20%E4%BD%BF%E7%94%A8NIO%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%8A%9F%E8%83%BD/" class="post-title-link" itemprop="url">5</a>
+            <a href="/5.JVM%E4%B9%8B%E8%B0%83%E4%BC%98/" class="post-title-link" itemprop="url">5</a>
         </h2>
 
         <div class="post-meta">
@@ -937,8 +949,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -946,7 +959,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                  <a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
                 </span>
             </span>
 
@@ -961,17 +974,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="使用NIO实现一个聊天室公共功能"><a href="#使用NIO实现一个聊天室公共功能" class="headerlink" title="使用NIO实现一个聊天室公共功能"></a>使用NIO实现一个聊天室公共功能</h1><h2 id="主要实现功能"><a href="#主要实现功能" class="headerlink" title="主要实现功能:"></a>主要实现功能:</h2><ul>
-<li>功能1:  客户端通过Java NIO 连接到服务端, 支持多客户端的连接</li>
-<li>功能2:  客户端初次连接的时候, 服务端提示输入昵称, 如果昵称已经有人使用, 则提示重新输入, 如果昵称唯一, 则登录成功,</li>
-<li>之后发送消息都需要按照规定格式带着昵称发送消息</li>
-<li>功能3: 客户端登录后, 发送已经设置好的欢迎信息和在线人数给客户端, 并且通知其他客户端该客户端已经上线</li>
-<li>功能4: 服务端收到已登录客户端输入内容, 转发至其他客户端</li>
-</ul>
-<h2 id="服务端代码"><a href="#服务端代码" class="headerlink" title="服务端代码"></a>服务端代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.formula.netty.chat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.net.InetSocketAddress;</span><br><span class="line"><span class="keyword">import</span> java.nio.ByteBuffer;</span><br><span class="line"><span class="keyword">import</span> java.nio.channels.*;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.Charset;</span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2019/9/21</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;网络多客户端聊天室</span></span><br><span class="line"><span class="comment"> * 功能1:  客户端通过Java NIO 连接到服务端, 支持多客户端的连接</span></span><br><span class="line"><span class="comment"> * 功能2:  客户端初次连接的时候, 服务端提示输入昵称, 如果昵称已经有人使用, 则提示重新输入, 如果昵称唯一, 则登录成功,</span></span><br><span class="line"><span class="comment"> * 之后发送消息都需要按照规定格式带着昵称发送消息</span></span><br><span class="line"><span class="comment"> * 功能3: 客户端登录后, 发送已经设置好的欢迎信息和在线人数给客户端, 并且通知其他客户端该客户端已经上线</span></span><br><span class="line"><span class="comment"> * 功能4: 服务端收到已登录客户端输入内容, 转发至其他客户端</span></span><br><span class="line"><span class="comment"> * &lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NIOChatServer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> port = <span class="number">8080</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//相当于自定义协议格式，与客户端协商好</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String USER_CONTENT_SPILIT = <span class="string">&quot;#@#&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Charset charset = Charset.forName(<span class="string">&quot;utf-8&quot;</span>);</span><br><span class="line">    <span class="keyword">private</span> Selector selector;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String USER_EXIST = <span class="string">&quot;系统提示：该昵称已经存在，请换一个昵称&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;用来记录在线人数, 以及昵称&lt;/p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 2019/9/21</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> HashSet&lt;String&gt; users = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">NIOChatServer</span><span class="params">(<span class="keyword">int</span> port)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.port = port;</span><br><span class="line"></span><br><span class="line">        ServerSocketChannel server = ServerSocketChannel.open();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 绑定端口号</span></span><br><span class="line">        server.bind(<span class="keyword">new</span> InetSocketAddress(<span class="keyword">this</span>.port));</span><br><span class="line">        <span class="comment">// 设置为非阻塞</span></span><br><span class="line">        server.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line">        <span class="comment">// 初始化轮询器</span></span><br><span class="line">        <span class="keyword">this</span>.selector = Selector.open();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 注册事件</span></span><br><span class="line">        server.register(selector, SelectionKey.OP_ACCEPT);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;服务已经启动, 端口号为: &quot;</span> + <span class="keyword">this</span>.port);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;开始监听&lt;/p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@link</span>&#125;</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 2019/9/21</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">listen</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> wait = selector.select();</span><br><span class="line">            <span class="keyword">if</span> (wait == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            Set&lt;SelectionKey&gt; selectionKeys = selector.selectedKeys();</span><br><span class="line">            Iterator&lt;SelectionKey&gt; iterator = selectionKeys.iterator();</span><br><span class="line">            <span class="keyword">while</span> (iterator.hasNext()) &#123;</span><br><span class="line"></span><br><span class="line">                SelectionKey selectionKey = iterator.next();</span><br><span class="line">                iterator.remove();</span><br><span class="line">                process(selectionKey);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(SelectionKey selectionKey)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (selectionKey.isAcceptable()) &#123;</span><br><span class="line">            ServerSocketChannel server = (ServerSocketChannel) selectionKey.channel();</span><br><span class="line">            SocketChannel client = server.accept();</span><br><span class="line">            <span class="comment">// 设置为非阻塞模式</span></span><br><span class="line">            client.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line">            <span class="comment">//注册选择器, 并设置为读取模式, 收到一个连接请求, 然后起一个 socketChannel , 并注册到selector 上, 之后这个连接的数据, 就由这个 socketCHannel 处理</span></span><br><span class="line">            client.register(selector, SelectionKey.OP_READ);</span><br><span class="line">            <span class="comment">// 将此对应的 channel 设置为准备接受其他客户端请求</span></span><br><span class="line">            selectionKey.interestOps(SelectionKey.OP_ACCEPT);</span><br><span class="line">            System.out.println(<span class="string">&quot;有客户端连接: IP地址为: &quot;</span> + client.getRemoteAddress());</span><br><span class="line">            client.write(charset.encode(<span class="string">&quot;请输入您的昵称&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 处理来自客户端的数据读取请求</span></span><br><span class="line">        <span class="keyword">if</span> (selectionKey.isReadable()) &#123;</span><br><span class="line">            <span class="comment">// 返回该 selectionKey 对应的channel, 其中有数据需要读取</span></span><br><span class="line">            SocketChannel client = (SocketChannel) selectionKey.channel();</span><br><span class="line">            ByteBuffer buffer = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line">            StringBuffer content = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">while</span> (client.read(buffer) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    buffer.flip();</span><br><span class="line">                    content.append(charset.decode(buffer));</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 将此对应的channel  设置为准备下一次接受数据</span></span><br><span class="line">                selectionKey.interestOps(SelectionKey.OP_READ);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                selectionKey.cancel();</span><br><span class="line">                <span class="keyword">if</span> (selectionKey.channel() != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    selectionKey.channel().close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (content.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                String[] arrayContent = content.toString().split(USER_CONTENT_SPILIT);</span><br><span class="line">                <span class="comment">//  注册用户</span></span><br><span class="line">                <span class="keyword">if</span> (arrayContent != <span class="keyword">null</span> &amp;&amp; arrayContent.length == <span class="number">1</span>) &#123;</span><br><span class="line">                    String nickName = arrayContent[<span class="number">0</span>];</span><br><span class="line">                    <span class="keyword">if</span> (users.contains(nickName)) &#123;</span><br><span class="line">                        client.write(charset.encode(USER_EXIST));</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        users.add(nickName);</span><br><span class="line">                        <span class="keyword">int</span> onlineCount = onlineCount();</span><br><span class="line">                        String message = <span class="string">&quot;欢迎: &quot;</span> + nickName + <span class="string">&quot;进入聊天室！当前在线人数: &quot;</span> + onlineCount;</span><br><span class="line">                        message = nickName + <span class="string">&quot; 说&quot;</span> + message;</span><br><span class="line">                        <span class="keyword">if</span> (users.contains(nickName)) &#123;</span><br><span class="line">                            <span class="comment">// 不会发送给此内容的客户端</span></span><br><span class="line">                            broadCase(client, message);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">broadCase</span><span class="params">(SocketChannel client, String message)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//  广播数据到所有的 SocketChannel</span></span><br><span class="line">        <span class="keyword">for</span> (SelectionKey key : selector.keys()) &#123;</span><br><span class="line">            Channel channel = key.channel();</span><br><span class="line">            <span class="comment">//  如果client 不为空, 不会发给此内容的客户端</span></span><br><span class="line">            <span class="keyword">if</span> (channel <span class="keyword">instanceof</span> SocketChannel &amp;&amp; channel != client) &#123;</span><br><span class="line">                SocketChannel socketChannel = (SocketChannel) channel;</span><br><span class="line">                socketChannel.write(charset.encode(message));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">onlineCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> res = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (SelectionKey key : selector.keys()) &#123;</span><br><span class="line">            Channel channel = key.channel();</span><br><span class="line">            <span class="comment">// 如果client 不为空, 不会发给此内容的客户端</span></span><br><span class="line">            <span class="keyword">if</span> (channel <span class="keyword">instanceof</span> SocketChannel) &#123;</span><br><span class="line">                res++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> NIOChatServer(<span class="number">8080</span>).listen();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+          <h1 id="JVM之调优"><a href="#JVM之调优" class="headerlink" title="JVM之调优"></a>JVM之调优</h1><h2 id="1-重新认识JVM"><a href="#1-重新认识JVM" class="headerlink" title="1. 重新认识JVM"></a>1. 重新认识JVM</h2><p>我们画一张图来展示JVM的大体物理结构</p>
+<p><img src="http://files.luyanan.com//img/20200511085020.png" alt="image-20200511085019210"></p>
+<h2 id="2-GC优化"><a href="#2-GC优化" class="headerlink" title="2. GC优化"></a>2. GC优化</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/5.%20%E4%BD%BF%E7%94%A8NIO%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%8A%9F%E8%83%BD/#more" rel="contents">
+              <a class="btn" href="/5.JVM%E4%B9%8B%E8%B0%83%E4%BC%98/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

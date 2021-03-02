@@ -229,8 +229,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -309,8 +310,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -389,8 +391,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -469,8 +472,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -525,172 +529,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/zookeeper%E4%B9%8Bwatcher%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/zookeeper%E4%B9%8Bwatcher%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">zookeeper之watcher原理分析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookpeer/" itemprop="url" rel="index"><span itemprop="name">zookpeer</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="zookeeper原理之watcher源码分析"><a href="#zookeeper原理之watcher源码分析" class="headerlink" title="zookeeper原理之watcher源码分析"></a>zookeeper原理之watcher源码分析</h1><h2 id="watcher-的基本流程"><a href="#watcher-的基本流程" class="headerlink" title="watcher 的基本流程"></a>watcher 的基本流程</h2><p>zookeeper 的watcher 机制, 总的来说分为三个过程: 客户端注册watcher、服务端处理watcher和客户端回调watcher . </p>
-<h2 id="基于zk客户端发起一个数据操作"><a href="#基于zk客户端发起一个数据操作" class="headerlink" title="基于zk客户端发起一个数据操作"></a>基于zk客户端发起一个数据操作</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, KeeperException, InterruptedException </span>&#123;</span><br><span class="line">       ZooKeeper zooKeeper = <span class="keyword">new</span> ZooKeeper(<span class="string">&quot;192.168.9.22:2181&quot;</span>,</span><br><span class="line">               <span class="number">4000</span>, <span class="keyword">new</span> Watcher() &#123;</span><br><span class="line">           <span class="meta">@Override</span></span><br><span class="line">           <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent watchedEvent)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">               System.out.println(<span class="string">&quot;event.type:&quot;</span> + watchedEvent.getType());</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;);</span><br><span class="line">       String path = <span class="string">&quot;/watcher&quot;</span>;</span><br><span class="line">       <span class="comment">//  创建节点</span></span><br><span class="line">       zooKeeper.create(path, <span class="string">&quot;0&quot;</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line">       <span class="comment">//  注册监听</span></span><br><span class="line">       zooKeeper.exists(path, <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 修改节点的值触发监听</span></span><br><span class="line">       zooKeeper.setData(path, <span class="string">&quot;1&quot;</span>.getBytes(), -<span class="number">1</span>);</span><br><span class="line">       System.in.read();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/zookeeper%E4%B9%8Bwatcher%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/zookeeper%20%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/zookeeper%20%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">zookeeper 核心原理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookpeer/" itemprop="url" rel="index"><span itemprop="name">zookpeer</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="zookeeper-核心原理"><a href="#zookeeper-核心原理" class="headerlink" title="zookeeper 核心原理"></a>zookeeper 核心原理</h1><h2 id="Zookeeper-数据的同步流程"><a href="#Zookeeper-数据的同步流程" class="headerlink" title="Zookeeper 数据的同步流程"></a>Zookeeper 数据的同步流程</h2><p>我们知道, zookeeper 是通过三种不同的集群角色来组成整个高性能集群的, 在zookeeper 中, 客户端会随机连接到 zookeeper 集群中的一个节点, 如果是读请求, 就直接从当前节点中读取数据, 如果是写请求, 那么请求会被转发给leader 提交事务. 然后leader 会传播事务, 只要有超过半数的节点写入成功, 那么写请求就会被提交.(类似于2PC 事务).</p>
-<p><img src="http://files.luyanan.com//img/20191112135730.png"></p>
-<blockquote>
-<p>那么问题来了? </p>
-<ol>
-<li>集群中的leader 节点是如何选举出来的? </li>
-<li>leader  节点崩溃后, 整个集群无法处理写请求, 如何快速的从其他节点中选举出新的leader 呢? </li>
-<li>leader节点和各个follower 节点的数据一致性如何保证. </li>
-</ol>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/zookeeper%20%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://luyanan.com/Zookeeper%E5%8E%9F%E7%90%86%E4%B9%8BLeader%E9%80%89%E4%B8%BE%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -714,8 +552,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -793,8 +632,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -849,7 +689,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20RabbitMQ%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/zookeeper%E4%B9%8Bwatcher%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -863,7 +703,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Spring%20RabbitMQ%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">Spring RabbitMQ参数配置详解</a>
+            <a href="/zookeeper%E4%B9%8Bwatcher%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">zookeeper之watcher原理分析</a>
         </h2>
 
         <div class="post-meta">
@@ -872,8 +712,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -885,7 +726,7 @@
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookpeer/" itemprop="url" rel="index"><span itemprop="name">zookpeer</span></a>
                 </span>
             </span>
 
@@ -900,12 +741,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Spring-RabbitMQ参数配置详解"><a href="#Spring-RabbitMQ参数配置详解" class="headerlink" title="Spring RabbitMQ参数配置详解"></a>Spring RabbitMQ参数配置详解</h1><h1 id="1-基础信息"><a href="#1-基础信息" class="headerlink" title="1.基础信息"></a>1.基础信息</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">spring.rabbitmq.host: 默认localhost</span><br><span class="line">spring.rabbitmq.port: 默认<span class="number">5672</span></span><br><span class="line">spring.rabbitmq.username: 用户名</span><br><span class="line">spring.rabbitmq.password: 密码</span><br><span class="line">spring.rabbitmq.virtual-host: 连接到代理时用的虚拟主机</span><br><span class="line">spring.rabbitmq.addresses: 连接到server的地址列表（以逗号分隔），先addresses后host </span><br><span class="line">spring.rabbitmq.requested-heartbeat: 请求心跳超时时间，<span class="number">0</span>为不指定，如果不指定时间单位默认为妙</span><br><span class="line">spring.rabbitmq.publisher-confirms: 是否启用【发布确认】，默认<span class="keyword">false</span></span><br><span class="line">spring.rabbitmq.publisher-returns: 是否启用【发布返回】，默认<span class="keyword">false</span></span><br><span class="line">spring.rabbitmq.connection-timeout: 连接超时时间，单位毫秒，<span class="number">0</span>表示永不超时 </span><br></pre></td></tr></table></figure>
-
-<h1 id="2-SSL"><a href="#2-SSL" class="headerlink" title="2. SSL"></a>2. SSL</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">spring.rabbitmq.ssl.enabled: 是否支持ssl，默认<span class="keyword">false</span></span><br><span class="line">spring.rabbitmq.ssl.key-store: 持有SSL certificate的key store的路径</span><br><span class="line">spring.rabbitmq.ssl.key-store-password: 访问key store的密码</span><br><span class="line">spring.rabbitmq.ssl.trust-store: 持有SSL certificates的Trust store</span><br><span class="line">spring.rabbitmq.ssl.trust-store-password: 访问trust store的密码</span><br><span class="line">spring.rabbitmq.ssl.trust-store-type=JKS：Trust store 类型.</span><br><span class="line">spring.rabbitmq.ssl.algorithm: ssl使用的算法，默认由rabiitClient配置</span><br><span class="line">spring.rabbitmq.ssl.validate-server-certificate=<span class="keyword">true</span>：是否启用服务端证书验证</span><br><span class="line">spring.rabbitmq.ssl.verify-hostname=<span class="keyword">true</span> 是否启用主机验证</span><br></pre></td></tr></table></figure>
+          <h1 id="zookeeper原理之watcher源码分析"><a href="#zookeeper原理之watcher源码分析" class="headerlink" title="zookeeper原理之watcher源码分析"></a>zookeeper原理之watcher源码分析</h1><h2 id="watcher-的基本流程"><a href="#watcher-的基本流程" class="headerlink" title="watcher 的基本流程"></a>watcher 的基本流程</h2><p>zookeeper 的watcher 机制, 总的来说分为三个过程: 客户端注册watcher、服务端处理watcher和客户端回调watcher . </p>
+<h2 id="基于zk客户端发起一个数据操作"><a href="#基于zk客户端发起一个数据操作" class="headerlink" title="基于zk客户端发起一个数据操作"></a>基于zk客户端发起一个数据操作</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, KeeperException, InterruptedException </span>&#123;</span><br><span class="line">       ZooKeeper zooKeeper = <span class="keyword">new</span> ZooKeeper(<span class="string">&quot;192.168.9.22:2181&quot;</span>,</span><br><span class="line">               <span class="number">4000</span>, <span class="keyword">new</span> Watcher() &#123;</span><br><span class="line">           <span class="meta">@Override</span></span><br><span class="line">           <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent watchedEvent)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">               System.out.println(<span class="string">&quot;event.type:&quot;</span> + watchedEvent.getType());</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;);</span><br><span class="line">       String path = <span class="string">&quot;/watcher&quot;</span>;</span><br><span class="line">       <span class="comment">//  创建节点</span></span><br><span class="line">       zooKeeper.create(path, <span class="string">&quot;0&quot;</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line">       <span class="comment">//  注册监听</span></span><br><span class="line">       zooKeeper.exists(path, <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 修改节点的值触发监听</span></span><br><span class="line">       zooKeeper.setData(path, <span class="string">&quot;1&quot;</span>.getBytes(), -<span class="number">1</span>);</span><br><span class="line">       System.in.read();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Spring%20RabbitMQ%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/#more" rel="contents">
+              <a class="btn" href="/zookeeper%E4%B9%8Bwatcher%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -929,7 +769,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(2)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/zookeeper%20%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -943,7 +783,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(2)/" class="post-title-link" itemprop="url">RabbitMQ工作模型与java编程(2)</a>
+            <a href="/zookeeper%20%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">zookeeper 核心原理</a>
         </h2>
 
         <div class="post-meta">
@@ -952,8 +792,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -965,7 +806,7 @@
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookpeer/" itemprop="url" rel="index"><span itemprop="name">zookpeer</span></a>
                 </span>
             </span>
 
@@ -980,12 +821,185 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="3-Spring-AMQP"><a href="#3-Spring-AMQP" class="headerlink" title="3. Spring AMQP"></a>3. Spring AMQP</h2><h3 id="3-1-Spring-AMQP-介绍"><a href="#3-1-Spring-AMQP-介绍" class="headerlink" title="3.1 Spring AMQP 介绍"></a>3.1 Spring AMQP 介绍</h3><p>思考： </p>
-<p>Java API 方式编程, 有什么问题? </p>
-<p>Spring 封装RabbitMQ的时候, 它做了什么呢? </p>
+          <h1 id="zookeeper-核心原理"><a href="#zookeeper-核心原理" class="headerlink" title="zookeeper 核心原理"></a>zookeeper 核心原理</h1><h2 id="Zookeeper-数据的同步流程"><a href="#Zookeeper-数据的同步流程" class="headerlink" title="Zookeeper 数据的同步流程"></a>Zookeeper 数据的同步流程</h2><p>我们知道, zookeeper 是通过三种不同的集群角色来组成整个高性能集群的, 在zookeeper 中, 客户端会随机连接到 zookeeper 集群中的一个节点, 如果是读请求, 就直接从当前节点中读取数据, 如果是写请求, 那么请求会被转发给leader 提交事务. 然后leader 会传播事务, 只要有超过半数的节点写入成功, 那么写请求就会被提交.(类似于2PC 事务).</p>
+<p><img src="http://files.luyanan.com//img/20191112135730.png"></p>
+<blockquote>
+<p>那么问题来了? </p>
+<ol>
+<li>集群中的leader 节点是如何选举出来的? </li>
+<li>leader  节点崩溃后, 整个集群无法处理写请求, 如何快速的从其他节点中选举出新的leader 呢? </li>
+<li>leader节点和各个follower 节点的数据一致性如何保证. </li>
+</ol>
+</blockquote>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(2)/#more" rel="contents">
+              <a class="btn" href="/zookeeper%20%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/" class="post-title-link" itemprop="url">Spring Cloud Alibaba之naocs配置中心</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Spring-Cloud/" itemprop="url" rel="index"><span itemprop="name">Spring Cloud</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Spring-Cloud-Alibaba之naocs配置中心"><a href="#Spring-Cloud-Alibaba之naocs配置中心" class="headerlink" title="Spring Cloud Alibaba之naocs配置中心"></a>Spring Cloud Alibaba之naocs配置中心</h1><h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1.  介绍"></a>1.  介绍</h2><blockquote>
+<p>动态配置服务可以让您以中心化、外部化和动态化的方式管理所有环境的应用配置和服务配置。</p>
+<p>动态配置消除了配置变更时重新部署应用和服务的需要，让配置管理变得更加高效和敏捷。</p>
+<p>配置中心化管理让实现无状态服务变得更简单，让服务按需弹性扩展变得更容易。</p>
+<p>Nacos 提供了一个简洁易用的UI (<a target="_blank" rel="noopener" href="http://console.nacos.io/nacos/index.html">控制台样例 Demo</a>) 帮助您管理所有的服务和应用的配置。Nacos 还提供包括配置版本跟踪、金丝雀发布、一键回滚配置以及客户端配置更新状态跟踪在内的一系列开箱即用的配置管理特性，帮助您更安全地在生产环境中管理配置变更和降低配置变更带来的风险。</p>
+</blockquote>
+<h2 id="2-项目实战"><a href="#2-项目实战" class="headerlink" title="2.  项目实战"></a>2.  项目实战</h2><h3 id="2-1-nacos-启动"><a href="#2-1-nacos-启动" class="headerlink" title="2.1  nacos  启动"></a>2.1  nacos  启动</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" class="post-title-link" itemprop="url">Spring Cloud Alibaba之naocs注册中心</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Spring-Cloud/" itemprop="url" rel="index"><span itemprop="name">Spring Cloud</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Spring-Cloud-Alibaba之naocs注册中心"><a href="#Spring-Cloud-Alibaba之naocs注册中心" class="headerlink" title="Spring Cloud Alibaba之naocs注册中心"></a>Spring Cloud Alibaba之naocs注册中心</h1><h2 id="1-确定版本"><a href="#1-确定版本" class="headerlink" title="1. 确定版本"></a>1. 确定版本</h2><p>我们先要确定下载的<code>nacos</code>的版本号, </p>
+<p><code>spring cloud alibaba</code>的官网表明了各个组件的版本依赖关系和与<code>Spring cloud</code>和<code>Spring Boot</code>的依赖关系</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba/wiki/%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E#%E7%BB%84%E4%BB%B6%E7%89%88%E6%9C%AC%E5%85%B3%E7%B3%BB">https://github.com/alibaba/spring-cloud-alibaba/wiki/%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E#%E7%BB%84%E4%BB%B6%E7%89%88%E6%9C%AC%E5%85%B3%E7%B3%BB</a></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
