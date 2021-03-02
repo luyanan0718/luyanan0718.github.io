@@ -14,6 +14,8 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
@@ -119,9 +121,34 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -179,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20Boot%20%E5%87%BA%E7%8E%B0Failed%20to%20decode%20downloaded%20font%E5%92%8COTS%20parsing%20error%20Failed%20to%20convert%20WOFF%202.0%20font%20to%20SFNT/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%8EThreadPoolExecutor%E7%B1%BB%E6%B5%85%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -193,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Spring%20Boot%20%E5%87%BA%E7%8E%B0Failed%20to%20decode%20downloaded%20font%E5%92%8COTS%20parsing%20error%20Failed%20to%20convert%20WOFF%202.0%20font%20to%20SFNT/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%8EThreadPoolExecutor%E7%B1%BB%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">线程池与ThreadPoolExecutor类浅析</a>
         </h2>
 
         <div class="post-meta">
@@ -203,15 +230,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:53" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:53+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
 
           
 
@@ -224,13 +253,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Spring-Boot-出现”Failed-to-decode-downloaded-font”和”OTS-parsing-error-Failed-to-convert-WOFF-2-0-font-to-SFNT”"><a href="#Spring-Boot-出现”Failed-to-decode-downloaded-font”和”OTS-parsing-error-Failed-to-convert-WOFF-2-0-font-to-SFNT”" class="headerlink" title="Spring Boot 出现”Failed to decode downloaded font”和”OTS parsing error: Failed to convert WOFF 2.0 font to SFNT”"></a>Spring Boot 出现”Failed to decode downloaded font”和”OTS parsing error: Failed to convert WOFF 2.0 font to SFNT”</h1><p>准确来讲，应该是maven项目使用Bootstrap时，出现</p>
-<p>“<strong>Failed to decode downloaded font</strong>“和”<strong>OTS parsing error: Failed to convert WOFF 2.0 font to SFNT</strong>“</p>
-<p>导致图标出不来的问题。</p>
-<p>解决方案：</p>
+          <h1 id="线程池与ThreadPoolExecutor类浅析"><a href="#线程池与ThreadPoolExecutor类浅析" class="headerlink" title="线程池与ThreadPoolExecutor类浅析"></a>线程池与ThreadPoolExecutor类浅析</h1><h2 id="一、Thread直接创建线程的弊端"><a href="#一、Thread直接创建线程的弊端" class="headerlink" title="一、Thread直接创建线程的弊端"></a>一、Thread直接创建线程的弊端</h2><p>（1）每次new Thread新建对象，性能差。<br>（2）线程缺乏统一管理，可能无限制的新建线程，相互竞争，有可能占用过多系统资源导致死机或OOM。<br>（3）缺少更多的功能，如更多执行、定期执行、线程中断。<br>（4）其他弊端，大家自行脑补，多动脑，没坏处，哈哈。</p>
+<h2 id="二、线程池的好处"><a href="#二、线程池的好处" class="headerlink" title="二、线程池的好处"></a>二、线程池的好处</h2><p>（1）重用存在的线程，减少对象创建、消亡的开销，性能佳。<br>（2）可以有效控制最大并发线程数，提高系统资源利用率，同时可以避免过多资源竞争，避免阻塞。<br>（3）提供定时执行、定期执行、单线程、并发数控制等功能。<br>（4）提供支持线程池监控的方法，可对线程池的资源进行实时监控。<br>（5）其他好处，大家自行脑补，多动脑，没坏处，哈哈。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Spring%20Boot%20%E5%87%BA%E7%8E%B0Failed%20to%20decode%20downloaded%20font%E5%92%8COTS%20parsing%20error%20Failed%20to%20convert%20WOFF%202.0%20font%20to%20SFNT/#more" rel="contents">
+              <a class="btn" href="/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%8EThreadPoolExecutor%E7%B1%BB%E6%B5%85%E6%9E%90/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -254,7 +281,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/elasticsratch%E9%97%AE%E9%A2%98/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%BE%85%E8%A7%A3%E5%86%B3%E9%9D%A2%E8%AF%95%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -268,7 +295,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/elasticsratch%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/%E5%BE%85%E8%A7%A3%E5%86%B3%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-title-link" itemprop="url">待解决面试题</a>
         </h2>
 
         <div class="post-meta">
@@ -278,15 +305,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
 
           
 
@@ -299,14 +328,85 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-least"><a href="#max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-least" class="headerlink" title="max virtual memory areas vm.max_map_count [65530] is too low, increase to at least "></a><code>max virtual memory areas vm.max_map_count [65530] is too low, increase to at least </code></h2><p>修改/etc/sysctl.conf文件，增加配置vm.max_map_count=262144</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vi &#x2F;etc&#x2F;sysctl.conf</span><br><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
+          <p>hash 碰撞<br>jvm内存模型<br>秒杀系统设计<br>rpc设计</p>
 
-<p>　执行命令sysctl -p生效</p>
-<h2 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h2>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/" class="post-title-link" itemprop="url">类加载器</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h1><h2 id="1-Java类加载器"><a href="#1-Java类加载器" class="headerlink" title="1. Java类加载器"></a>1. Java类加载器</h2><ul>
+<li>Java源代码.java文件通过编译成字节码.class文件后，需要被加载到Java虚拟机的内存空间中使用，这个过程就是类加载。类加载依靠的是Java类加载器</li>
+<li>Java类加载器是Java运行时环境的一部分，负责动态加载Java类到Java虚拟机的内存空间中。类通常是按需加载的，即第一次使用该类时才加载。由于有了类加载器，Java运行时系统不需要知道文件的位置与文件系统。</li>
+</ul>
+<h2 id="2-JVM的3个默认类加载器"><a href="#2-JVM的3个默认类加载器" class="headerlink" title="2. JVM的3个默认类加载器"></a>2. JVM的3个默认类加载器</h2><ol>
+<li>引导（Bootstrap）类加载器。由原生代码C语言编写，不继承java.lang.ClassLoader。负责加载核心Java库，存储在<java_home>/jre/lib目录中。</java_home></li>
+<li>扩展（Extensions）类加载器。用来在指明的目录中加载Java的扩展类。Java虚拟机的实现会提供一个扩展库目录。该类加载器在此目录里面查找并加载Java类。该类由sun.misc.Launcher$ExtClassLoader实现。</li>
+<li>Apps类加载器（也称系统类加载器）。根据Java应用程序的类路径来加载Java类。一般来说，Java应用程序的类都是由它来完成加载的，可以通过ClassLoader.getSystemClassLoader()来获取它。该类由sun.misc.Launcher$AppClassLoader来实现。</li>
+</ol>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/elasticsratch%E9%97%AE%E9%A2%98/#more" rel="contents">
+              <a class="btn" href="/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -330,7 +430,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/CENTOS%207%20%E5%92%8C%20JDK%20%E6%B7%BB%E5%8A%A0%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E3%80%90Redis%E3%80%91%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%EF%BC%8C%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%EF%BC%8C%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -344,7 +444,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/CENTOS%207%20%E5%92%8C%20JDK%20%E6%B7%BB%E5%8A%A0%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/%E3%80%90Redis%E3%80%91%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%EF%BC%8C%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%EF%BC%8C%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/" class="post-title-link" itemprop="url">【Redis】缓存穿透，缓存雪崩，缓存击穿</a>
         </h2>
 
         <div class="post-meta">
@@ -354,15 +454,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
 
           
 
@@ -375,13 +477,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="CENTOS-7-和-JDK-添加中文字体"><a href="#CENTOS-7-和-JDK-添加中文字体" class="headerlink" title="CENTOS 7 和 JDK 添加中文字体"></a>CENTOS 7 和 JDK 添加中文字体</h1><p>【1】在我们的 Windows 的 <strong>C:\Windows\Fonts</strong> 下面选择一个中文字体，如宋体，先拷贝到桌面，然后字体就变成了英文的：*<strong>*SIMSUN.TTC**</strong></p>
-<p> <img src="https://img2018.cnblogs.com/blog/979767/201809/979767-20180920164849487-905318821.png" alt="img"></p>
-<p>备注：我这里只是写了 Windows 的，没有用过 Mac 系列的 …</p>
-<p> 【2】在服务器上面建立相关目录，为了便于区分，我们把目录名字叫做 <strong><em>\</em>zh_CN**</strong>：</p>
+          <h1 id="Redis-缓存穿透，缓存雪崩，缓存击穿"><a href="#Redis-缓存穿透，缓存雪崩，缓存击穿" class="headerlink" title="[Redis]缓存穿透，缓存雪崩，缓存击穿"></a>[Redis]缓存穿透，缓存雪崩，缓存击穿</h1><h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a><strong>缓存穿透</strong></h3><p>第一次看到这个名字，会觉得是一个很高深的名词。但是和其他许多概念一样，它只是描述了一个很容易理解的现象：请求了不存在的数据。造成大量的请求没有命中缓存场景之一：数据库使用了id为正整数作为键，但是黑客使用负整数向服务器发起请求，这时所有的请求都没有在缓存中命中，从而导致大量请求数据库，如果超过了数据库的承载能力，会导致数据库服务器宏机。</p>
+<p>解决缓存穿透的方案主要有两种：<br>1，当查询不存在时，也将结果保存在缓存中。但是这可能会存在一种问题：大量没有查询结果的请求保存在缓存中，这时我们就可以将这些请求的key设置得更短一些。</p>
+<p>2，提前过滤掉不合法的请求，Redis实现了布隆过滤器，我们可以使用它来达到这个目的。布隆过滤器很好理解，可以参考<a target="_blank" rel="noopener" href="https://www.cnblogs.com/cpselvis/p/6265825.html">布隆过滤器(Bloom Filter)的原理和实现</a>。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/CENTOS%207%20%E5%92%8C%20JDK%20%E6%B7%BB%E5%8A%A0%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93/#more" rel="contents">
+              <a class="btn" href="/%E3%80%90Redis%E3%80%91%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%EF%BC%8C%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%EF%BC%8C%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -405,7 +506,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E8%AE%BE%E8%AE%A1/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%B9%90%E8%A7%82%E9%94%81%E5%92%8C%E6%82%B2%E8%A7%82%E9%94%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -419,7 +520,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E8%AE%BE%E8%AE%A1/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/%E4%B9%90%E8%A7%82%E9%94%81%E5%92%8C%E6%82%B2%E8%A7%82%E9%94%81/" class="post-title-link" itemprop="url">乐观锁和悲观锁</a>
         </h2>
 
         <div class="post-meta">
@@ -429,15 +530,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
 
           
 
@@ -450,12 +553,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="微服务架构下的服务注册中心设计"><a href="#微服务架构下的服务注册中心设计" class="headerlink" title="微服务架构下的服务注册中心设计"></a>微服务架构下的服务注册中心设计</h1><p>这里以一个电商网站进行模拟</p>
-<h2 id="单体架构"><a href="#单体架构" class="headerlink" title="单体架构"></a>单体架构</h2><p>传统的单体架构(all in one) </p>
-<p><img src="http://files.luyanan.com//img/20191104093834.png"></p>
+          <h1 id="锁机制"><a href="#锁机制" class="headerlink" title="锁机制"></a>锁机制</h1><p>在数据库操作过程中，为了避免两个或多个用户同时对一条数据操作，通常采用锁的机制来来解决数据冲突问题。<br>同样，在程序流程中为了避免对多线程共享的资源的修改冲突，也采用锁的机制来避免修改冲突</p>
+<h1 id="锁的分类"><a href="#锁的分类" class="headerlink" title="锁的分类"></a>锁的分类</h1><h2 id="乐观锁（Optimistic-Lock）"><a href="#乐观锁（Optimistic-Lock）" class="headerlink" title="乐观锁（Optimistic Lock）"></a>乐观锁（Optimistic Lock）</h2><p>所谓乐观锁，就是相信大部分场景下，不会产生数据修改冲突，所以在读取数据进行修改的时候，不对数据进行加锁，而是在最终提交修改的时候，通过version或CAS机制，检查对数据的修改是否发生了冲突。<br>乐观锁的适用于读多写少的场景，能提供系统的处理能力，如果在冲突比较概率高的场景使用乐观锁，反而会降低系统的处理能力。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E4%B8%8B%E7%9A%84%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E8%AE%BE%E8%AE%A1/#more" rel="contents">
+              <a class="btn" href="/%E4%B9%90%E8%A7%82%E9%94%81%E5%92%8C%E6%82%B2%E8%A7%82%E9%94%81/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -479,7 +581,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%9F%BA%E4%BA%8EZookeeper%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%B8%B8%E8%A7%81%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%9D%A2%E8%AF%95%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -493,7 +595,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E5%9F%BA%E4%BA%8EZookeeper%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/%E5%B8%B8%E8%A7%81%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-title-link" itemprop="url">常见多线程面试题</a>
         </h2>
 
         <div class="post-meta">
@@ -503,15 +605,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
 
           
 
@@ -524,12 +628,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="基于Zookeeper-实现分布式锁"><a href="#基于Zookeeper-实现分布式锁" class="headerlink" title="基于Zookeeper 实现分布式锁"></a>基于Zookeeper 实现分布式锁</h1><h2 id="分布式锁的基本场景"><a href="#分布式锁的基本场景" class="headerlink" title="分布式锁的基本场景"></a>分布式锁的基本场景</h2><p>如果在多线程并行情况下去访问某一个共享资源,比如说共享变量, 那么势必会造成线程安全问题. 那么我们可以用很多种方法来解决, 比如synchronized、比如Lock 之类的锁操作来解决线程问题, 那么在分布式架构下,涉及到多个进程访问某一个共享资源的情况下, 比如说在电商平台中商品库存问题, 在库存中只有10个的情况下进来100个用户, 如果能够避免超卖呢? 所以这个时候就要一个互斥的手段来防止彼此之间的干扰. </p>
-<p>然后在分布式情况下, synchronized 或者Lock 之类的锁只能控制单一进程的资源访问, 在多进程架构下, 这些API就没办法解决我们的问题了, 怎么办呢? </p>
-<h2 id="用Zookeeper-来实现分布式锁"><a href="#用Zookeeper-来实现分布式锁" class="headerlink" title="用Zookeeper 来实现分布式锁"></a>用Zookeeper 来实现分布式锁</h2>
+          <h2 id="1-启动一个线程是调用-run-方法还是-start-方法？"><a href="#1-启动一个线程是调用-run-方法还是-start-方法？" class="headerlink" title="1.启动一个线程是调用 run() 方法还是 start() 方法？"></a>1.启动一个线程是调用 run() 方法还是 start() 方法？</h2><p>启动一个线程调用的是start()方法，使线程进入到就绪状态，这就意味着它可以由JVM调度并执行，这并不意味着线程就会立马执行；run()方法是线程启动后线程要进行回调的方法。</p>
+<h2 id="2-请说出同步线程及线程调度相关的方法？"><a href="#2-请说出同步线程及线程调度相关的方法？" class="headerlink" title="2. 请说出同步线程及线程调度相关的方法？"></a>2. 请说出同步线程及线程调度相关的方法？</h2><ul>
+<li><p>wait():使一个线程处于阻塞状态，并且释放所持有的对象锁；</p>
+</li>
+<li><p>sleep():使一个线程休眠一段时间，当时间过后线程又会恢复到以前的状态，并且在休眠状态不会释放对象锁；</p>
+</li>
+<li><p>notify():唤醒一个处于等待状态的线程，当然在调用此方法的时候，并不能确切的唤醒某一个等待状态的线程，而是由 JVM 确定唤醒哪个线程，而且与优先级无关；</p>
+</li>
+<li><p>notifyAll():唤醒所有处于等待状态的线程，该方法并不是将对象的锁给所有线程，而是让它们竞争，只有获得锁的线程才能进入就绪状态；</p>
+</li>
+</ul>
+<h2 id="3-线程和进程的区别？"><a href="#3-线程和进程的区别？" class="headerlink" title="3.线程和进程的区别？"></a>3.线程和进程的区别？</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E5%9F%BA%E4%BA%8EZookeeper%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/#more" rel="contents">
+              <a class="btn" href="/%E5%B8%B8%E8%A7%81%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%9D%A2%E8%AF%95%E9%A2%98/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -553,7 +666,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%9F%BA%E4%BA%8EZookeeper%20%E5%AE%9E%E7%8E%B0Leader%E9%80%89%E4%B8%BE/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/String%E3%80%81StringBuffer%E5%92%8CStringBuilder%E7%9A%84%E5%8C%BA%E5%88%AB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -567,7 +680,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E5%9F%BA%E4%BA%8EZookeeper%20%E5%AE%9E%E7%8E%B0Leader%E9%80%89%E4%B8%BE/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/String%E3%80%81StringBuffer%E5%92%8CStringBuilder%E7%9A%84%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">String、StringBuffer和StringBuilder的区别</a>
         </h2>
 
         <div class="post-meta">
@@ -577,15 +690,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
 
           
 
@@ -598,12 +713,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="基于Zookeeper-实现Leader选举"><a href="#基于Zookeeper-实现Leader选举" class="headerlink" title="基于Zookeeper 实现Leader选举"></a>基于Zookeeper 实现Leader选举</h1><p>在分布式计算中,leader election 是很重要的一个功能, 这个选举过程是这样子的: 指派一个进程作为组织者, 将任务分发给各节点。 在任务开始之前, 哪个节点都不知道谁是leader 或者coordinator. 当选举算法开始执行后, 每个节点最终会得到一个唯一的节点作为任务leader. 除此之外, 选举还经常会发生在leader 意外宕机的情况下, 新的leader 要被选举出来. </p>
-<p>curatot 有两种选举recipe(Leader Latch 和Leader Election)</p>
-<h2 id="Leader-Latch"><a href="#Leader-Latch" class="headerlink" title="Leader Latch"></a>Leader Latch</h2><p>参与选举的所有节点, 会创建一个顺序节点, 其中最小的节点会设置为master节点, 没抢到leader 节点的都监听前一个节点的删除事件, 在前一个节点还是删除后进行重新抢主, 当master 节点手动调用close() 方法或者master  节点挂了之后, 后续的子节点会抢占master</p>
+          <h1 id="String、StringBuffer和StringBuilder的区别"><a href="#String、StringBuffer和StringBuilder的区别" class="headerlink" title="String、StringBuffer和StringBuilder的区别"></a>String、StringBuffer和StringBuilder的区别</h1><h6 id="可变性"><a href="#可变性" class="headerlink" title="可变性"></a><strong>可变性</strong></h6><ul>
+<li>String是不可变的，它使用final关键词修饰–</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br><span class="line">...................</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>StringBuffer和StringBuilder两者都是继承自AbstractStringBuilder,AbstractStringBuilder也是用字符数组保存char value[]当时没有用final修饰，所以这两种对象是可变的</li>
+</ul>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E5%9F%BA%E4%BA%8EZookeeper%20%E5%AE%9E%E7%8E%B0Leader%E9%80%89%E4%B8%BE/#more" rel="contents">
+              <a class="btn" href="/String%E3%80%81StringBuffer%E5%92%8CStringBuilder%E7%9A%84%E5%8C%BA%E5%88%AB/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -627,7 +747,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%B0%83%E6%9C%8D%E5%8A%A1%E7%9A%84zookeeper%E5%BA%94%E7%94%A8%E5%AE%9E%E6%88%98/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/mysql%E4%B8%BB%E4%BB%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -641,7 +761,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%B0%83%E6%9C%8D%E5%8A%A1%E7%9A%84zookeeper%E5%BA%94%E7%94%A8%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/mysql%E4%B8%BB%E4%BB%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">mysql主从实现原理</a>
         </h2>
 
         <div class="post-meta">
@@ -651,15 +771,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
 
           
 
@@ -672,11 +794,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="分布式协调服务的zookeeper应用实战"><a href="#分布式协调服务的zookeeper应用实战" class="headerlink" title="分布式协调服务的zookeeper应用实战"></a>分布式协调服务的zookeeper应用实战</h1><h2 id="集群角色"><a href="#集群角色" class="headerlink" title="集群角色"></a>集群角色</h2><p><img src="http://files.luyanan.com//img/20191106154252.png"></p>
-<h2 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h2><p>zookeeper的视图结构和标准的文件系统非常类似, 每一个节点称之为ZNode, 是zookeeper的最小单元. 每个znode 上都可以保存数据以及挂载子节点. 构成一个层次化树形结构. </p>
+          <h1 id="mysql主从实现原理"><a href="#mysql主从实现原理" class="headerlink" title="mysql主从实现原理"></a>mysql主从实现原理</h1><h2 id="1、什么是mysql主从同步？"><a href="#1、什么是mysql主从同步？" class="headerlink" title="1、什么是mysql主从同步？"></a>1、什么是mysql主从同步？</h2><p>当master(主)库的数据发生变化的时候，变化会实时的同步到slave(从)库。</p>
+<hr>
+<h2 id="2、主从同步有什么好处？"><a href="#2、主从同步有什么好处？" class="headerlink" title="2、主从同步有什么好处？"></a>2、主从同步有什么好处？</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%B0%83%E6%9C%8D%E5%8A%A1%E7%9A%84zookeeper%E5%BA%94%E7%94%A8%E5%AE%9E%E6%88%98/#more" rel="contents">
+              <a class="btn" href="/mysql%E4%B8%BB%E4%BB%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -700,7 +823,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Zookeeper%E5%8E%9F%E7%90%86%E4%B9%8BLeader%E9%80%89%E4%B8%BE%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/spring%E7%9A%84%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%92%8C%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -714,7 +837,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Zookeeper%E5%8E%9F%E7%90%86%E4%B9%8BLeader%E9%80%89%E4%B8%BE%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/spring%E7%9A%84%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%92%8C%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA/" class="post-title-link" itemprop="url">spring的事务隔离级别和事务传播行为</a>
         </h2>
 
         <div class="post-meta">
@@ -724,15 +847,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
 
           
 
@@ -745,11 +870,42 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Zookeeper原理之Leader选举源码分析"><a href="#Zookeeper原理之Leader选举源码分析" class="headerlink" title="Zookeeper原理之Leader选举源码分析"></a>Zookeeper原理之Leader选举源码分析</h1><h2 id="Zookeeper-的一致性"><a href="#Zookeeper-的一致性" class="headerlink" title="Zookeeper 的一致性"></a>Zookeeper 的一致性</h2><h3 id="Zookeeper-的来源"><a href="#Zookeeper-的来源" class="headerlink" title="Zookeeper 的来源"></a>Zookeeper 的来源</h3><p>对于zookeeper的一致性问题, 我们再从来源问题梳理一遍一致性的问题. </p>
-<p>我们知道zookeeper的来源, 是来自于Google chubby, 为了分布式环境下, 如何从多个server 中选举出master server. 那么这么多个server 就需要涉及到一致性问题, 这个一致性体现的是多个server 就master 这个投票在分布式环境下达成一致性. 简单来说, 就是最终听谁的. 但是在网络环境中由于网络环境的不可靠性, 会存在消息丢失或者被篡改等问题. 所以如何在这样一个环境中快速并且正确的在多个server 中对某一个数据达成一致性并且保证无论发生任何异常, 都不会破坏整个系统一致性呢? </p>
+          <h2 id="spring的事务隔离级别和事务传播行为"><a href="#spring的事务隔离级别和事务传播行为" class="headerlink" title="spring的事务隔离级别和事务传播行为"></a>spring的事务隔离级别和事务传播行为</h2><h3 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h3><ul>
+<li><p>DEFAULT </p>
+<blockquote>
+<p>使用底层数据库默认的隔离级别,大部分数据库默认的隔离级别都是<code>READ_COMMITED</code></p>
+</blockquote>
+</li>
+<li><p>READ_UNCOMMITED </p>
+<blockquote>
+<p>允许事务读取未被其他事务提交的修改、可能会出现脏读、幻读、不可重复读</p>
+</blockquote>
+</li>
+<li><p>READ_COMMITED </p>
+<blockquote>
+<p>只允许事务读取已经被事务提交的更改,可以避免脏读.但不可重复读和幻读问题仍然可能出现. </p>
+</blockquote>
+</li>
+<li><p>REPEATABLE_READ</p>
+<blockquote>
+<p>确保事务可以多次从一个字段中读取相同的值,在这个事务持续期间, 禁止其他事务对这个字段进行更新,可以避免脏读和不可重复读, 但是幻读问题仍然存在. </p>
+</blockquote>
+</li>
+<li><p>SERIALIZABLE </p>
+<blockquote>
+<p>确保事务可以从一个表中读取相同的行, 在这个事务持续期间, 禁止其他事务对该表执行插入、更新、删除. 所有的并发问题都能避免, 但是性能较低. </p>
+</blockquote>
+<p>事务的隔离级别需要底层数据库引擎的支持,而不是应用程序或者框架的支持. </p>
+</li>
+</ul>
+<ol>
+<li>Oracle 支持2种事务隔离级别: <code>READ_COMMITED</code>，<code>SERIALIZABLE</code>. 默认是 <code>READ_COMMITED</code></li>
+<li>Mysql 支持4种事务隔离级别, 默认是<code>REPEATABLE_READ</code> . </li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">msyql 查看隔离级别：</span><br><span class="line">select @@tx_isolation;</span><br><span class="line">设置隔离级别：</span><br><span class="line">set session transaction isolation level serializable;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Zookeeper%E5%8E%9F%E7%90%86%E4%B9%8BLeader%E9%80%89%E4%B8%BE%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/spring%E7%9A%84%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%92%8C%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -773,7 +929,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Zookeeper%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E7%9A%84%E5%AE%89%E8%A3%85/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Java%E4%B9%8Bsynchronized%E5%92%8CLock%E7%9A%84%E5%8C%BA%E5%88%AB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -787,7 +943,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Zookeeper%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E7%9A%84%E5%AE%89%E8%A3%85/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/Java%E4%B9%8Bsynchronized%E5%92%8CLock%E7%9A%84%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">Java之synchronized和Lock的区别</a>
         </h2>
 
         <div class="post-meta">
@@ -797,15 +953,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
 
           
 
@@ -818,84 +976,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Zookeeper单机和集群的安装"><a href="#Zookeeper单机和集群的安装" class="headerlink" title="Zookeeper单机和集群的安装"></a>Zookeeper单机和集群的安装</h1><h2 id="1-安装-zookeeper"><a href="#1-安装-zookeeper" class="headerlink" title="1. 安装 zookeeper"></a>1. 安装 zookeeper</h2><h3 id="1-下载"><a href="#1-下载" class="headerlink" title="1. 下载"></a>1. 下载</h3><p>通过下面地址可以下载zookeeper</p>
-<p><a target="_blank" rel="noopener" href="http://apache.fayea.com/zookeeper/">http://apache.fayea.com/zookeeper/</a></p>
+          <h1 id="Java之synchronized和Lock的区别"><a href="#Java之synchronized和Lock的区别" class="headerlink" title="Java之synchronized和Lock的区别"></a>Java之synchronized和Lock的区别</h1><ol>
+<li>Lock是java的一个interface接口，而synchronized是Java中的关键字，synchronized是由JDK实现的，不需要程序员编写代码去控制加锁和释放；Lock的接口如下：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Lock</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">lockInterruptibly</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">(<span class="keyword">long</span> time, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">unlock</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">Condition <span class="title">newCondition</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>synchronized修饰的代码在执行异常时，jdk会自动释放线程占有的锁，不需要程序员去控制释放锁，因此不会导致死锁现象发生；但是，当Lock发生异常时，如果程序没有通过unLock()去释放锁，则很可能造成死锁现象，因此Lock一般都是在finally块中释放锁；格式如下：</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Lock <span class="keyword">lock</span> = <span class="keyword">new</span> LockImpl; <span class="comment">// new 一个Lock的实现类</span></span><br><span class="line"><span class="keyword">lock</span>.<span class="keyword">lock</span>();  <span class="comment">// 加锁</span></span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    <span class="comment">//todo</span></span><br><span class="line">&#125;catch(Exception ex)&#123;</span><br><span class="line">     <span class="comment">// todo</span></span><br><span class="line">&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">    <span class="keyword">lock</span>.unlock();   <span class="comment">//释放锁</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Zookeeper%E4%BB%A5%E5%8F%8A%E9%9B%86%E7%BE%A4%E7%9A%84%E5%AE%89%E8%A3%85/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/zookeeper%E4%B9%8Bwatcher%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/zookeeper%E4%B9%8Bwatcher%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">未命名</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="zookeeper原理之watcher源码分析"><a href="#zookeeper原理之watcher源码分析" class="headerlink" title="zookeeper原理之watcher源码分析"></a>zookeeper原理之watcher源码分析</h1><h2 id="watcher-的基本流程"><a href="#watcher-的基本流程" class="headerlink" title="watcher 的基本流程"></a>watcher 的基本流程</h2><p>zookeeper 的watcher 机制, 总的来说分为三个过程: 客户端注册watcher、服务端处理watcher和客户端回调watcher . </p>
-<h2 id="基于zk客户端发起一个数据操作"><a href="#基于zk客户端发起一个数据操作" class="headerlink" title="基于zk客户端发起一个数据操作"></a>基于zk客户端发起一个数据操作</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, KeeperException, InterruptedException </span>&#123;</span><br><span class="line">       ZooKeeper zooKeeper = <span class="keyword">new</span> ZooKeeper(<span class="string">&quot;192.168.9.22:2181&quot;</span>,</span><br><span class="line">               <span class="number">4000</span>, <span class="keyword">new</span> Watcher() &#123;</span><br><span class="line">           <span class="meta">@Override</span></span><br><span class="line">           <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent watchedEvent)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">               System.out.println(<span class="string">&quot;event.type:&quot;</span> + watchedEvent.getType());</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;);</span><br><span class="line">       String path = <span class="string">&quot;/watcher&quot;</span>;</span><br><span class="line">       <span class="comment">//  创建节点</span></span><br><span class="line">       zooKeeper.create(path, <span class="string">&quot;0&quot;</span>.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line">       <span class="comment">//  注册监听</span></span><br><span class="line">       zooKeeper.exists(path, <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 修改节点的值触发监听</span></span><br><span class="line">       zooKeeper.setData(path, <span class="string">&quot;1&quot;</span>.getBytes(), -<span class="number">1</span>);</span><br><span class="line">       System.in.read();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/zookeeper%E4%B9%8Bwatcher%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/Java%E4%B9%8Bsynchronized%E5%92%8CLock%E7%9A%84%E5%8C%BA%E5%88%AB/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -918,7 +1010,7 @@
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -986,18 +1078,44 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-count">227</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">1</span>
-        <span class="site-state-item-name">标签</span>
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
 
 
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
 
       </div>
 

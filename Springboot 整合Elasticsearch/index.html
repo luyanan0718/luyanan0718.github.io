@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Springboot 整合Elasticsearch1. elasticsearch-Rest-Clientelasticserch 客户端详解 9300  tcp  spring-data-elasticsearch:transport-api.jar  springboot 版本不同,ransport-api.jar 不同,不能适配es 版本 7.x 已经不建议使用了,8以后就要废弃了   9">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Springboot 整合Elasticsearch">
+<meta property="og:url" content="http://luyanan.com/Springboot%20%E6%95%B4%E5%90%88Elasticsearch/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="Springboot 整合Elasticsearch1. elasticsearch-Rest-Clientelasticserch 客户端详解 9300  tcp  spring-data-elasticsearch:transport-api.jar  springboot 版本不同,ransport-api.jar 不同,不能适配es 版本 7.x 已经不建议使用了,8以后就要废弃了   9">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-02T05:42:51.678Z">
+<meta property="article:modified_time" content="2021-03-02T05:42:51.679Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://luyanan.com/Springboot%20%E6%95%B4%E5%90%88Elasticsearch/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Springboot 整合Elasticsearch | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Springboot%20%E6%95%B4%E5%90%88Elasticsearch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Springboot 整合Elasticsearch
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Springboot-整合Elasticsearch"><a href="#Springboot-整合Elasticsearch" class="headerlink" title="Springboot 整合Elasticsearch"></a>Springboot 整合Elasticsearch</h1><h2 id="1-elasticsearch-Rest-Client"><a href="#1-elasticsearch-Rest-Client" class="headerlink" title="1. elasticsearch-Rest-Client"></a>1. <code>elasticsearch-Rest-Client</code></h2><h3 id="elasticserch-客户端详解"><a href="#elasticserch-客户端详解" class="headerlink" title="elasticserch 客户端详解"></a><code>elasticserch</code> 客户端详解</h3><ol>
+<li><p><code>9300</code>  <code>tcp</code></p>
+<p> <code>spring-data-elasticsearch:transport-api.jar</code></p>
+<ul>
+<li><code>springboot</code> 版本不同,<code>ransport-api.jar</code> 不同,不能适配<code>es</code> 版本</li>
+<li><code>7.x</code> 已经不建议使用了,8以后就要废弃了</li>
+</ul>
+</li>
+<li><p><code>9200</code> <code>HTTP</code></p>
+<ul>
+<li><p><code>jestClient</code>:非官方,更新慢</p>
+</li>
+<li><p><code>RestTemplate</code>: 模拟<code>HTTP</code>请求, <code>ES</code> 很多操作都需要自己封装</p>
+</li>
+<li><p><code>HttpClient</code>: 同上</p>
+</li>
+<li><p><code>Elasticsearch-Rest-Client</code>: 官方<code>RestClient</code>，封装了<code>ES</code>操作, <code>API</code>层次分明,上手简单</p>
+<p>最终选择Elasticsearch-Rest-Client（elasticsearch-rest-high-level-client）；<br><a target="_blank" rel="noopener" href="https://_www.elastic.co_guide_en_elasticsearch_client_java-rest_current_java-rest-high/">https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high.html</a></p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="2-SpringBoot-整合ElasticSearch"><a href="#2-SpringBoot-整合ElasticSearch" class="headerlink" title="2. SpringBoot 整合ElasticSearch"></a>2. <code>SpringBoot</code> 整合<code>ElasticSearch</code></h2><h3 id="2-1-导入依赖"><a href="#2-1-导入依赖" class="headerlink" title="2.1 导入依赖"></a>2.1 导入依赖</h3><p>这里的版本要和所安装的<code>es</code>的版本匹配</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.elasticsearch.client<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>elasticsearch-rest-high-level-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>7.6.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>修改 <code>elasticsearch</code>的版本, <code>&lt;spring-boot-dependencies&gt;</code> 中所依赖的版本为6.x,需要将版本改为安装的版本</p>
+<h3 id="2-2-编写测试类"><a href="#2-2-编写测试类" class="headerlink" title="2.2 编写测试类"></a>2.2 编写测试类</h3><h4 id="2-2-1-测试保存数据"><a href="#2-2-1-测试保存数据" class="headerlink" title="2.2.1 测试保存数据"></a>2.2.1 测试保存数据</h4><p><a target="_blank" rel="noopener" href="https://_www.elastic.co_guide_en_elasticsearch_client_java-rest_current_java-rest-high-document-index/">https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high-document-index.html</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RestHighLevelClient <span class="title">restHighLevelClient</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> RestHighLevelClient(RestClient.builder(<span class="keyword">new</span> HttpHost(<span class="string">&quot;122.152.226.81&quot;</span>, <span class="number">9200</span>, <span class="string">&quot;http&quot;</span>)));</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">   <span class="meta">@Test</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initData</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">       IndexRequest request = <span class="keyword">new</span> IndexRequest(<span class="string">&quot;user&quot;</span>);</span><br><span class="line"></span><br><span class="line">       User user = <span class="keyword">new</span> User();</span><br><span class="line">       user.setName(<span class="string">&quot;张三&quot;</span>);</span><br><span class="line">       user.setAge(<span class="number">22</span>);</span><br><span class="line">       user.setCreateTime(<span class="keyword">new</span> Date());</span><br><span class="line">       <span class="comment">// 设置要保存的内容</span></span><br><span class="line">       request.source(JSON.toJSONString(user), XContentType.JSON);</span><br><span class="line">       <span class="comment">//执行创建索引和保存数据</span></span><br><span class="line">       IndexResponse index = restHighLevelClient().index(request, RequestOptions.DEFAULT);</span><br><span class="line">       System.out.println(index);</span><br><span class="line"></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>返回结果 </p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">IndexResponse[index=user,type=_doc,id=9kuBoHUBGfMAKZWDXKSG,version=1,result=created,seqNo=0,primaryTerm=1,shards=&#123;&quot;total&quot;:2,&quot;successful&quot;:1,&quot;failed&quot;:0&#125;]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="获取数据"><a href="#获取数据" class="headerlink" title="获取数据"></a>获取数据</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">   * &lt;p&gt;获取数据&lt;/p&gt;</span></span><br><span class="line"><span class="comment">   *</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@since</span> 2020/11/7</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="meta">@Test</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getData</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 9kuBoHUBGfMAKZWDXKSG 是上步添加操作的时候返回的id</span></span><br><span class="line">      GetRequest request = <span class="keyword">new</span> GetRequest(<span class="string">&quot;user&quot;</span>, <span class="string">&quot;9kuBoHUBGfMAKZWDXKSG&quot;</span>);</span><br><span class="line">      GetResponse response = restHighLevelClient().get(request, RequestOptions.DEFAULT);</span><br><span class="line">      System.out.println(response);</span><br><span class="line">      String id = response.getId();</span><br><span class="line">      System.out.println(<span class="string">&quot;id:&quot;</span> + id);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (response.isExists()) &#123;</span><br><span class="line">          System.out.println(<span class="string">&quot;version:&quot;</span> + response.getVersion());</span><br><span class="line">          System.out.println(<span class="string">&quot;返回结果:&quot;</span> + response.getSourceAsString());</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>返回结果</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">&quot;_index&quot;</span>:<span class="string">&quot;user&quot;</span>,<span class="string">&quot;_type&quot;</span>:<span class="string">&quot;_doc&quot;</span>,<span class="string">&quot;_id&quot;</span>:<span class="string">&quot;9kuBoHUBGfMAKZWDXKSG&quot;</span>,<span class="string">&quot;_version&quot;</span>:<span class="number">1</span>,<span class="string">&quot;_seq_no&quot;</span>:<span class="number">0</span>,<span class="string">&quot;_primary_term&quot;</span>:<span class="number">1</span>,<span class="string">&quot;found&quot;</span>:<span class="keyword">true</span>,<span class="string">&quot;_source&quot;</span>:&#123;<span class="string">&quot;age&quot;</span>:<span class="number">22</span>,<span class="string">&quot;createTime&quot;</span>:<span class="number">1604715631647</span>,<span class="string">&quot;name&quot;</span>:<span class="string">&quot;张三&quot;</span>&#125;&#125;</span><br><span class="line">id:9kuBoHUBGfMAKZWDXKSG</span><br><span class="line">version:<span class="number">1</span></span><br><span class="line">返回结果:&#123;<span class="string">&quot;age&quot;</span>:<span class="number">22</span>,<span class="string">&quot;createTime&quot;</span>:<span class="number">1604715631647</span>,<span class="string">&quot;name&quot;</span>:<span class="string">&quot;张三&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="复杂查询"><a href="#复杂查询" class="headerlink" title="复杂查询"></a>复杂查询</h5><blockquote>
+<p>搜索<code>address</code> 中包含<code>mill</code>的所有人的年龄分布以及平均年龄, 平均薪资</p>
+</blockquote>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">GET bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;match&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;address&quot;</span>: <span class="string">&quot;Mill&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;aggs&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;ageAgg&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;terms&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;field&quot;</span>: <span class="string">&quot;age&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;size&quot;</span>: <span class="number">10</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;ageAvg&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;avg&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;field&quot;</span>: <span class="string">&quot;age&quot;</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;balanceAvg&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;avg&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;field&quot;</span>: <span class="string">&quot;balance&quot;</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>java</code>的实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;复杂检索:在bank中搜索address中包含mill的所有人的年龄分布以及平均年龄，平均薪资&lt;/p&gt;</span></span><br><span class="line"><span class="comment">     *   GET bank/_search</span></span><br><span class="line"><span class="comment">     * &#123;</span></span><br><span class="line"><span class="comment">     *   &quot;query&quot;: &#123;</span></span><br><span class="line"><span class="comment">     *     &quot;match&quot;: &#123;</span></span><br><span class="line"><span class="comment">     *       &quot;address&quot;: &quot;Mill&quot;</span></span><br><span class="line"><span class="comment">     *     &#125;</span></span><br><span class="line"><span class="comment">     *   &#125;,</span></span><br><span class="line"><span class="comment">     *   &quot;aggs&quot;: &#123;</span></span><br><span class="line"><span class="comment">     *     &quot;ageAgg&quot;: &#123;</span></span><br><span class="line"><span class="comment">     *       &quot;terms&quot;: &#123;</span></span><br><span class="line"><span class="comment">     *         &quot;field&quot;: &quot;age&quot;,</span></span><br><span class="line"><span class="comment">     *         &quot;size&quot;: 10</span></span><br><span class="line"><span class="comment">     *       &#125;</span></span><br><span class="line"><span class="comment">     *     &#125;,</span></span><br><span class="line"><span class="comment">     *     &quot;ageAvg&quot;: &#123;</span></span><br><span class="line"><span class="comment">     *       &quot;avg&quot;: &#123;</span></span><br><span class="line"><span class="comment">     *         &quot;field&quot;: &quot;age&quot;</span></span><br><span class="line"><span class="comment">     *       &#125;</span></span><br><span class="line"><span class="comment">     *     &#125;,</span></span><br><span class="line"><span class="comment">     *     &quot;balanceAvg&quot;: &#123;</span></span><br><span class="line"><span class="comment">     *       &quot;avg&quot;: &#123;</span></span><br><span class="line"><span class="comment">     *         &quot;field&quot;: &quot;balance&quot;</span></span><br><span class="line"><span class="comment">     *       &#125;</span></span><br><span class="line"><span class="comment">     *     &#125;</span></span><br><span class="line"><span class="comment">     *   &#125;</span></span><br><span class="line"><span class="comment">     * &#125;</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 2020/11/7</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getData2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//1. 创建检索请求</span></span><br><span class="line">        SearchRequest searchRequest = <span class="keyword">new</span> SearchRequest();</span><br><span class="line">        <span class="comment">//1.1）指定索引</span></span><br><span class="line">        searchRequest.indices(<span class="string">&quot;bank&quot;</span>);</span><br><span class="line">        <span class="comment">//1.2）构造检索条件</span></span><br><span class="line">        SearchSourceBuilder sourceBuilder = <span class="keyword">new</span> SearchSourceBuilder();</span><br><span class="line">        sourceBuilder.query(QueryBuilders.matchQuery(<span class="string">&quot;address&quot;</span>, <span class="string">&quot;Mill&quot;</span>));</span><br><span class="line">        <span class="comment">//1.2.1)按照年龄分布进行聚合</span></span><br><span class="line">        TermsAggregationBuilder ageAgg = AggregationBuilders.terms(<span class="string">&quot;ageAgg&quot;</span>).field(<span class="string">&quot;age&quot;</span>).size(<span class="number">10</span>);</span><br><span class="line">        sourceBuilder.aggregation(ageAgg);</span><br><span class="line">        <span class="comment">//1.2.2)计算平均年龄</span></span><br><span class="line">        AvgAggregationBuilder ageAvg = AggregationBuilders.avg(<span class="string">&quot;ageAvg&quot;</span>).field(<span class="string">&quot;age&quot;</span>);</span><br><span class="line">        sourceBuilder.aggregation(ageAvg);</span><br><span class="line">        <span class="comment">//1.2.3)计算平均薪资</span></span><br><span class="line">        AvgAggregationBuilder balanceAvg = AggregationBuilders.avg(<span class="string">&quot;balanceAvg&quot;</span>).field(<span class="string">&quot;balance&quot;</span>);</span><br><span class="line">        sourceBuilder.aggregation(balanceAvg);</span><br><span class="line">        System.out.println(<span class="string">&quot;检索条件：&quot;</span> + sourceBuilder);</span><br><span class="line">        searchRequest.source(sourceBuilder);</span><br><span class="line">        <span class="comment">//2. 执行检索</span></span><br><span class="line">        SearchResponse searchResponse = restHighLevelClient().search(searchRequest, RequestOptions.DEFAULT);</span><br><span class="line">        System.out.println(<span class="string">&quot;检索结果：&quot;</span> + searchResponse);</span><br><span class="line">        <span class="comment">//3. 将检索结果封装为Bean</span></span><br><span class="line">        SearchHits hits = searchResponse.getHits();</span><br><span class="line">        SearchHit[] searchHits = hits.getHits();</span><br><span class="line">        <span class="keyword">for</span> (SearchHit searchHit : searchHits) &#123;</span><br><span class="line">            String sourceAsString = searchHit.getSourceAsString();</span><br><span class="line">            Account account = JSON.parseObject(sourceAsString, Account.class);</span><br><span class="line">            System.out.println(account);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//4. 获取聚合信息</span></span><br><span class="line">        Aggregations aggregations = searchResponse.getAggregations();</span><br><span class="line">        Terms ageAgg1 = aggregations.get(<span class="string">&quot;ageAgg&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (Terms.Bucket bucket : ageAgg1.getBuckets()) &#123;</span><br><span class="line">            String keyAsString = bucket.getKeyAsString();</span><br><span class="line">            System.out.println(<span class="string">&quot;年龄：&quot;</span> + keyAsString + <span class="string">&quot; ==&gt; &quot;</span> + bucket.getDocCount());</span><br><span class="line">        &#125;</span><br><span class="line">        Avg ageAvg1 = aggregations.get(<span class="string">&quot;ageAvg&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;平均年龄：&quot;</span> + ageAvg1.getValue());</span><br><span class="line">        Avg balanceAvg1 = aggregations.get(<span class="string">&quot;balanceAvg&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;平均薪资：&quot;</span> + balanceAvg1.getValue());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Elasticsearch%E4%B9%8B%E6%A3%80%E7%B4%A2/" rel="prev" title="Elasticsearch之检索">
+      <i class="fa fa-chevron-left"></i> Elasticsearch之检索
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/Elasticserarch%E5%92%8Ckibana%E7%9A%84%E5%AE%89%E8%A3%85/" rel="next" title="Elasticserarch和kibana的安装">
+      Elasticserarch和kibana的安装 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Springboot-%E6%95%B4%E5%90%88Elasticsearch"><span class="nav-number">1.</span> <span class="nav-text">Springboot 整合Elasticsearch</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-elasticsearch-Rest-Client"><span class="nav-number">1.1.</span> <span class="nav-text">1. elasticsearch-Rest-Client</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#elasticserch-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.1.1.</span> <span class="nav-text">elasticserch 客户端详解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-SpringBoot-%E6%95%B4%E5%90%88ElasticSearch"><span class="nav-number">1.2.</span> <span class="nav-text">2. SpringBoot 整合ElasticSearch</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%AF%BC%E5%85%A5%E4%BE%9D%E8%B5%96"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 导入依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E7%BC%96%E5%86%99%E6%B5%8B%E8%AF%95%E7%B1%BB"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 编写测试类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-%E6%B5%8B%E8%AF%95%E4%BF%9D%E5%AD%98%E6%95%B0%E6%8D%AE"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">2.2.1 测试保存数据</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="nav-number">1.2.2.1.1.</span> <span class="nav-text">获取数据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A4%8D%E6%9D%82%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.2.2.1.2.</span> <span class="nav-text">复杂查询</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">227</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

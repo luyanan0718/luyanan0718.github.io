@@ -14,6 +14,8 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
@@ -119,9 +121,34 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -179,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Dubbo%E4%B9%8B%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0%E5%8F%91%E5%B8%83%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/19.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -193,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Dubbo%E4%B9%8B%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0%E5%8F%91%E5%B8%83%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/19.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">19</a>
         </h2>
 
         <div class="post-meta">
@@ -203,15 +230,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
 
           
 
@@ -224,11 +253,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Dubbo-服务发布源码分析"><a href="#Dubbo-服务发布源码分析" class="headerlink" title="Dubbo 服务发布源码分析"></a>Dubbo 服务发布源码分析</h1><h2 id="Dubbo-对于Spring-的扩展"><a href="#Dubbo-对于Spring-的扩展" class="headerlink" title="Dubbo 对于Spring 的扩展"></a>Dubbo 对于Spring 的扩展</h2><p>最早我们使用spring 的配置来实现dubbo 服务的发布, 方便大家的同时也意味着Dubbo 里面和Spring 肯定有那种说不清的关系. </p>
-<h3 id="Spring-的标签扩展"><a href="#Spring-的标签扩展" class="headerlink" title="Spring 的标签扩展"></a>Spring 的标签扩展</h3><p>在Spring中定义了两个接口, </p>
+          <h2 id="19-设计模式之中介者模式-Mediator-Pattern"><a href="#19-设计模式之中介者模式-Mediator-Pattern" class="headerlink" title="19. 设计模式之中介者模式(Mediator Pattern)"></a>19. 设计模式之中介者模式(Mediator Pattern)</h2><hr>
+<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Mediator模式是行为模式的一种,在Mediator模式中,类之间的交互行为被统一的放在Mediator的对象中,对象通过Mediator对象同其他对象交互,Mediator对象起着控制器的作用.</p>
+<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Dubbo%E4%B9%8B%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0%E5%8F%91%E5%B8%83%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/19.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -252,7 +282,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Dubbo%E4%B9%8BSPI%E6%9C%BA%E5%88%B6/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/2.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -266,7 +296,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Dubbo%E4%B9%8BSPI%E6%9C%BA%E5%88%B6/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/2.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">2</a>
         </h2>
 
         <div class="post-meta">
@@ -276,15 +306,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
 
           
 
@@ -297,11 +329,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Dubbo之API机制"><a href="#Dubbo之API机制" class="headerlink" title="Dubbo之API机制"></a>Dubbo之API机制</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>本文的源码是基于Dubbo 2.7.2 版本进行分析的.这里, 我们首先将Dubbo 里面用的比较多的SPI 机制做一个详细的分析</p>
-<h2 id="Dubbo-中的SPI机制"><a href="#Dubbo-中的SPI机制" class="headerlink" title="Dubbo 中的SPI机制"></a>Dubbo 中的SPI机制</h2><h3 id="关于Java-SPI"><a href="#关于Java-SPI" class="headerlink" title="关于Java SPI"></a>关于Java SPI</h3>
+          <h1 id="2-设计模式之工厂方法模式"><a href="#2-设计模式之工厂方法模式" class="headerlink" title="2. 设计模式之工厂方法模式"></a>2. 设计模式之工厂方法模式</h1><hr>
+<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>  工厂方法模式同样属于类的创建型模式 又被成为多态工厂模式. 工厂方法模式的意义是定义一个创建产品对象的工厂接口,将实际创建工作推迟到子类当中.核心工厂类不再负责产品的创建,这样核心类成为一个抽象工厂角色,仅负责具体工厂子类必须实现的接口,这样进一步抽象化的好处是使得工厂方法模式可以使系统在不修改具体工厂角色的情况下引进新的产品</p>
+<h3 id="2-模式中包含的角色及其职责"><a href="#2-模式中包含的角色及其职责" class="headerlink" title="2. 模式中包含的角色及其职责"></a>2. 模式中包含的角色及其职责</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Dubbo%E4%B9%8BSPI%E6%9C%BA%E5%88%B6/#more" rel="contents">
+              <a class="btn" href="/2.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -325,7 +358,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/1.%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/16.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -339,7 +372,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/1.%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/16.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">16</a>
         </h2>
 
         <div class="post-meta">
@@ -349,15 +382,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
 
           
 
@@ -370,12 +405,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="微服务的前生今世"><a href="#微服务的前生今世" class="headerlink" title="微服务的前生今世"></a>微服务的前生今世</h1><h2 id="单体架构"><a href="#单体架构" class="headerlink" title="单体架构"></a>单体架构</h2><p>任何一个网站在发布初期几乎都不可能立马就拥有庞大的用户流量和海量数据,都是在不停的试错过程中一步一步演变其自身架构的, 满足其自身业务. 比如现在能够抗住双十一那么大流量的淘宝,它的技术最早的是LAMP(linux + Apache + Mysql + Php).</p>
-<p>实际上,架构越复杂, 意味着业务的体量越庞大. </p>
-<p>对于一个刚刚起步的项目,我们会选择最简单的最快速的方式来实现。而单体架构是最好的选择, 目前很多的传统软件行业仍然采用这类的架构.</p>
+          <h2 id="16-设计模式之命令模式-Command-Pattren"><a href="#16-设计模式之命令模式-Command-Pattren" class="headerlink" title="16. 设计模式之命令模式(Command Pattren)"></a>16. 设计模式之命令模式(Command Pattren)</h2><hr>
+<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>命令模式是行为设计模式的一种,Command 模式通过被称为commonand的类封装了堆目标对象的调用行为以及调用参数</p>
+<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/1.%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96/#more" rel="contents">
+              <a class="btn" href="/16.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -399,7 +434,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/5.%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B9%8BSharding-JDBC/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/17.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%A3%E9%87%8A%E5%99%A8%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -413,7 +448,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/5.%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B9%8BSharding-JDBC/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/17.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%A3%E9%87%8A%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">17</a>
         </h2>
 
         <div class="post-meta">
@@ -423,15 +458,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
 
           
 
@@ -444,11 +481,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="分库分表之Sharding-JDBC"><a href="#分库分表之Sharding-JDBC" class="headerlink" title="分库分表之Sharding-JDBC"></a>分库分表之<a target="_blank" rel="noopener" href="https://gitee.com/Sharding-Sphere/sharding-sphere">Sharding-JDBC</a></h1><h2 id="1-架构与核心概念"><a href="#1-架构与核心概念" class="headerlink" title="1. 架构与核心概念"></a>1. 架构与核心概念</h2><h3 id="1-1-发展历史"><a href="#1-1-发展历史" class="headerlink" title="1.1 发展历史"></a>1.1 发展历史</h3><p>它是从当当网的内部架构<code>ddframe</code>  里面的一个分库分表的模块脱胎出来的, 用来解决当当的分库分表问题, 把跟业务相关的敏感的代码剥离后, 就得到了<code>Sharding-JDBC</code>. 它是一个工作在客户端的分库分表的解决方案. </p>
-<p><code>DubboX</code>、<code>Elastic-job</code>  也是当当开源出来的产品. </p>
+          <h2 id="17-设计模式之解释器模式-Interpreter-Pattern"><a href="#17-设计模式之解释器模式-Interpreter-Pattern" class="headerlink" title="17. 设计模式之解释器模式(Interpreter Pattern)"></a>17. 设计模式之解释器模式(Interpreter Pattern)</h2><hr>
+<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>解释器模式是行为模式的一种,通过建立一个解释器,对于特定的计算机程序设计语言,用来解释预先定义的文法.简单的说,Interpreter 模式是一种简单的语法解释器构架</p>
+<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/5.%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B9%8BSharding-JDBC/#more" rel="contents">
+              <a class="btn" href="/17.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%A3%E9%87%8A%E5%99%A8%E6%A8%A1%E5%BC%8F/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -472,7 +510,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/4.%20Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/18.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -486,7 +524,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/4.%20Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/18.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">18</a>
         </h2>
 
         <div class="post-meta">
@@ -496,15 +534,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
 
           
 
@@ -517,11 +557,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Mysql主从复制"><a href="#Mysql主从复制" class="headerlink" title="Mysql主从复制"></a>Mysql主从复制</h1><h2 id="1-主从复制的含义"><a href="#1-主从复制的含义" class="headerlink" title="1. 主从复制的含义"></a>1. 主从复制的含义</h2><p>在Mysql多服务区的架构中, 至少要有一个主节点(<code>master</code>),跟主节点相对的, 我们把他叫做从节点(<code>slave</code>). 主从复制, 就是把主节点的数据复制到一个或者多个从节点. 主服务器和从服务器可以在不同的ip上, 通过远程连接来同步数据, 这个是异步的过程. </p>
-<h2 id="2-主从复制的形式"><a href="#2-主从复制的形式" class="headerlink" title="2. 主从复制的形式"></a>2. 主从复制的形式</h2><p>一主一从/一主多从</p>
+          <h2 id="18-设计模式之迭代器模式-Iterator-Pattern"><a href="#18-设计模式之迭代器模式-Iterator-Pattern" class="headerlink" title="18.   设计模式之迭代器模式(Iterator Pattern)"></a>18.   设计模式之迭代器模式(Iterator Pattern)</h2><hr>
+<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Iterator模式是行为模式的一种,它把容器中包含的内部对象的访问委让给外部类,使用iterator(遍历)按顺序进行遍历访问的设计模式</p>
+<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/4.%20Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/#more" rel="contents">
+              <a class="btn" href="/18.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -545,7 +586,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/3.%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B9%8BMycat/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/14.3%20%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%9C%A8Spring%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -559,7 +600,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/3.%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B9%8BMycat/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/14.3%20%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%9C%A8Spring%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/" class="post-title-link" itemprop="url">14</a>
         </h2>
 
         <div class="post-meta">
@@ -569,15 +610,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
 
           
 
@@ -590,13 +633,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="分库分表之Mycat"><a href="#分库分表之Mycat" class="headerlink" title="分库分表之Mycat"></a>分库分表之Mycat</h1><p>官网: <a target="_blank" rel="noopener" href="http://www.mycat.io/">http://www.mycat.io/</a></p>
-<p>Mycat 概要介绍： <a target="_blank" rel="noopener" href="https://github.com/MyCATApache/Mycat-Server">https://github.com/MyCATApache/Mycat-Server</a></p>
-<p>入门指南: <a target="_blank" rel="noopener" href="https://github.com/MyCATApache/Mycat-doc/tree/master/%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97">https://github.com/MyCATApache/Mycat-doc/tree/master/%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97</a></p>
-<h2 id="1-Mycat介绍和核心概念"><a href="#1-Mycat介绍和核心概念" class="headerlink" title="1.Mycat介绍和核心概念"></a>1.Mycat介绍和核心概念</h2>
+          <h1 id="14-3-代理模式在Spring中的应用"><a href="#14-3-代理模式在Spring中的应用" class="headerlink" title="14.3 代理模式在Spring中的应用"></a>14.3 代理模式在Spring中的应用</h1><p>先看ProxyFactoryBean类,核心方法为getObject(),我们来看一下源码,</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Nullable</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getObject</span><span class="params">()</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.initializeAdvisorChain();</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.isSingleton()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.getSingletonInstance();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.targetName == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">this</span>.logger.warn(<span class="string">&quot;Using non-singleton proxies with singleton targets is often undesirable. Enable prototype proxies by setting the &#x27;targetName&#x27; property.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.newPrototypeInstance();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在getObject()方法中,主要调用getSingletonInstance()方法和newPrototypeInstance()方法,在Spring的配置当中,如果不做任何的设置,那么Spring代理生成的的Bean都是单例对象.如果修改scope则每次创建一个新的原型对象.<br><br>Spring利用动态代理实现AOP有两个非常重要的类,一个是JdkDynamicAopProxy类和CglibAopProxy类</p>
+<h5 id="Spring中大代理选择原则"><a href="#Spring中大代理选择原则" class="headerlink" title="Spring中大代理选择原则:"></a>Spring中大代理选择原则:</h5>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/3.%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B9%8BMycat/#more" rel="contents">
+              <a class="btn" href="/14.3%20%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%9C%A8Spring%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -620,7 +663,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/2.%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%92%8C%E7%89%B9%E7%82%B9/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/15.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -634,7 +677,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2.%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%92%8C%E7%89%B9%E7%82%B9/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/15.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">15</a>
         </h2>
 
         <div class="post-meta">
@@ -644,15 +687,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
 
           
 
@@ -665,13 +710,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="分库分表的类型和特点"><a href="#分库分表的类型和特点" class="headerlink" title="分库分表的类型和特点"></a>分库分表的类型和特点</h1><p>从维度来说可以分为两种: 一种是垂直, 一种是水平</p>
-<p><strong>垂直切分</strong>: 基于表和字段划分, 表结构不同, 我们有单表的分表， 也有多库的分表. </p>
-<p><strong>水平切分</strong>: 基于数据切分, 表结构相同, 数据不同, 也有同库的水平切分和多库的切分 </p>
-<p><img src="http://files.luyanan.com//img/20200404134317.png" alt="image-20200404134155501"></p>
+          <h2 id="15-责任链模式-Chain-of-Responsibility-COR"><a href="#15-责任链模式-Chain-of-Responsibility-COR" class="headerlink" title="15. 责任链模式(Chain of Responsibility )(COR)"></a>15. 责任链模式(Chain of Responsibility )(COR)</h2><hr>
+<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Chain of Responsibility(COR) 模式也叫作职责链模式或者责任连锁模式,是行为模式之一.该模式构造一系列分别担当不同职责的类的对象来共同完成一个任务,这些类的对象之间像链条一样紧密相连,所以被称作职责链模式</p>
+<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2.%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%92%8C%E7%89%B9%E7%82%B9/#more" rel="contents">
+              <a class="btn" href="/15.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -695,7 +739,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/1.%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/11.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -709,7 +753,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/1.%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/11.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">11</a>
         </h2>
 
         <div class="post-meta">
@@ -719,15 +763,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
 
           
 
@@ -740,12 +786,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="为什么要分库分表"><a href="#为什么要分库分表" class="headerlink" title="为什么要分库分表"></a>为什么要分库分表</h1><h2 id="1-数据库性能瓶颈的出现"><a href="#1-数据库性能瓶颈的出现" class="headerlink" title="1. 数据库性能瓶颈的出现"></a>1. 数据库性能瓶颈的出现</h2><p>对于应用来说, 如果是数据库性能出现问题, 要么是无法获取连接, 是因为在高并发的情况下连接数不够了。要么是操作数据变慢了, 数据库处理数据的效率出现了问题. 要么是存储出现了问题, 比如单机存储的数据量太大了, 存储的问题也可能会导致性能的问题. </p>
-<p>归根结底都是收到了硬件的影响, 比如<code>CPU</code>、内存、磁盘、网络等等. 但是我们优化肯定不可能直接从扩展硬件出手, 因为带来的收益和投入比例太差. </p>
-<p>所以我们先来分析一下, 当我们处理数据出现无法连接,或者变慢的时候, 我们可以从哪些层面入手呢? </p>
+          <h1 id="11-设计模式之装饰模式-Decorator-Pattren"><a href="#11-设计模式之装饰模式-Decorator-Pattren" class="headerlink" title="11. 设计模式之装饰模式(Decorator Pattren)"></a>11. 设计模式之装饰模式(Decorator Pattren)</h1><hr>
+<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>装饰模式又叫包装模式,通过一种对客户端透明的方式来扩展对象的功能,是继承关系的一个替换方案.</p>
+<h3 id="2-角色和职责"><a href="#2-角色和职责" class="headerlink" title="2. 角色和职责"></a>2. 角色和职责</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/1.%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/#more" rel="contents">
+              <a class="btn" href="/11.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -769,7 +815,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%AE%80%E4%BB%8B/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/12.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -783,7 +829,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%AE%80%E4%BB%8B/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/12.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">12</a>
         </h2>
 
         <div class="post-meta">
@@ -793,15 +839,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
 
           
 
@@ -814,14 +862,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="设计模式简介"><a href="#设计模式简介" class="headerlink" title="设计模式简介"></a>设计模式简介</h1><h2 id="1-设计模式简介"><a href="#1-设计模式简介" class="headerlink" title="1. 设计模式简介"></a>1. 设计模式简介</h2><p> 设计模式是一套被反复使用的,多数人只晓得,经过分类编写的,代码设计经验的总结.使用设计模式是为了重用代码,让代码更容易被他们理解,保证代码的可靠性.</p>
-<h2 id="2-设计模式的设计原则"><a href="#2-设计模式的设计原则" class="headerlink" title="2. 设计模式的设计原则"></a>2. 设计模式的设计原则</h2><ul>
-<li> 对接口编程而不是对实现编程</li>
-<li> 优先使用对象组合而不是继承<h2 id="3-设计模式的类型"><a href="#3-设计模式的类型" class="headerlink" title="3.设计模式的类型"></a>3.设计模式的类型</h2><h3 id="1-创建型模式"><a href="#1-创建型模式" class="headerlink" title="1. 创建型模式 "></a>1. 创建型模式 <br></h3></li>
-</ul>
+          <h1 id="12-设计模式之外观模式-Facade-Pattern"><a href="#12-设计模式之外观模式-Facade-Pattern" class="headerlink" title="12. 设计模式之外观模式(Facade Pattern)"></a>12. 设计模式之外观模式(Facade Pattern)</h1><hr>
+<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Facade 模式也叫外观模式,是为一组具有类似功能的类群,比如类,子系统等.提供一个一致的简单界面.这个一致的简单的界面被称为Facade</p>
+<h3 id="2-角色和职责"><a href="#2-角色和职责" class="headerlink" title="2. 角色和职责:"></a>2. 角色和职责:</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%AE%80%E4%BB%8B/#more" rel="contents">
+              <a class="btn" href="/12.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -845,7 +891,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%AF%B9%E6%AF%94/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/13.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -859,7 +905,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Spring%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%AF%B9%E6%AF%94/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/13.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">13</a>
         </h2>
 
         <div class="post-meta">
@@ -869,15 +915,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
 
           
 
@@ -890,66 +938,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="spring-中常用的设计模式对比"><a href="#spring-中常用的设计模式对比" class="headerlink" title="spring 中常用的设计模式对比"></a>spring 中常用的设计模式对比</h1><table>
-<thead>
-<tr>
-<th>设计模式</th>
-<th>一句话归纳</th>
-<th>举例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>工厂模式(Factory)</td>
-<td>只对结果负责,封装创建过程</td>
-<td>BeanFactory,Calender</td>
-</tr>
-<tr>
-<td>单例模式(Singleton)</td>
-<td>保证独一无二</td>
-<td>ApplicationContext,Calender</td>
-</tr>
-<tr>
-<td>原型模式(Prototype)</td>
-<td>克隆</td>
-<td>ArrayList,PrototypeBean</td>
-</tr>
-<tr>
-<td>代理模式(Proxy)</td>
-<td>增强职责</td>
-<td>ProxyFactoryBean,JDKDynamicAopFactory,CglibAopFactory</td>
-</tr>
-<tr>
-<td>委派模式(Delegate)</td>
-<td>干活算员工的,功劳算项目经理的</td>
-<td>DispatcherServlet,BeanDefinitionParserDelegate</td>
-</tr>
-<tr>
-<td>策略模式(Strategy)</td>
-<td>用户选择,结果统一</td>
-<td>InstantiationStrategy</td>
-</tr>
-<tr>
-<td>模板模式(Template)</td>
-<td>流程标准化,自己实现定制</td>
-<td>jdbcTemplate,HttpServlet</td>
-</tr>
-<tr>
-<td>适配器模式(Adapter)</td>
-<td>兼容转换头</td>
-<td>AdvisorAdapter,HandlerAdapter</td>
-</tr>
-<tr>
-<td>装饰器模式(Decorator)</td>
-<td>包装,同宗同源</td>
-<td>BufferedReader,InputStream,OutputStream,HttpHeadResponseDecorator</td>
-</tr>
-<tr>
-<td>观察者模式(Observer)</td>
-<td>任务完成时通知</td>
-<td>ContextLoaderListener</td>
-</tr>
-</tbody></table>
-
+          <h1 id="13-设计模式之享元模式-Flywight-Pattren"><a href="#13-设计模式之享元模式-Flywight-Pattren" class="headerlink" title="13. 设计模式之享元模式(Flywight Pattren)"></a>13. 设计模式之享元模式(Flywight Pattren)</h1><hr>
+<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>享元通过与其他类似对象共享数据来减少内存占用. 这种类型的设计模式属于结构性模式,它提供了减少对象数量从而改善应用数量从而改善应用所需的对象结构的方式</p>
+<p> 享元模式尝试重用现有的同类对象,如果未找到匹配的对象,则创建新的对象</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/13.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -967,7 +966,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1035,18 +1034,44 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-count">227</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">1</span>
-        <span class="site-state-item-name">标签</span>
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
 
 
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
 
       </div>
 

@@ -14,6 +14,8 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
@@ -119,9 +121,34 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -179,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/15.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%B6%88%E6%81%AF%E6%8A%95%E9%80%92/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -193,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/15.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/Spring%20RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%B6%88%E6%81%AF%E6%8A%95%E9%80%92/" class="post-title-link" itemprop="url">Spring RabbitMQ可靠性消息投递</a>
         </h2>
 
         <div class="post-meta">
@@ -203,15 +230,21 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
+                </span>
+            </span>
 
           
 
@@ -224,12 +257,23 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="15-责任链模式-Chain-of-Responsibility-COR"><a href="#15-责任链模式-Chain-of-Responsibility-COR" class="headerlink" title="15. 责任链模式(Chain of Responsibility )(COR)"></a>15. 责任链模式(Chain of Responsibility )(COR)</h2><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Chain of Responsibility(COR) 模式也叫作职责链模式或者责任连锁模式,是行为模式之一.该模式构造一系列分别担当不同职责的类的对象来共同完成一个任务,这些类的对象之间像链条一样紧密相连,所以被称作职责链模式</p>
-<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
+          <h1 id="Spring-RabbitMQ可靠性消息投递"><a href="#Spring-RabbitMQ可靠性消息投递" class="headerlink" title="Spring RabbitMQ可靠性消息投递"></a>Spring RabbitMQ可靠性消息投递</h1><p>RabbitMQ核心基础概念。</p>
+<ul>
+<li>Server:又称之为Broker，接受客户端的连接，实现AMQP实体服务。</li>
+<li>Connection:连接，应用程序与Broker的网络连接。</li>
+<li>Channel:网络信道，几乎所有的操作都在Channel中进行，Channel是进行消息读写的通道。客户端可以建立多个Channel，每个Channel代表一个会话任务。<br> 如果每一次访问RabbitMQ都建立一个Connection，在消息量大的时候建立TCP Connection的开销将是巨大的，效率也较低。Channel是在connection内部建立的逻辑连接，如果应用程序支持多线程，通常每个thread创建单独的channel进行通讯，AMQP method包含了channel id帮助客户端和message broker识别channel，所以channel之间是完全隔离的。Channel作为轻量级的Connection极大减少了操作系统建立TCP connection的开销。</li>
+<li>Message：消息，服务器和应用程序之间传送的数据，由Message Properties和Body组成。Properties可以对消息进行修饰，比如消息的优先级，延迟等高级特性，Body就是消息体内容。</li>
+<li>Virtual Host:虚拟地址，用于进行逻辑隔离，最上层的消息路由。一个Virtual Host里面可以有若干个Exchange和Queue，同一个Virtual Host里面不能有相同名称的Exchange或者Queue。</li>
+<li>Exchange：交换机，接收消息，根据路由键转发消息到绑定的队列。</li>
+<li>Binding:Exchange和Queue之间的虚拟连接，binding中可以包含routing key。</li>
+<li>Routing key:一个路由规则，虚拟机可以用它来确定如何路由一个特定消息。</li>
+<li>Queue：也可以称之为Message Queue(消息队列)，保存消息并将它们转发到消费者。</li>
+</ul>
+<p>通过下面2张图，我们能大概能明白AMQP协议模型和消息流转过程。在Exchange和Message Queue上面还有Virtual host。记住同一个Virtual Host里面不能有相同名称的ExChange和Message Queue。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4636177-22901bbb566bbcbc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/682/format/webp" alt="img"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/15.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/Spring%20RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%B6%88%E6%81%AF%E6%8A%95%E9%80%92/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -253,7 +297,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/14.3%20%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%9C%A8Spring%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E5%92%8C%E5%AE%9E%E8%B7%B5%E7%BB%8F%E9%AA%8C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -267,7 +311,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/14.3%20%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%9C%A8Spring%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E5%92%8C%E5%AE%9E%E8%B7%B5%E7%BB%8F%E9%AA%8C/" class="post-title-link" itemprop="url">RabbitMQ可靠性投递和实践经验</a>
         </h2>
 
         <div class="post-meta">
@@ -277,15 +321,21 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
+                </span>
+            </span>
 
           
 
@@ -298,13 +348,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="14-3-代理模式在Spring中的应用"><a href="#14-3-代理模式在Spring中的应用" class="headerlink" title="14.3 代理模式在Spring中的应用"></a>14.3 代理模式在Spring中的应用</h1><p>先看ProxyFactoryBean类,核心方法为getObject(),我们来看一下源码,</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Nullable</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getObject</span><span class="params">()</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.initializeAdvisorChain();</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.isSingleton()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.getSingletonInstance();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.targetName == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">this</span>.logger.warn(<span class="string">&quot;Using non-singleton proxies with singleton targets is often undesirable. Enable prototype proxies by setting the &#x27;targetName&#x27; property.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.newPrototypeInstance();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在getObject()方法中,主要调用getSingletonInstance()方法和newPrototypeInstance()方法,在Spring的配置当中,如果不做任何的设置,那么Spring代理生成的的Bean都是单例对象.如果修改scope则每次创建一个新的原型对象.<br><br>Spring利用动态代理实现AOP有两个非常重要的类,一个是JdkDynamicAopProxy类和CglibAopProxy类</p>
-<h5 id="Spring中大代理选择原则"><a href="#Spring中大代理选择原则" class="headerlink" title="Spring中大代理选择原则:"></a>Spring中大代理选择原则:</h5>
+          <h1 id="RabbitMQ可靠性投递和实践经验"><a href="#RabbitMQ可靠性投递和实践经验" class="headerlink" title="RabbitMQ可靠性投递和实践经验"></a>RabbitMQ可靠性投递和实践经验</h1><h2 id="1-可靠性投递"><a href="#1-可靠性投递" class="headerlink" title="1. 可靠性投递"></a>1. 可靠性投递</h2><p>在RabbitMQ里面提供了很多保证可靠投递的机制, 这也是RbabitMQ的一个特性. </p>
+<p>​    我们在讲可靠性投递的时候,必须要明确一个问题,因为效率与可靠性是无法兼得的, 如果要保证每一个环节都成功, 势必会对消息的收发效率造成影响. 所以如果是一些业务实时一致性不是特别高的场景, 可以牺牲一些可靠性换取效率. </p>
+<p>​    比如发送通知或者记录日志的这种场景, 如果用户没有收到通知,不会造成业务影响,只要再次发送就可以了. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/14.3%20%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%9C%A8Spring%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/#more" rel="contents">
+              <a class="btn" href="/RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E5%92%8C%E5%AE%9E%E8%B7%B5%E7%BB%8F%E9%AA%8C/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -328,7 +377,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/13.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -342,7 +391,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/13.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(1)/" class="post-title-link" itemprop="url">RabbitMQ工作模型与java编程(1)</a>
         </h2>
 
         <div class="post-meta">
@@ -352,15 +401,21 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
+                </span>
+            </span>
 
           
 
@@ -373,12 +428,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="13-设计模式之享元模式-Flywight-Pattren"><a href="#13-设计模式之享元模式-Flywight-Pattren" class="headerlink" title="13. 设计模式之享元模式(Flywight Pattren)"></a>13. 设计模式之享元模式(Flywight Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>享元通过与其他类似对象共享数据来减少内存占用. 这种类型的设计模式属于结构性模式,它提供了减少对象数量从而改善应用数量从而改善应用所需的对象结构的方式</p>
-<p> 享元模式尝试重用现有的同类对象,如果未找到匹配的对象,则创建新的对象</p>
+          <h1 id="RabbitMQ工作模型与java编程"><a href="#RabbitMQ工作模型与java编程" class="headerlink" title="RabbitMQ工作模型与java编程"></a>RabbitMQ工作模型与java编程</h1><h2 id="1-MQ入门"><a href="#1-MQ入门" class="headerlink" title="1. MQ入门"></a>1. MQ入门</h2><h3 id="1-1-MQ的诞生历程"><a href="#1-1-MQ的诞生历程" class="headerlink" title="1.1 MQ的诞生历程"></a>1.1 MQ的诞生历程</h3><p>我们要去用MQ, 先来了解一下MQ是怎么诞生的,这样对于它解决了什么问题理解会更加深刻.大家知不知道世界上第一个MQ叫什么名字,是什么时候诞生的? </p>
+<p>​    1983年的时候, 有个在MIT工作的印度小伙伴突发奇想,以前我们的软件相互通信,都是点对点的,而且要实现相同的协议, 能不能有一种专门用来通信的中间件,就想主板(BUS)一样,把不同的软件集成起来呢? 于是它搞了一家公司(Tekneron),开发了世界上第一个消息队列软件The Information Bus(TIB). 最开始的时候, 它被高盛这些公司用在了金融交易里面。 因为TIB 实现了发布订阅(Publish/Subscrbe)模型, 信息的生产者和消费者完全解耦,这个特性引起了电信行业特别是新闻机构的注意. 1994年路透社收购了Teknekron. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/13.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -402,7 +456,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/12.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -416,7 +470,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/12.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">Nacos长轮询和集群分析</a>
         </h2>
 
         <div class="post-meta">
@@ -426,15 +480,21 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/nacos/" itemprop="url" rel="index"><span itemprop="name">nacos</span></a>
+                </span>
+            </span>
 
           
 
@@ -447,12 +507,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="12-设计模式之外观模式-Facade-Pattern"><a href="#12-设计模式之外观模式-Facade-Pattern" class="headerlink" title="12. 设计模式之外观模式(Facade Pattern)"></a>12. 设计模式之外观模式(Facade Pattern)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Facade 模式也叫外观模式,是为一组具有类似功能的类群,比如类,子系统等.提供一个一致的简单界面.这个一致的简单的界面被称为Facade</p>
-<h3 id="2-角色和职责"><a href="#2-角色和职责" class="headerlink" title="2. 角色和职责:"></a>2. 角色和职责:</h3>
+          <h1 id="长轮询的时间间隔"><a href="#长轮询的时间间隔" class="headerlink" title="长轮询的时间间隔"></a>长轮询的时间间隔</h1><p>我们知道客户端会有一个长训轮的任务去检查服务器端的配置是否发生了变化, 如果发生了变更, 那么客户端会拿到变更的<code>groupKey</code> 再根据 <code>groupKey</code> 去获取配置项的最新值 跟新到本地的缓存以及文件中,那么这种每次都靠客户端去请求, 那请求的时间间隔设置多少合适呢? </p>
+<p>如果间隔时间设置的太长的话有可能无法及时获取服务端的变更, 如果间隔时间设置的太短的话, 那么频繁的请求对于服务端来说无疑也是一种负担,所以最好的方式是客户端每隔一段长度适中的时间去服务端请求, 而在这期间如果配置发生了变更, 服务端能够主动将变更后的结果推送给客户端, 这样既能够保证客户端能够实时感知到配置的变化, 也降低了服务端的压力, 我们来看看nacos 设置的间隔时间是多久? </p>
+<h2 id="长轮询的概念"><a href="#长轮询的概念" class="headerlink" title="长轮询的概念"></a>长轮询的概念</h2><p>那么在讲解原理之前, 先给大家解释一下什么叫长轮询. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/12.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -476,7 +536,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/11.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -490,7 +550,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/11.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">Nacos基本原理以及实战</a>
         </h2>
 
         <div class="post-meta">
@@ -500,15 +560,21 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/nacos/" itemprop="url" rel="index"><span itemprop="name">nacos</span></a>
+                </span>
+            </span>
 
           
 
@@ -521,12 +587,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="11-设计模式之装饰模式-Decorator-Pattren"><a href="#11-设计模式之装饰模式-Decorator-Pattren" class="headerlink" title="11. 设计模式之装饰模式(Decorator Pattren)"></a>11. 设计模式之装饰模式(Decorator Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>装饰模式又叫包装模式,通过一种对客户端透明的方式来扩展对象的功能,是继承关系的一个替换方案.</p>
-<h3 id="2-角色和职责"><a href="#2-角色和职责" class="headerlink" title="2. 角色和职责"></a>2. 角色和职责</h3>
+          <h1 id="Nacos-原理分析以及实战"><a href="#Nacos-原理分析以及实战" class="headerlink" title="Nacos 原理分析以及实战"></a>Nacos 原理分析以及实战</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Nacos 致力于帮助您发现、配置和管理微服务。Nacos 提供了一组简单易用的特性集，帮助您快速实现动态服务发现、服务配置、服务元数据及流量管理。</p>
+<p>Nacos 帮助您更敏捷和容易地构建、交付和管理微服务平台。 Nacos 是构建以“服务”为中心的现代应用架构 (例如微服务范式、云原生范式) 的服务基础设施。                                                                </p>
+<p>​                                                                                                                                     –&gt; copy 自官网. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/11.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -550,7 +616,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/10.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -564,7 +630,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/10.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/" class="post-title-link" itemprop="url">分布式消息通信之Kafka的基本应用</a>
         </h2>
 
         <div class="post-meta">
@@ -574,15 +640,21 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/" itemprop="url" rel="index"><span itemprop="name">kafka</span></a>
+                </span>
+            </span>
 
           
 
@@ -595,12 +667,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="10-设计模式之组合模式-Composite-Pattren"><a href="#10-设计模式之组合模式-Composite-Pattren" class="headerlink" title="10 . 设计模式之组合模式(Composite Pattren)"></a>10 . 设计模式之组合模式(Composite Pattren)</h1><hr>
-<h3 id="1-概念组合"><a href="#1-概念组合" class="headerlink" title="1. 概念组合"></a>1. 概念组合</h3><p>组合模式是构造性的设计模式之一.通过递归手段来实现树形的对象结构,并可以通过一个对象来访问整个对象树</p>
-<h3 id="2-角色和职责"><a href="#2-角色和职责" class="headerlink" title="2. 角色和职责"></a>2. 角色和职责</h3>
+          <h1 id="分布式消息通信之Kafka的基本应用"><a href="#分布式消息通信之Kafka的基本应用" class="headerlink" title="分布式消息通信之Kafka的基本应用"></a>分布式消息通信之Kafka的基本应用</h1><h2 id="消息中间件的背景分析"><a href="#消息中间件的背景分析" class="headerlink" title="消息中间件的背景分析"></a>消息中间件的背景分析</h2><h3 id="场景分析"><a href="#场景分析" class="headerlink" title="场景分析"></a>场景分析</h3><p>我们可以使用阻塞队列+线程池的方式来实现生产者和消费者的模式 . 比如在一个应用中, A 方法调用B方法去执行一些任务处理, 我们可以同步调用, 但是如果这个时候请求比较多的情况下, 同步调用会比较耗时会导致请求阻塞. 我们会使用阻塞队列+线程池的方式来实现异步任务的处理. </p>
+<p><img src="http://files.luyanan.com//img/20191224155658.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/10.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -624,7 +695,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/1.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -638,7 +709,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/1.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">分布式消息通信值Kafka的实现原理</a>
         </h2>
 
         <div class="post-meta">
@@ -648,15 +719,21 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/" itemprop="url" rel="index"><span itemprop="name">kafka</span></a>
+                </span>
+            </span>
 
           
 
@@ -669,12 +746,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="1-设计模式之工厂模式"><a href="#1-设计模式之工厂模式" class="headerlink" title="1. 设计模式之工厂模式"></a>1. 设计模式之工厂模式</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p> 工厂模式属于类的创建型模式 又叫静态工厂方法模式.通过专门定义一个类 来负责创建其他类的实例,被创建的实例通常都具有共同的父类</p>
-<h3 id="2-模式中包含的角色及其指责"><a href="#2-模式中包含的角色及其指责" class="headerlink" title="2. 模式中包含的角色及其指责"></a>2. 模式中包含的角色及其指责</h3>
+          <h1 id="分布式消息通信之Kafka-的实现原理"><a href="#分布式消息通信之Kafka-的实现原理" class="headerlink" title="分布式消息通信之Kafka 的实现原理"></a>分布式消息通信之Kafka 的实现原理</h1><h2 id="消息中间件能做什么"><a href="#消息中间件能做什么" class="headerlink" title="消息中间件能做什么?"></a>消息中间件能做什么?</h2><p>消息中间件主要解决的就是分布式系统之间消息的传递问题, 它能够屏蔽各种平台以及协议之间的特性,实现应用程序之间的协同. 举个简单的例子, 就拿一个电商平台的注册功能来简单分析一下,用户注册这一个服务,不仅仅只是insert 一条数据库里面就完事了, 还需要发送激活邮件、发送新人红包或者积分、发送营销短信等一些列操作. 假如说这里面的每一个操作都需要消耗1s , 那么整个注册过程就需要耗时4s 才能响应给用户.</p>
+<p><img src="http://files.luyanan.com//img/20191227142436.png"></p>
+<p>但是我们从注册这个服务可以看到, 每一个子操作都是相对独立的. 同时, 基于领域划分后, 发送激活邮件、发送营销短信、赠送积分以及红包都属于不同的子域. 所以我们可以读这些子操作进行实现异步化执行, 类似于多线程并行处理的概念. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/1.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -698,7 +775,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E4%B9%8BApache%20Dubbo%20%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -712,7 +789,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E4%B9%8BApache%20Dubbo%20%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86/" class="post-title-link" itemprop="url">微服务治理之Apache Dubbo 的基本认识</a>
         </h2>
 
         <div class="post-meta">
@@ -722,15 +799,21 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/" itemprop="url" rel="index"><span itemprop="name">dubbo</span></a>
+                </span>
+            </span>
 
           
 
@@ -743,10 +826,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="任务调度之Quartz"><a href="#任务调度之Quartz" class="headerlink" title="任务调度之Quartz"></a>任务调度之Quartz</h1><h2 id="1-漫谈任务调度"><a href="#1-漫谈任务调度" class="headerlink" title="1. 漫谈任务调度"></a>1. 漫谈任务调度</h2><h3 id="1-1-什么时候需要任务调度"><a href="#1-1-什么时候需要任务调度" class="headerlink" title="1.1 什么时候需要任务调度"></a>1.1 什么时候需要任务调度</h3><h4 id="1-1-1-任务调度的背景"><a href="#1-1-1-任务调度的背景" class="headerlink" title="1.1.1 任务调度的背景"></a>1.1.1 任务调度的背景</h4><p>在业务系统中,有很多这样的场景:</p>
+          <h1 id="微服务治理之Apache-Dubbo-的基本认识"><a href="#微服务治理之Apache-Dubbo-的基本认识" class="headerlink" title="微服务治理之Apache Dubbo 的基本认识"></a>微服务治理之Apache Dubbo 的基本认识</h1><h2 id="为什么要使用dubbo"><a href="#为什么要使用dubbo" class="headerlink" title="为什么要使用dubbo"></a>为什么要使用dubbo</h2><h3 id="远程通信背景"><a href="#远程通信背景" class="headerlink" title="远程通信背景"></a>远程通信背景</h3><p>技术架构的发展从单体到分布式，是一种顺势而为的架构演进,也是一种被逼无奈的技术变革. 架构的复杂度能够体现公司的业务的复杂度,也能从侧面体现公司的产品的发展势头是向上的. </p>
+<p>和传统的单体架构相比,分布式多了一个远程服务之间的通信,不管是soa还是微服务,他们本质上都是对于业务服务的提炼和复用. 那么远程服务之间的调用才是实现分布式的关键因素. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/#more" rel="contents">
+              <a class="btn" href="/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E4%B9%8BApache%20Dubbo%20%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -770,7 +854,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -784,7 +868,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/" class="post-title-link" itemprop="url">分布式消息通信之Kafka 的实现原理2</a>
         </h2>
 
         <div class="post-meta">
@@ -794,15 +878,21 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/" itemprop="url" rel="index"><span itemprop="name">kafka</span></a>
+                </span>
+            </span>
 
           
 
@@ -815,16 +905,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="任务调度之Eliastic-Job-md"><a href="#任务调度之Eliastic-Job-md" class="headerlink" title="任务调度之Eliastic-Job.md"></a>任务调度之Eliastic-Job.md</h1><h2 id="1-1-任务调度高级需求"><a href="#1-1-任务调度高级需求" class="headerlink" title="1.1 任务调度高级需求"></a>1.1 任务调度高级需求</h2><p><code>Quartz</code> 的不足:</p>
-<ol>
-<li>作业只能通过DB 抢占随机负载, 无法协调. </li>
-<li>作业不能分片, 单个任务数据太多了跑不完,消耗线程,负载不均匀. </li>
-<li>作业日志可视化监控,统计. </li>
-</ol>
-<h3 id="1-2-发展历史"><a href="#1-2-发展历史" class="headerlink" title="1.2 发展历史"></a>1.2 发展历史</h3>
+          <h1 id="分布式消息通信之Kafka-的实现原理2"><a href="#分布式消息通信之Kafka-的实现原理2" class="headerlink" title="分布式消息通信之Kafka 的实现原理2"></a>分布式消息通信之Kafka 的实现原理2</h1><h2 id="分区的副本机制"><a href="#分区的副本机制" class="headerlink" title="分区的副本机制"></a>分区的副本机制</h2><p>我们已经知道kafka的每个topic 都可以分为多个partition, 并且多个partition 会均匀分布在集群中的各个节点下.虽然这种方式能够有效的对数据进行分片, 但是对于每个partition而言, 都是单点的. 当其中某个partition不可用的时候, 那么这部分消息就没办法消费. 所以kafka为了提高partition 的可靠性而提供了副本的概念(Replica),通过副本机制来实现冗余备份. </p>
+<p>每个分区可以有多个副本, 并且在副本集合中会存在一个leader 的副本, 所有的读写请求都是由leader 副本来进行处理. 剩余的其他副本都作为follower 副本. follower 副本会从leader 副本同步消息日志. 这个有点类似于zookeeper 中的leader 和follower 的概念. 但是具体的实现方式还是有比较大的差异的. 所以我们可以认为，副本集会存在一主多从的关系. </p>
+<p>一般情况下,同一个分区的多个副本会被均匀的分配到集群中的不同broker 上. 当leader 副本所在的broker 出现故障后, 可以重新选举新的leader 副本继续对外提供服务. 通过这样的副本机制来提高kafka 集群的可用性. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/#more" rel="contents">
+              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -848,7 +934,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%8EThreadPoolExecutor%E7%B1%BB%E6%B5%85%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/SpringBoot%E4%B8%8EDubbo%E7%9A%84%E6%95%B4%E5%90%88/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -862,7 +948,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%8EThreadPoolExecutor%E7%B1%BB%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/SpringBoot%E4%B8%8EDubbo%E7%9A%84%E6%95%B4%E5%90%88/" class="post-title-link" itemprop="url">SpringBoot与Dubbo的整合</a>
         </h2>
 
         <div class="post-meta">
@@ -872,15 +958,21 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/" itemprop="url" rel="index"><span itemprop="name">dubbo</span></a>
+                </span>
+            </span>
 
           
 
@@ -893,11 +985,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="线程池与ThreadPoolExecutor类浅析"><a href="#线程池与ThreadPoolExecutor类浅析" class="headerlink" title="线程池与ThreadPoolExecutor类浅析"></a>线程池与ThreadPoolExecutor类浅析</h1><h2 id="一、Thread直接创建线程的弊端"><a href="#一、Thread直接创建线程的弊端" class="headerlink" title="一、Thread直接创建线程的弊端"></a>一、Thread直接创建线程的弊端</h2><p>（1）每次new Thread新建对象，性能差。<br>（2）线程缺乏统一管理，可能无限制的新建线程，相互竞争，有可能占用过多系统资源导致死机或OOM。<br>（3）缺少更多的功能，如更多执行、定期执行、线程中断。<br>（4）其他弊端，大家自行脑补，多动脑，没坏处，哈哈。</p>
-<h2 id="二、线程池的好处"><a href="#二、线程池的好处" class="headerlink" title="二、线程池的好处"></a>二、线程池的好处</h2><p>（1）重用存在的线程，减少对象创建、消亡的开销，性能佳。<br>（2）可以有效控制最大并发线程数，提高系统资源利用率，同时可以避免过多资源竞争，避免阻塞。<br>（3）提供定时执行、定期执行、单线程、并发数控制等功能。<br>（4）提供支持线程池监控的方法，可对线程池的资源进行实时监控。<br>（5）其他好处，大家自行脑补，多动脑，没坏处，哈哈。</p>
+          <h1 id="SpringBoot-与Dubbo-的整合"><a href="#SpringBoot-与Dubbo-的整合" class="headerlink" title="SpringBoot 与Dubbo 的整合"></a>SpringBoot 与Dubbo 的整合</h1><h2 id="新建项目"><a href="#新建项目" class="headerlink" title="新建项目"></a>新建项目</h2><p>我们先新建一个基于Springboot 的项目</p>
+<h2 id="jar包"><a href="#jar包" class="headerlink" title="jar包"></a>jar包</h2><p>添加dubbo 和zookeeper 的jar</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%8EThreadPoolExecutor%E7%B1%BB%E6%B5%85%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/SpringBoot%E4%B8%8EDubbo%E7%9A%84%E6%95%B4%E5%90%88/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -920,7 +1012,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -988,18 +1080,44 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-count">227</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">1</span>
-        <span class="site-state-item-name">标签</span>
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
 
 
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
 
       </div>
 

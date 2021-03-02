@@ -14,6 +14,8 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
@@ -119,9 +121,34 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -179,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/2.%20Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/3.%20Spring5%20%E6%96%B0%E7%89%B9%E6%80%A7%E7%AE%80%E8%BF%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -193,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2.%20Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/3.%20Spring5%20%E6%96%B0%E7%89%B9%E6%80%A7%E7%AE%80%E8%BF%B0/" class="post-title-link" itemprop="url">3</a>
         </h2>
 
         <div class="post-meta">
@@ -203,15 +230,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
 
           
 
@@ -224,13 +253,117 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="2-Spring的前世今生"><a href="#2-Spring的前世今生" class="headerlink" title="2 . Spring的前世今生"></a>2 . Spring的前世今生</h1><p>&emsp;&emsp;相信经历过不使用框架开发Web项目的70后、80后都会有如此感触，如今的程序员开发项目太轻松<br>了，基本只需要关心业务如何实现，通用技术问题只需要集成框架便可。早在2007年，一个基于Java<br>语言的开源框架正式发布，取了一个非常有活力且美好的名字，叫做 Spring。它是一个开源的轻量级<br>Java SE（Java标准版本）/Java EE（Java企业版本）开发应用框架，其目的是用于简化企业级应用程<br>序开发。应用程序是由一组相互协作的对象组成。而在传统应用程序开发中，一个完整的应用是由一组<br>相互协作的对象组成。所以开发一个应用除了要开发业务逻辑之外，最多的是关注如何使这些对象协作<br>来完成所需功能，而且要低耦合、高聚合。业务逻辑开发是不可避免的，那如果有个框架出来帮我们来<br>创建对象及管理这些对象之间的依赖关系。可能有人说了，比如“抽象工厂、工厂方法模式”不也可以</p>
-<p>帮我们创建对象，“生成器模式”帮我们处理对象间的依赖关系，不也能完成这些功能吗？可是这些又<br>需要我们创建另一些工厂类、生成器类，我们又要而外管理这些类，增加了我们的负担，如果能有种通<br>过配置方式来创建对象，管理对象之间依赖关系，我们不需要通过工厂和生成器来创建及管理对象之间<br>的依赖关系，这样我们是不是减少了许多工作，加速了开发，能节省出很多时间来干其他事。Spring<br>框架刚出来时主要就是来完成这个功能。</p>
-<p>&emsp;&emsp;Spring框架除了帮我们管理对象及其依赖关系，还提供像通用日志记录、性能统计、安全控制、异常处<br>理等面向切面的能力，还能帮我管理最头疼的数据库事务，本身提供了一套简单的JDBC访问实现，提<br>供与第三方数据访问框架集成（如Hibernate、JPA），与各种 JavaEE技术整合（如JavaMail、任务<br>调度等等），提供一套自己的Web层框架SpringMVC、而且还能非常简单的与第三方Web框架集成。<br>从这里我们可以认为 Spring 是一个超级粘合大平台，除了自己提供功能外，还提供粘合其他技术和框<br>架的能力，从而使我们可以更自由的选择到底使用什么技术进行开发。而且不管是JAVASE（C/S架构）<br>应用程序还是 JAVA EE（B/S架构）应用程序都可以使用这个平台进行开发。如今的 Spring 已经不再<br>是一个框架，早已成为了一种生态。SpringBoot的便捷式开发实现了零配置，SpringCloud全家桶，<br>提供了非常方便的解决方案。接下来，让我们来深入探讨Spring到底能给我们带来什么？</p>
-<h2 id="一切从Bean开始"><a href="#一切从Bean开始" class="headerlink" title="一切从Bean开始"></a>一切从Bean开始</h2>
+          <h1 id="3-Spring5-新特性简述"><a href="#3-Spring5-新特性简述" class="headerlink" title="3. Spring5 新特性简述"></a>3. Spring5 新特性简述</h1><hr>
+<p>Spring 5 于 2017 年 9 月发布了通用版本 (GA)，它标志着自 2013 年 12 月以来第一个主要<br>Spring Framework 版本。它提供了一些人们期待已久的改进，还采用了一种全新的编程范例，以反应<br>式描述中陈述的反应式原则为基础。</p>
+<p>这个版本是很长时间以来最令人激动的 Spring Framework 版本。Spring 5 兼容 Java™8 和 JDK 9，<br>它集成了反应式流，以方便后续提供一种颠覆性方法来实现端点和 Web 应用程序开发。<br>当然，反应式编程不仅是此版本的主题，还是令许多程序员激动不已的重大特性。人们对能够针对负载<br>波动进行无缝扩展的容灾和响应式服务的需求在不断增加，Spring 5 很好地满足了这一需求。<br>我们将介绍 Java SE 8 和 Java EE 7 API 升级的基本内容、Spring 5 的新反应式编程模型、对 HTTP/2<br>支持，以及 Spring 通过 Kotlin 对函数式编程的全面支持。我还会简要介绍测试和性能增强，最后介<br>绍对 Spring 核心和容器的一般性修订。</p>
+<h4 id="升级到-Java-SE-8-和-Java-EE-7"><a href="#升级到-Java-SE-8-和-Java-EE-7" class="headerlink" title="升级到 Java SE 8 和 Java EE 7"></a>升级到 Java SE 8 和 Java EE 7</h4>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2.%20Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96/#more" rel="contents">
+              <a class="btn" href="/3.%20Spring5%20%E6%96%B0%E7%89%B9%E6%80%A7%E7%AE%80%E8%BF%B0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/4.%20Spring%E7%89%88%E6%9C%AC%20%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/4.%20Spring%E7%89%88%E6%9C%AC%20%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/" class="post-title-link" itemprop="url">4</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="4-Spring-版本命名规范"><a href="#4-Spring-版本命名规范" class="headerlink" title="4. Spring 版本命名规范"></a>4. Spring 版本命名规范</h1><h3 id="常见软件的版本号命名"><a href="#常见软件的版本号命名" class="headerlink" title="常见软件的版本号命名"></a>常见软件的版本号命名</h3><table>
+<thead>
+<tr>
+<th>软件</th>
+<th>升级过程</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>linux Kernel</td>
+<td>0.0.1 ,1.0.0,2.6.32</td>
+<td>若用X.Y.Z表示,则偶数Y 表示稳定版本,奇书Y 表示开发版本</td>
+</tr>
+<tr>
+<td>Window</td>
+<td>Windows 98,windows 2000,windows XP</td>
+<td>最大的特点就是杂乱无章,毫无规律</td>
+</tr>
+<tr>
+<td>SSH  Cleint</td>
+<td>0.9.8</td>
+<td></td>
+</tr>
+<tr>
+<td>OpenStack</td>
+<td>2014.1.3 2015.1.1.dev8</td>
+<td>日期命令</td>
+</tr>
+</tbody></table>
+<p>从上可以看出,不同的软件版本号风格各异,随着系统的规模越大,依赖的软件越多,如果这些软件没有遵循一套规范的命名风格,容易造成 Dependency Hell.所以 当我们发布版本的时候,版本号的命名需要遵循某种规则,其中Semantic Versionong2.0.0 定义了一套简单的规则以及条件来约束版本号的配置和增长.本文根据Semantic Versioning2.0.0 和Semantic Versioning3.0.0 选择性的整理出版本号命名规则指南.</p>
+<h3 id="语义化版本命名通行规则"><a href="#语义化版本命名通行规则" class="headerlink" title="语义化版本命名通行规则"></a>语义化版本命名通行规则</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/4.%20Spring%E7%89%88%E6%9C%AC%20%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -268,7 +401,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/13%20.%20%E6%B5%85%E8%B0%88%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/13%20.%20%E6%B5%85%E8%B0%88%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/" class="post-title-link" itemprop="url">13 </a>
         </h2>
 
         <div class="post-meta">
@@ -278,15 +411,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
 
           
 
@@ -329,6 +464,83 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/2.%20Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2.%20Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96/" class="post-title-link" itemprop="url">2</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="2-Spring的前世今生"><a href="#2-Spring的前世今生" class="headerlink" title="2 . Spring的前世今生"></a>2 . Spring的前世今生</h1><p>&emsp;&emsp;相信经历过不使用框架开发Web项目的70后、80后都会有如此感触，如今的程序员开发项目太轻松<br>了，基本只需要关心业务如何实现，通用技术问题只需要集成框架便可。早在2007年，一个基于Java<br>语言的开源框架正式发布，取了一个非常有活力且美好的名字，叫做 Spring。它是一个开源的轻量级<br>Java SE（Java标准版本）/Java EE（Java企业版本）开发应用框架，其目的是用于简化企业级应用程<br>序开发。应用程序是由一组相互协作的对象组成。而在传统应用程序开发中，一个完整的应用是由一组<br>相互协作的对象组成。所以开发一个应用除了要开发业务逻辑之外，最多的是关注如何使这些对象协作<br>来完成所需功能，而且要低耦合、高聚合。业务逻辑开发是不可避免的，那如果有个框架出来帮我们来<br>创建对象及管理这些对象之间的依赖关系。可能有人说了，比如“抽象工厂、工厂方法模式”不也可以</p>
+<p>帮我们创建对象，“生成器模式”帮我们处理对象间的依赖关系，不也能完成这些功能吗？可是这些又<br>需要我们创建另一些工厂类、生成器类，我们又要而外管理这些类，增加了我们的负担，如果能有种通<br>过配置方式来创建对象，管理对象之间依赖关系，我们不需要通过工厂和生成器来创建及管理对象之间<br>的依赖关系，这样我们是不是减少了许多工作，加速了开发，能节省出很多时间来干其他事。Spring<br>框架刚出来时主要就是来完成这个功能。</p>
+<p>&emsp;&emsp;Spring框架除了帮我们管理对象及其依赖关系，还提供像通用日志记录、性能统计、安全控制、异常处<br>理等面向切面的能力，还能帮我管理最头疼的数据库事务，本身提供了一套简单的JDBC访问实现，提<br>供与第三方数据访问框架集成（如Hibernate、JPA），与各种 JavaEE技术整合（如JavaMail、任务<br>调度等等），提供一套自己的Web层框架SpringMVC、而且还能非常简单的与第三方Web框架集成。<br>从这里我们可以认为 Spring 是一个超级粘合大平台，除了自己提供功能外，还提供粘合其他技术和框<br>架的能力，从而使我们可以更自由的选择到底使用什么技术进行开发。而且不管是JAVASE（C/S架构）<br>应用程序还是 JAVA EE（B/S架构）应用程序都可以使用这个平台进行开发。如今的 Spring 已经不再<br>是一个框架，早已成为了一种生态。SpringBoot的便捷式开发实现了零配置，SpringCloud全家桶，<br>提供了非常方便的解决方案。接下来，让我们来深入探讨Spring到底能给我们带来什么？</p>
+<h2 id="一切从Bean开始"><a href="#一切从Bean开始" class="headerlink" title="一切从Bean开始"></a>一切从Bean开始</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2.%20Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://luyanan.com/12.%20spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -343,7 +555,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/12.%20spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/12.%20spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/" class="post-title-link" itemprop="url">12</a>
         </h2>
 
         <div class="post-meta">
@@ -353,15 +565,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
 
           
 
@@ -510,7 +724,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/11.%20Spring%20%E4%B8%AD%E7%BB%8F%E5%85%B8%E7%9A%84%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/11.%20Spring%20%E4%B8%AD%E7%BB%8F%E5%85%B8%E7%9A%84%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-title-link" itemprop="url">11</a>
         </h2>
 
         <div class="post-meta">
@@ -520,15 +734,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
 
           
 
@@ -570,6 +786,82 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/1.%20Spring%20%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/1.%20Spring%20%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85/" class="post-title-link" itemprop="url">1</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="1-Spring-源码编译和安装"><a href="#1-Spring-源码编译和安装" class="headerlink" title="1. Spring 源码编译和安装"></a>1. Spring 源码编译和安装</h1><hr>
+<h3 id="Spring5源码下载注意事项"><a href="#Spring5源码下载注意事项" class="headerlink" title="Spring5源码下载注意事项"></a>Spring5源码下载注意事项</h3><p>首先你的JDK需要升级到1.8以上。Spring3.0开始,Spring源码采用github托管，不再提供官网下载<br>链接。这里不做过多赘述，大家可自行去github网站下载，我们使用的版本下载链接为：<br><a target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-framework/archive/v5.0.2.RELEASE.zip%EF%BC%8C%E4%B8%8B%E8%BD%BD%E5%AE%8C%E6%88%90%E5%90%8E%EF%BC%8C">https://github.com/spring-projects/spring-framework/archive/v5.0.2.RELEASE.zip，下载完成后，</a><br>解压源码包会看到以下文件目录：</p>
+<h3 id="基于Gradle的源码构建技巧"><a href="#基于Gradle的源码构建技巧" class="headerlink" title="基于Gradle的源码构建技巧"></a>基于Gradle的源码构建技巧</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/1.%20Spring%20%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://luyanan.com/10%20.%20Spring%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E6%80%BB%E7%BB%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -584,7 +876,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/10%20.%20Spring%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/10%20.%20Spring%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">10 </a>
         </h2>
 
         <div class="post-meta">
@@ -594,15 +886,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
 
           
 
@@ -669,7 +963,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/1.%20Spring%20%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/8.redis%E4%B9%8B%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -683,7 +977,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/1.%20Spring%20%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/8.redis%E4%B9%8B%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">8</a>
         </h2>
 
         <div class="post-meta">
@@ -693,15 +987,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                </span>
+            </span>
 
           
 
@@ -714,246 +1010,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="1-Spring-源码编译和安装"><a href="#1-Spring-源码编译和安装" class="headerlink" title="1. Spring 源码编译和安装"></a>1. Spring 源码编译和安装</h1><hr>
-<h3 id="Spring5源码下载注意事项"><a href="#Spring5源码下载注意事项" class="headerlink" title="Spring5源码下载注意事项"></a>Spring5源码下载注意事项</h3><p>首先你的JDK需要升级到1.8以上。Spring3.0开始,Spring源码采用github托管，不再提供官网下载<br>链接。这里不做过多赘述，大家可自行去github网站下载，我们使用的版本下载链接为：<br><a target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-framework/archive/v5.0.2.RELEASE.zip%EF%BC%8C%E4%B8%8B%E8%BD%BD%E5%AE%8C%E6%88%90%E5%90%8E%EF%BC%8C">https://github.com/spring-projects/spring-framework/archive/v5.0.2.RELEASE.zip，下载完成后，</a><br>解压源码包会看到以下文件目录：</p>
-<h3 id="基于Gradle的源码构建技巧"><a href="#基于Gradle的源码构建技巧" class="headerlink" title="基于Gradle的源码构建技巧"></a>基于Gradle的源码构建技巧</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/1.%20Spring%20%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/2.Istio%E6%9E%B6%E6%9E%84%E5%8E%9F%E7%90%86%E5%92%8C%E5%AE%9E%E6%88%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2.Istio%E6%9E%B6%E6%9E%84%E5%8E%9F%E7%90%86%E5%92%8C%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">未命名</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Istio-核心架构和实战"><a href="#Istio-核心架构和实战" class="headerlink" title="Istio 核心架构和实战"></a><code>Istio</code> 核心架构和实战</h1><h2 id="1-组件介绍"><a href="#1-组件介绍" class="headerlink" title="1. 组件介绍"></a>1. 组件介绍</h2><p><code>Components</code> 官网:<a target="_blank" rel="noopener" href="https://istio.io/docs/ops/deployment/architecture/#components">https://istio.io/docs/ops/deployment/architecture/#components</a></p>
-<h3 id="1-1-Proxy-Envoy"><a href="#1-1-Proxy-Envoy" class="headerlink" title="1.1 Proxy[Envoy]"></a>1.1 <code>Proxy[Envoy]</code></h3><p><code>proxy</code> 在<code>Istio</code> 架构中必须存在. </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2.Istio%E6%9E%B6%E6%9E%84%E5%8E%9F%E7%90%86%E5%92%8C%E5%AE%9E%E6%88%98/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/1.Service%20Mesh%E5%88%9D%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/1.Service%20Mesh%E5%88%9D%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">未命名</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Service-Mesh初入门"><a href="#Service-Mesh初入门" class="headerlink" title="Service Mesh初入门"></a>Service Mesh初入门</h1><h2 id="1-分布式架构发展史"><a href="#1-分布式架构发展史" class="headerlink" title="1.  分布式架构发展史"></a>1.  分布式架构发展史</h2><h3 id="1-1-单机小型机时代"><a href="#1-1-单机小型机时代" class="headerlink" title="1.1  单机小型机时代"></a>1.1  单机小型机时代</h3><ul>
-<li><p>1969年,阿帕网诞生,最初是为了军事目的,后来演变成了<code>Inernet</code></p>
-</li>
-<li><p>2000年左右,互联网在中国盛行起来,但是那时候网民数量较少,所以多数企业服务单一,采用集中式部署的方式就能满足需求</p>
-<p><img src="http://files.luyanan.com//img/20200505165155.png" alt="image-20200505165154580"></p>
-</li>
-<li><p>一旦小型机或者数据库出现问题,会导致整个系统的故障,而且功能修改发布也不方便,所以不妨把大系统拆分成多个子系统, 比如<code>用户</code> 、<code>商品</code> 、<code>论坛</code>等, 也就是“垂直拆分”, 并且每个子系统都有各自的硬件</p>
-<p><img src="http://files.luyanan.com//img/20200505165359.png" alt="image-20200505165357739"></p>
-</li>
-</ul>
-<h3 id="1-2-集群化负载均衡时代"><a href="#1-2-集群化负载均衡时代" class="headerlink" title="1.2 集群化负载均衡时代"></a>1.2 集群化负载均衡时代</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/1.Service%20Mesh%E5%88%9D%E5%85%A5%E9%97%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/8.%E5%AE%9E%E6%88%98Spring%20Security%20Oauth2.0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/8.%E5%AE%9E%E6%88%98Spring%20Security%20Oauth2.0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83/" class="post-title-link" itemprop="url">未命名</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="实战Spring-Security-Oauth2-0搭建分布式授权中心"><a href="#实战Spring-Security-Oauth2-0搭建分布式授权中心" class="headerlink" title="实战Spring Security Oauth2.0搭建分布式授权中心"></a>实战Spring Security Oauth2.0搭建分布式授权中心</h1><h2 id="1-需求分析"><a href="#1-需求分析" class="headerlink" title="1. 需求分析"></a>1. 需求分析</h2><p>技术方案如下:</p>
-<p><img src="8.%E5%AE%9E%E6%88%98Spring%20Security%20Oauth2.0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83.assets/image-20200801092902342.png" alt="image-20200801092902342"></p>
+          <h1 id="redis之发布订阅"><a href="#redis之发布订阅" class="headerlink" title="redis之发布订阅"></a>redis之发布订阅</h1><h2 id="1-列表的局限"><a href="#1-列表的局限" class="headerlink" title="1 列表的局限"></a>1 列表的局限</h2><p>我们知道, redis的队列可以通过<code>rpush</code>和<code>lpop</code> 来实现消息队列(队尾进,队头出),但是消费者需要不断的调用<code>lpop</code>查看list中是否有等待处理的任务(比如写一个<code>while</code>循环).为了减少通信的消耗, 可以<code>sleep</code>一段时间后再进行消费, 但是这样会有两个问题: </p>
 <ol>
-<li><code>UAA</code> 认证服务负责认证授权</li>
-<li>所有的请求经过网关到达微服务</li>
-<li>网关将负责鉴权客户端以及请求转发</li>
-<li>网关将<code>token</code> 解析后传给微服务, 微服务进行授权. </li>
+<li><p>如果生产者生产消息的速度远大于消费者消费消息的速度, List会占用大量的内存. </p>
+</li>
+<li><p>消息的实时性降低. </p>
+<p> <code>list</code> 还提供了一个阻塞的命令, <code>blpop</code>, 没有任何元素可以弹出的时候 , 连接会被阻塞. </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">blpop queue 5</span><br></pre></td></tr></table></figure>
+
+</li>
 </ol>
+<p>基于<code>list</code> 实现的消息队列, 不支持一对多的消息分发. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/8.%E5%AE%9E%E6%88%98Spring%20Security%20Oauth2.0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83/#more" rel="contents">
+              <a class="btn" href="/8.redis%E4%B9%8B%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -977,7 +1047,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/7.Spring%20Cloud%20Security%20Oauth2.0%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/9.redis%E4%B9%8B%E4%BA%8B%E5%8A%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -991,7 +1061,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/7.Spring%20Cloud%20Security%20Oauth2.0%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/9.redis%E4%B9%8B%E4%BA%8B%E5%8A%A1/" class="post-title-link" itemprop="url">9</a>
         </h2>
 
         <div class="post-meta">
@@ -1001,15 +1071,17 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:51" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:51+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                </span>
+            </span>
 
           
 
@@ -1022,12 +1094,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Spring-Cloud-Security-Oauth2-0实现分布式系统认证"><a href="#Spring-Cloud-Security-Oauth2-0实现分布式系统认证" class="headerlink" title="Spring Cloud Security Oauth2.0实现分布式系统认证"></a><img src="7.Spring%20Cloud%20Security%20Oauth2.0%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200801092800346.png" alt="image-20200801092800346"><img src="7.Spring%20Cloud%20Security%20Oauth2.0%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81.assets/image-20200801092745464.png" alt="image-20200801092745464">Spring Cloud Security Oauth2.0实现分布式系统认证</h1><h2 id="1-环境介绍"><a href="#1-环境介绍" class="headerlink" title="1. 环境介绍"></a>1. 环境介绍</h2><p><code>Spring-Security-Oauth2.0</code> 是对<code>Oauth2.0</code> 的一种实现,并且跟<code>Spring Security</code>相辅相成,与<code>Spring Cloud</code> 体系的集成也非常便利,接下来,我们需要对它进行学习,最终使用它来实现我们设计的分布式认证授权解决方案</p>
-<p><code>Oauth2.0</code> 的服务提供方涵盖两个服务,即授权服务(<code>Authorization Server</code>,也叫认证服务)和资源服务(<code>resource Server</code>),使用 <code>Spring Security Oauth2.0</code>的时候, 你可以选择把他们放在同一个应用程序中去实现,也可以选择建立使用同一个授权服务的多个资源服务.</p>
-<p><strong>授权服务(<code>Authorization Server</code>)</strong> 应包含对接入端以及登录用户的合法性进行验证并颁发<code>token</code> 等功能,对令牌的请求端点由<code>Spring MVC</code>控制器进行实现,下面是一个配置一个认证服务必须实现的<code>endpoints</code>: </p>
+          <h1 id="redis之事务"><a href="#redis之事务" class="headerlink" title="redis之事务"></a>redis之事务</h1><h2 id="1-官网介绍"><a href="#1-官网介绍" class="headerlink" title="1. 官网介绍"></a>1. 官网介绍</h2><p><a target="_blank" rel="noopener" href="https://redis.io/topics/transactions/">https://redis.io/topics/transactions/</a><br><a target="_blank" rel="noopener" href="http://redisdoc.com/topic/transaction.html">http://redisdoc.com/topic/transaction.html</a></p>
+<h2 id="2-为什么要使用事务"><a href="#2-为什么要使用事务" class="headerlink" title="2. 为什么要使用事务"></a>2. 为什么要使用事务</h2><p>我们知道Redis的单个命令是原子性的(比如<code>get</code>,<code>set</code>,<code>mget</code>,<code>mset</code>),如果涉及到多个命令的时候, 需要把多个命令作为一个不可分割的处理序列, 就需要用到事务. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/7.Spring%20Cloud%20Security%20Oauth2.0%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81/#more" rel="contents">
+              <a class="btn" href="/9.redis%E4%B9%8B%E4%BA%8B%E5%8A%A1/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1050,7 +1121,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1118,18 +1189,44 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-count">227</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">1</span>
-        <span class="site-state-item-name">标签</span>
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
 
 
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
 
       </div>
 

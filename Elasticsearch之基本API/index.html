@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Elasticsearch的基本API3. 基本API3.1 _cat3.1.1  GET  _cat 查看所有的节点如: http:&#x2F;&#x2F;ip:9200&#x2F;_cat&#x2F;nodes, 可以看到:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Elasticsearch之基本API">
+<meta property="og:url" content="http://luyanan.com/Elasticsearch%E4%B9%8B%E5%9F%BA%E6%9C%ACAPI/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="Elasticsearch的基本API3. 基本API3.1 _cat3.1.1  GET  _cat 查看所有的节点如: http:&#x2F;&#x2F;ip:9200&#x2F;_cat&#x2F;nodes, 可以看到:">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-02T05:42:51.677Z">
+<meta property="article:modified_time" content="2021-03-02T05:42:51.677Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://luyanan.com/Elasticsearch%E4%B9%8B%E5%9F%BA%E6%9C%ACAPI/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Elasticsearch之基本API | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Elasticsearch%E4%B9%8B%E5%9F%BA%E6%9C%ACAPI/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Elasticsearch之基本API
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Elasticsearch的基本API"><a href="#Elasticsearch的基本API" class="headerlink" title="Elasticsearch的基本API"></a>Elasticsearch的基本API</h1><h2 id="3-基本API"><a href="#3-基本API" class="headerlink" title="3. 基本API"></a>3. 基本API</h2><h3 id="3-1-cat"><a href="#3-1-cat" class="headerlink" title="3.1 _cat"></a>3.1 <code>_cat</code></h3><h4 id="3-1-1-GET-cat-查看所有的节点"><a href="#3-1-1-GET-cat-查看所有的节点" class="headerlink" title="3.1.1  GET  _cat 查看所有的节点"></a>3.1.1  <code>GET</code>  <code>_cat</code> 查看所有的节点</h4><p>如: <code>http://ip:9200/_cat/nodes</code>, 可以看到:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">172.29.0.3 21 86 55 8.33 8.23 9.08 dilm * 2162cacd6d03</span><br></pre></td></tr></table></figure>
+
+<p>注: <code>*</code> 表示集群中的主节点</p>
+<h4 id="3-1-2-GET-cat-health-查看es的健康状况"><a href="#3-1-2-GET-cat-health-查看es的健康状况" class="headerlink" title="3.1.2 GET  _cat/health 查看es的健康状况"></a>3.1.2 <code>GET</code>  <code>_cat/health</code> 查看es的健康状况</h4><p>访问: <code>http://ip:9200/_cat/health</code>,可以看到</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1604546520 03:22:00 docker-cluster green 1 1 4 4 0 0 0 0 - 100.0%</span><br></pre></td></tr></table></figure>
+
+<p>注意: <code>green</code> 表示健康值正常</p>
+<h4 id="3-1-3-GET-cat-master-查看主节点"><a href="#3-1-3-GET-cat-master-查看主节点" class="headerlink" title="3.1.3 GET _cat/master 查看主节点"></a>3.1.3 <code>GET</code> <code>_cat/master</code> 查看主节点</h4><p>访问: <code>http://ip:9200/_cat/master</code> , 可以看到</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">osm0iaKBT9qrxc5mOIsRDQ 172.29.0.3 172.29.0.3 2162cacd6d03</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-1-4-GET-cat-indices-查看所有的索引-等价于mysql-中的show-databases"><a href="#3-1-4-GET-cat-indices-查看所有的索引-等价于mysql-中的show-databases" class="headerlink" title="3.1.4  GET _cat/indices  查看所有的索引,等价于mysql 中的show databases"></a>3.1.4  <code>GET</code> <code>_cat/indices</code>  查看所有的索引,等价于<code>mysql</code> 中的<code>show databases</code></h4><p>访问:  <code>http://ip:9200/_cat/indices</code></p>
+<p>可以看到</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">green open .kibana_task_manager_1       SXTHIO_4RsWZmTwMNshnsA 1 0    2  0 49.2kb 49.2kb</span><br><span class="line">green open kibana_sample_data_ecommerce caFiJ4VWSDmDkQFl6HXTRw 1 0 4675  0  5.1mb  5.1mb</span><br><span class="line">green open .apm-agent-configuration     HPYrwMnOTB2s2vSeSMi_bQ 1 0    0  0   283b   283b</span><br><span class="line">green open .kibana_1                    dIEll9o5TJWPNr95Bfv9pw 1 0   57 49  1.8mb  1.8mb</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-2-索引一个文档"><a href="#3-2-索引一个文档" class="headerlink" title="3.2  索引一个文档"></a>3.2  索引一个文档</h3><p>保存一个数据,保存到哪个索引下面,指定用哪个唯一标识, </p>
+<p>如<code>PUT customer/external/1</code>, 表示 在<code>customer</code> 索引下的 <code>external</code> 类型下保存1号数据</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"><span class="attr">&quot;name&quot;</span>:<span class="string">&quot;卢亚楠&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里可以使用<code>POST</code> 请求, 也可以使用<code>PUT</code>请求,</p>
+<p><code>POST</code> 新增,如果不指定id, 会自动生成id, 指定id就会修改这个数据,并新增版本号</p>
+<p><code>PUT</code> 可以新增,也可以修改,但是<code>PUT</code> 必须指定id, 由于<code>PUT</code>必须指定id, 所以我们一般用来做更新操作,不指定<code>id</code> 就会报错</p>
+<p>可以看到返回</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;customer&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;external&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;1&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_version&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;result&quot;</span>: <span class="string">&quot;created&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_shards&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;total&quot;</span>: <span class="number">2</span>,</span><br><span class="line">        <span class="attr">&quot;successful&quot;</span>: <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;failed&quot;</span>: <span class="number">0</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;_seq_no&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">&quot;_primary_term&quot;</span>: <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这些返回的<code>JSON</code>串的含义: 这些带有下划线开头的, 称为元数据,反映了当前的基本信息. </p>
+<p><code>&quot;_index&quot;: &quot;customer&quot;</code>: 表示该数据在哪个数据库下</p>
+<p><code>&quot;_type&quot;: &quot;external&quot;,</code> 表示该数据在哪个类型下</p>
+<p><code> &quot;_id&quot;: &quot;1&quot;,</code>:   说明被保存的数据的id</p>
+<p><code>&quot;_version&quot;: 1,</code>:被保存的数据的版本</p>
+<p><code>&quot;result&quot;: &quot;created&quot;,</code>:  这里是创建了一条数据,如果 重新<code>put</code> 了一条数据, 该状态会变为<code>updated</code>, 并且版本号也会发生变化</p>
+<h3 id="3-3-查看文档"><a href="#3-3-查看文档" class="headerlink" title="3.3 查看文档"></a>3.3 查看文档</h3><p><code>GET </code> <code>customer/external/1</code></p>
+<blockquote>
+<p><code>http://ip:9200/customer/external/1</code></p>
+</blockquote>
+<p>返回结果: </p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;customer&quot;</span>, <span class="comment">// 在哪个索引中</span></span><br><span class="line">    <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;external&quot;</span>, <span class="comment">// 在那个类型下</span></span><br><span class="line">    <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;1&quot;</span>, <span class="comment">// 记录id</span></span><br><span class="line">    <span class="attr">&quot;_version&quot;</span>: <span class="number">1</span>, <span class="comment">// 版本号</span></span><br><span class="line">    <span class="attr">&quot;_seq_no&quot;</span>: <span class="number">0</span>, <span class="comment">// 并发控制字段,每次更新都会加1,用来做乐观锁</span></span><br><span class="line">    <span class="attr">&quot;_primary_term&quot;</span>: <span class="number">1</span>, <span class="comment">// 同上,主分片重新分配,如重启,就会变化</span></span><br><span class="line">    <span class="attr">&quot;found&quot;</span>: <span class="literal">true</span>, </span><br><span class="line">    <span class="attr">&quot;_source&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;卢亚楠&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过<code>if_seq_no=1&amp;if_primary_term=1</code> ,当序列号匹配的时候,才进行修改,否则不修改. </p>
+<p>实例: 将<code>id=1</code>的数据, 修改为<code>name=1</code>,然后再次更新为<code>name=2</code>, 起始<code>seq_no=0</code>, <code>primary_term=1</code></p>
+<h5 id="1-将name-更新为1"><a href="#1-将name-更新为1" class="headerlink" title="1.  将name  更新为1"></a>1.  将<code>name</code>  更新为1</h5><p><code>http://ip:9200/customer/external/1?if_seq_no=0&amp;if_primary_term=1</code></p>
+<p>查看返回结果</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;customer&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;external&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;1&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_version&quot;</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="attr">&quot;result&quot;</span>: <span class="string">&quot;updated&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_shards&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;total&quot;</span>: <span class="number">2</span>,</span><br><span class="line">        <span class="attr">&quot;successful&quot;</span>: <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;failed&quot;</span>: <span class="number">0</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;_seq_no&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;_primary_term&quot;</span>: <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到, <code>_seq_no</code>加1了</p>
+<h5 id="2-将name-更新为2-更新过程中使用-seq-no-0"><a href="#2-将name-更新为2-更新过程中使用-seq-no-0" class="headerlink" title="2.  将name 更新为2,更新过程中使用_seq_no=0"></a>2.  将<code>name</code> 更新为2,更新过程中使用<code>_seq_no=0</code></h5><p>再次调用 <code>http://ip:9200/customer/external/1?if_seq_no=0&amp;if_primary_term=1</code></p>
+<p>将参数更新为: </p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"><span class="attr">&quot;name&quot;</span>:<span class="string">&quot;2&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>返回结果: </p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;error&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;root_cause&quot;</span>: [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;version_conflict_engine_exception&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;reason&quot;</span>: <span class="string">&quot;[1]: version conflict, required seqNo [0], primary term [1]. current document has seqNo [1] and primary term [1]&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;index_uuid&quot;</span>: <span class="string">&quot;wnn6v2lTQD23hl6ZTc2zpw&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;shard&quot;</span>: <span class="string">&quot;0&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;index&quot;</span>: <span class="string">&quot;customer&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;version_conflict_engine_exception&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;reason&quot;</span>: <span class="string">&quot;[1]: version conflict, required seqNo [0], primary term [1]. current document has seqNo [1] and primary term [1]&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;index_uuid&quot;</span>: <span class="string">&quot;wnn6v2lTQD23hl6ZTc2zpw&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;shard&quot;</span>: <span class="string">&quot;0&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;index&quot;</span>: <span class="string">&quot;customer&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;status&quot;</span>: <span class="number">409</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 可以看到更新出现了错误</p>
+<h5 id="3-查看新的数据"><a href="#3-查看新的数据" class="headerlink" title="3. 查看新的数据"></a>3. 查看新的数据</h5><p>调用 <code>http://ip:9200/customer/external/1</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;customer&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;external&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;1&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_version&quot;</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="attr">&quot;_seq_no&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;_primary_term&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;found&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">&quot;_source&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;1&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到<code>_seq_no</code> 变成了1</p>
+<h5 id="4-再次更新-更新成功"><a href="#4-再次更新-更新成功" class="headerlink" title="4. 再次更新,更新成功"></a>4. 再次更新,更新成功</h5><p>将地址换为 <code>http://ip:9200/customer/external/1?if_seq_no=1&amp;if_primary_term=1</code>, </p>
+<p>查看返回结果: </p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;customer&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;external&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;1&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_version&quot;</span>: <span class="number">3</span>,</span><br><span class="line">    <span class="attr">&quot;result&quot;</span>: <span class="string">&quot;updated&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_shards&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;total&quot;</span>: <span class="number">2</span>,</span><br><span class="line">        <span class="attr">&quot;successful&quot;</span>: <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;failed&quot;</span>: <span class="number">0</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;_seq_no&quot;</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="attr">&quot;_primary_term&quot;</span>: <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到数据已经更新成功了</p>
+<h3 id="3-4-更新文档"><a href="#3-4-更新文档" class="headerlink" title="3.4 更新文档"></a>3.4 更新文档</h3><p>可以使用</p>
+<ol>
+<li><p><strong><code>POST</code></strong> <code>customer/external/1/_update</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;doc&quot;</span>:&#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>:<span class="string">&quot;1&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>POST</code></strong>   <code>customer/external/1</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>:<span class="string">&quot;1&quot;</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>PUT</code></strong>  <code>customer/external/1</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>:<span class="string">&quot;1&quot;</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<ul>
+<li><p>不同: <code>POST</code>操作会对比源文档数据,如果相同不会有什么操作,文档<code>Version 不增加,</code>PUT<code> 操作总会将数据重新保存并且增加</code>version` 版本</p>
+<p>带<code>_update</code> 对比元数据, 如果一样,则不进行任何操作. </p>
+<p>使用场景: </p>
+<ul>
+<li>对于大并发更新,不带<code>update</code></li>
+<li>对于大并发查询偶尔更新,带<code>update</code>, 对比更新,重新计算分配规则</li>
+</ul>
+</li>
+<li><p>更新同时增加属性 <strong><code>POST</code></strong> <code>/customer/external/1_update</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;doc&quot;</span>:&#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>:<span class="string">&quot;2&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;age&quot;</span>:<span class="string">&quot;22&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+</li>
+</ul>
+<h3 id="3-5-删除文档或者索引"><a href="#3-5-删除文档或者索引" class="headerlink" title="3.5 删除文档或者索引"></a>3.5 删除文档或者索引</h3>  <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DELETE customer/external/1</span><br><span class="line">DELETE customer</span><br></pre></td></tr></table></figure>
+
+<p>  注:  <code>elasticsearch</code> 并没有提供删除类型的操作, 只提供了删除索引和文档的操作,</p>
+<h4 id="3-5-1-根据id删除"><a href="#3-5-1-根据id删除" class="headerlink" title="3.5.1 根据id删除"></a>3.5.1 根据id删除</h4><p>  例:  删除<code>id=1</code>的数据,删除后继续查询`</p>
+<p>  <strong><code>DELETE</code></strong>  <code>http://ip:9200/customer/external/1</code></p>
+<p>   返回结果: </p>
+  <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;customer&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;external&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;1&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_version&quot;</span>: <span class="number">4</span>,</span><br><span class="line">    <span class="attr">&quot;result&quot;</span>: <span class="string">&quot;deleted&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;_shards&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;total&quot;</span>: <span class="number">2</span>,</span><br><span class="line">        <span class="attr">&quot;successful&quot;</span>: <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;failed&quot;</span>: <span class="number">0</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;_seq_no&quot;</span>: <span class="number">3</span>,</span><br><span class="line">    <span class="attr">&quot;_primary_term&quot;</span>: <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  然后再查询, 可以看到返回</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;_index&quot;: &quot;customer&quot;,</span><br><span class="line">    &quot;_type&quot;: &quot;external&quot;,</span><br><span class="line">    &quot;_id&quot;: &quot;1&quot;,</span><br><span class="line">    &quot;found&quot;: false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-5-2-删除整个索引"><a href="#3-5-2-删除整个索引" class="headerlink" title="3.5.2 删除整个索引"></a>3.5.2 删除整个索引</h4><p><strong><code>DELETE</code></strong> <code>http://ip:9200/customer</code></p>
+<p>返回结果: </p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;acknowledged&quot;</span>: <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-6-批量操作-bulk"><a href="#3-6-批量操作-bulk" class="headerlink" title="3.6  批量操作 bulk"></a>3.6  批量操作 <code>bulk</code></h3><p>语法格式: </p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;action:&#123;metadata&#125;&#125;\n</span><br><span class="line">&#123;request body  &#125;\n</span><br><span class="line">&#123;action:&#123;metadata&#125;&#125;\n</span><br><span class="line">&#123;request body  &#125;\n</span><br></pre></td></tr></table></figure>
+
+<p>这里的批量操作,当发生某一条执行发生失败的时候,其他的数据仍然是可以继续执行,也就是说彼此之间是独立的,</p>
+<p><code>bulk api</code>依次按顺序执行所有的<code>action</code>(动作), 如果一个单个的动作因为任何原因失败,它将继续处理后面剩余的动作,当<code>bulk api</code>  返回的时候,它将提供每个动作的状态(与发送的顺序相同) , 通过这个可以检查一个指定的动作是否失败了. </p>
+<p><strong>例子</strong></p>
+<ol>
+<li><p>执行多条数据</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST customer/external/_bulk</span><br><span class="line">&#123;&quot;index&quot;:&#123;&quot;_id&quot;:&quot;1&quot;&#125;&#125;</span><br><span class="line">&#123;&quot;name&quot;:&quot;John Doe&quot;&#125;</span><br><span class="line">&#123;&quot;index&quot;:&#123;&quot;_id&quot;:&quot;2&quot;&#125;&#125;</span><br><span class="line">&#123;&quot;name&quot;:&quot;John Doe&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p> 执行结果: </p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">#! Deprecation: [types removal] Specifying types in bulk requests is deprecated.</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;took&quot;</span> : <span class="number">491</span>,</span><br><span class="line">  <span class="attr">&quot;errors&quot;</span> : <span class="literal">false</span>,</span><br><span class="line">  <span class="attr">&quot;items&quot;</span> : [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">&quot;index&quot;</span> : &#123;</span><br><span class="line">        <span class="attr">&quot;_index&quot;</span> : <span class="string">&quot;customer&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_type&quot;</span> : <span class="string">&quot;external&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_id&quot;</span> : <span class="string">&quot;1&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_version&quot;</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;result&quot;</span> : <span class="string">&quot;created&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_shards&quot;</span> : &#123;</span><br><span class="line">          <span class="attr">&quot;total&quot;</span> : <span class="number">2</span>,</span><br><span class="line">          <span class="attr">&quot;successful&quot;</span> : <span class="number">1</span>,</span><br><span class="line">          <span class="attr">&quot;failed&quot;</span> : <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;_seq_no&quot;</span> : <span class="number">0</span>,</span><br><span class="line">        <span class="attr">&quot;_primary_term&quot;</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;status&quot;</span> : <span class="number">201</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">&quot;index&quot;</span> : &#123;</span><br><span class="line">        <span class="attr">&quot;_index&quot;</span> : <span class="string">&quot;customer&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_type&quot;</span> : <span class="string">&quot;external&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_id&quot;</span> : <span class="string">&quot;2&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_version&quot;</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;result&quot;</span> : <span class="string">&quot;created&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_shards&quot;</span> : &#123;</span><br><span class="line">          <span class="attr">&quot;total&quot;</span> : <span class="number">2</span>,</span><br><span class="line">          <span class="attr">&quot;successful&quot;</span> : <span class="number">1</span>,</span><br><span class="line">          <span class="attr">&quot;failed&quot;</span> : <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;_seq_no&quot;</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;_primary_term&quot;</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;status&quot;</span> : <span class="number">201</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对于整个索引执行批量操作</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /_bulk</span><br><span class="line">&#123;&quot;delete&quot;:&#123;&quot;_index&quot;:&quot;website&quot;,&quot;_type&quot;:&quot;blog&quot;,&quot;_id&quot;:&quot;123&quot;&#125;&#125;</span><br><span class="line">&#123;&quot;create&quot;:&#123;&quot;_index&quot;:&quot;website&quot;,&quot;_type&quot;:&quot;blog&quot;,&quot;_id&quot;:&quot;123&quot;&#125;&#125;</span><br><span class="line">&#123;&quot;title&quot;:&quot;my first blog post&quot;&#125;</span><br><span class="line">&#123;&quot;index&quot;:&#123;&quot;_index&quot;:&quot;website&quot;,&quot;_type&quot;:&quot;blog&quot;&#125;&#125;</span><br><span class="line">&#123;&quot;title&quot;:&quot;my second blog post&quot;&#125;</span><br><span class="line">&#123;&quot;update&quot;:&#123;&quot;_index&quot;:&quot;website&quot;,&quot;_type&quot;:&quot;blog&quot;,&quot;_id&quot;:&quot;123&quot;&#125;&#125;</span><br><span class="line">&#123;&quot;doc&quot;:&#123;&quot;title&quot;:&quot;my updated blog post&quot;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果: </p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line">#! Deprecation: [types removal] Specifying types in bulk requests is deprecated.</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;took&quot;</span> : <span class="number">608</span>,</span><br><span class="line">  <span class="attr">&quot;errors&quot;</span> : <span class="literal">false</span>,</span><br><span class="line">  <span class="attr">&quot;items&quot;</span> : [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">&quot;delete&quot;</span> : &#123;</span><br><span class="line">        <span class="attr">&quot;_index&quot;</span> : <span class="string">&quot;website&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_type&quot;</span> : <span class="string">&quot;blog&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_id&quot;</span> : <span class="string">&quot;123&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_version&quot;</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;result&quot;</span> : <span class="string">&quot;not_found&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_shards&quot;</span> : &#123;</span><br><span class="line">          <span class="attr">&quot;total&quot;</span> : <span class="number">2</span>,</span><br><span class="line">          <span class="attr">&quot;successful&quot;</span> : <span class="number">1</span>,</span><br><span class="line">          <span class="attr">&quot;failed&quot;</span> : <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;_seq_no&quot;</span> : <span class="number">0</span>,</span><br><span class="line">        <span class="attr">&quot;_primary_term&quot;</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;status&quot;</span> : <span class="number">404</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">&quot;create&quot;</span> : &#123;</span><br><span class="line">        <span class="attr">&quot;_index&quot;</span> : <span class="string">&quot;website&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_type&quot;</span> : <span class="string">&quot;blog&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_id&quot;</span> : <span class="string">&quot;123&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_version&quot;</span> : <span class="number">2</span>,</span><br><span class="line">        <span class="attr">&quot;result&quot;</span> : <span class="string">&quot;created&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_shards&quot;</span> : &#123;</span><br><span class="line">          <span class="attr">&quot;total&quot;</span> : <span class="number">2</span>,</span><br><span class="line">          <span class="attr">&quot;successful&quot;</span> : <span class="number">1</span>,</span><br><span class="line">          <span class="attr">&quot;failed&quot;</span> : <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;_seq_no&quot;</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;_primary_term&quot;</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;status&quot;</span> : <span class="number">201</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">&quot;index&quot;</span> : &#123;</span><br><span class="line">        <span class="attr">&quot;_index&quot;</span> : <span class="string">&quot;website&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_type&quot;</span> : <span class="string">&quot;blog&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_id&quot;</span> : <span class="string">&quot;MCOs0HEBHYK_MJXUyYIz&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_version&quot;</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;result&quot;</span> : <span class="string">&quot;created&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_shards&quot;</span> : &#123;</span><br><span class="line">          <span class="attr">&quot;total&quot;</span> : <span class="number">2</span>,</span><br><span class="line">          <span class="attr">&quot;successful&quot;</span> : <span class="number">1</span>,</span><br><span class="line">          <span class="attr">&quot;failed&quot;</span> : <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;_seq_no&quot;</span> : <span class="number">2</span>,</span><br><span class="line">        <span class="attr">&quot;_primary_term&quot;</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;status&quot;</span> : <span class="number">201</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">&quot;update&quot;</span> : &#123;</span><br><span class="line">        <span class="attr">&quot;_index&quot;</span> : <span class="string">&quot;website&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_type&quot;</span> : <span class="string">&quot;blog&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_id&quot;</span> : <span class="string">&quot;123&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_version&quot;</span> : <span class="number">3</span>,</span><br><span class="line">        <span class="attr">&quot;result&quot;</span> : <span class="string">&quot;updated&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_shards&quot;</span> : &#123;</span><br><span class="line">          <span class="attr">&quot;total&quot;</span> : <span class="number">2</span>,</span><br><span class="line">          <span class="attr">&quot;successful&quot;</span> : <span class="number">1</span>,</span><br><span class="line">          <span class="attr">&quot;failed&quot;</span> : <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;_seq_no&quot;</span> : <span class="number">3</span>,</span><br><span class="line">        <span class="attr">&quot;_primary_term&quot;</span> : <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;status&quot;</span> : <span class="number">200</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BASpringBoot%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/" rel="prev" title="深入浅出SpringBoot核心原理">
+      <i class="fa fa-chevron-left"></i> 深入浅出SpringBoot核心原理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/Elasticsearch%E4%B9%8B%E6%A3%80%E7%B4%A2/" rel="next" title="Elasticsearch之检索">
+      Elasticsearch之检索 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Elasticsearch%E7%9A%84%E5%9F%BA%E6%9C%ACAPI"><span class="nav-number">1.</span> <span class="nav-text">Elasticsearch的基本API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%9F%BA%E6%9C%ACAPI"><span class="nav-number">1.1.</span> <span class="nav-text">3. 基本API</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-cat"><span class="nav-number">1.1.1.</span> <span class="nav-text">3.1 _cat</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-1-GET-cat-%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E7%9A%84%E8%8A%82%E7%82%B9"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">3.1.1  GET  _cat 查看所有的节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-2-GET-cat-health-%E6%9F%A5%E7%9C%8Bes%E7%9A%84%E5%81%A5%E5%BA%B7%E7%8A%B6%E5%86%B5"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">3.1.2 GET  _cat&#x2F;health 查看es的健康状况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-3-GET-cat-master-%E6%9F%A5%E7%9C%8B%E4%B8%BB%E8%8A%82%E7%82%B9"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">3.1.3 GET _cat&#x2F;master 查看主节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-4-GET-cat-indices-%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E7%9A%84%E7%B4%A2%E5%BC%95-%E7%AD%89%E4%BB%B7%E4%BA%8Emysql-%E4%B8%AD%E7%9A%84show-databases"><span class="nav-number">1.1.1.4.</span> <span class="nav-text">3.1.4  GET _cat&#x2F;indices  查看所有的索引,等价于mysql 中的show databases</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E7%B4%A2%E5%BC%95%E4%B8%80%E4%B8%AA%E6%96%87%E6%A1%A3"><span class="nav-number">1.1.2.</span> <span class="nav-text">3.2  索引一个文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E6%9F%A5%E7%9C%8B%E6%96%87%E6%A1%A3"><span class="nav-number">1.1.3.</span> <span class="nav-text">3.3 查看文档</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E5%B0%86name-%E6%9B%B4%E6%96%B0%E4%B8%BA1"><span class="nav-number">1.1.3.0.1.</span> <span class="nav-text">1.  将name  更新为1</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E5%B0%86name-%E6%9B%B4%E6%96%B0%E4%B8%BA2-%E6%9B%B4%E6%96%B0%E8%BF%87%E7%A8%8B%E4%B8%AD%E4%BD%BF%E7%94%A8-seq-no-0"><span class="nav-number">1.1.3.0.2.</span> <span class="nav-text">2.  将name 更新为2,更新过程中使用_seq_no&#x3D;0</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-%E6%9F%A5%E7%9C%8B%E6%96%B0%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="nav-number">1.1.3.0.3.</span> <span class="nav-text">3. 查看新的数据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%E5%86%8D%E6%AC%A1%E6%9B%B4%E6%96%B0-%E6%9B%B4%E6%96%B0%E6%88%90%E5%8A%9F"><span class="nav-number">1.1.3.0.4.</span> <span class="nav-text">4. 再次更新,更新成功</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E6%9B%B4%E6%96%B0%E6%96%87%E6%A1%A3"><span class="nav-number">1.1.4.</span> <span class="nav-text">3.4 更新文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-%E5%88%A0%E9%99%A4%E6%96%87%E6%A1%A3%E6%88%96%E8%80%85%E7%B4%A2%E5%BC%95"><span class="nav-number">1.1.5.</span> <span class="nav-text">3.5 删除文档或者索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-1-%E6%A0%B9%E6%8D%AEid%E5%88%A0%E9%99%A4"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">3.5.1 根据id删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-2-%E5%88%A0%E9%99%A4%E6%95%B4%E4%B8%AA%E7%B4%A2%E5%BC%95"><span class="nav-number">1.1.5.2.</span> <span class="nav-text">3.5.2 删除整个索引</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C-bulk"><span class="nav-number">1.1.6.</span> <span class="nav-text">3.6  批量操作 bulk</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">227</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

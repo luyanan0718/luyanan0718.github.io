@@ -14,6 +14,8 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
@@ -22,7 +24,7 @@
 
   <meta name="description" content="Sentinel的基本应用以及原理分析限流的基本认识场景分析一个互联网产品, 打算搞一次大促来增加销量以及曝光. 公司的架构师基于往期的流量情况做了一个活动流量的预估. 然后整个公司的各个技术团队开始按照这个目标进行设计和优化, 最终在大家的不懈努力下,达到了链路压测的目标流量峰值. 到了活动开始那天, 大家都盯着监控面板, 看着流量像洪水一样涌进来, 由于前期的宣传工作做得非常好, 使得这个流程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="程序员报社">
+<meta property="og:title" content="Sentinel的基本应用以及原理分析">
 <meta property="og:url" content="http://luyanan.com/Sentinel%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8%E4%BB%A5%E5%8F%8A%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="程序员报社">
 <meta property="og:description" content="Sentinel的基本应用以及原理分析限流的基本认识场景分析一个互联网产品, 打算搞一次大促来增加销量以及曝光. 公司的架构师基于往期的流量情况做了一个活动流量的预估. 然后整个公司的各个技术团队开始按照这个目标进行设计和优化, 最终在大家的不懈努力下,达到了链路压测的目标流量峰值. 到了活动开始那天, 大家都盯着监控面板, 看着流量像洪水一样涌进来, 由于前期的宣传工作做得非常好, 使得这个流程">
@@ -30,10 +32,10 @@
 <meta property="og:image" content="http://files.luyanan.com//img/20191212160950.png">
 <meta property="og:image" content="http://files.luyanan.com//img/20191212161823.png">
 <meta property="og:image" content="http://files.luyanan.com//img/20191212163617.png">
-<meta property="article:published_time" content="2021-03-01T09:46:52.890Z">
-<meta property="article:modified_time" content="2020-12-24T09:34:50.085Z">
+<meta property="article:published_time" content="2021-03-02T05:42:51.760Z">
+<meta property="article:modified_time" content="2021-03-02T05:42:51.760Z">
 <meta property="article:author" content="luyanan">
-<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta property="article:tag" content="Go">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://files.luyanan.com//img/20191212160950.png">
 
@@ -50,7 +52,7 @@
   };
 </script>
 
-  <title> | 程序员报社</title>
+  <title>Sentinel的基本应用以及原理分析 | 程序员报社</title>
   
 
 
@@ -125,9 +127,34 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -199,7 +226,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          
+          Sentinel的基本应用以及原理分析
         </h1>
 
         <div class="post-meta">
@@ -209,15 +236,21 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-01 17:46:52" itemprop="dateCreated datePublished" datetime="2021-03-01T17:46:52+08:00">2021-03-01</time>
+              <time title="创建时间：2021-03-02 13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:42:51+08:00">2021-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-24 17:34:50" itemprop="dateModified" datetime="2020-12-24T17:34:50+08:00">2020-12-24</time>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
               </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Sentinel/" itemprop="url" rel="index"><span itemprop="name">Sentinel</span></a>
+                </span>
+            </span>
 
           
 
@@ -463,6 +496,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
 
         
 
@@ -470,12 +506,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/Sentinel%20%E6%95%B4%E5%90%88Dubbo%E9%99%90%E6%B5%81%E5%AE%9E%E6%88%98/" rel="prev" title="">
-      <i class="fa fa-chevron-left"></i> 
+    <a href="/RocketMQ%E9%97%AE%E9%A2%98/" rel="prev" title="RocketMQ问题">
+      <i class="fa fa-chevron-left"></i> RocketMQ问题
     </a></div>
       <div class="post-nav-item">
-    <a href="/zookeeper%20%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/" rel="next" title="">
-       <i class="fa fa-chevron-right"></i>
+    <a href="/Spring%20Cloud%20Alibaba%E4%B9%8Bnaocs%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" rel="next" title="Spring Cloud Alibaba之naocs注册中心">
+      Spring Cloud Alibaba之naocs注册中心 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -551,18 +587,44 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">214</span>
+          <span class="site-state-item-count">227</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">1</span>
-        <span class="site-state-item-name">标签</span>
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
 
 
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
 
       </div>
 
