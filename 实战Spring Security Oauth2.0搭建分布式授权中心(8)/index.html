@@ -34,8 +34,8 @@
 <meta property="og:image" content="http://luyanan.com/%E5%AE%9E%E6%88%98Spring%20Security%20Oauth2.0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83(8)/8.%E5%AE%9E%E6%88%98Spring%20Security%20Oauth2.0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83.assets/image-20200801152554057.png">
 <meta property="og:image" content="http://luyanan.com/%E5%AE%9E%E6%88%98Spring%20Security%20Oauth2.0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83(8)/8.%E5%AE%9E%E6%88%98Spring%20Security%20Oauth2.0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83.assets/image-20200801152849236.png">
 <meta property="og:image" content="http://luyanan.com/%E5%AE%9E%E6%88%98Spring%20Security%20Oauth2.0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83(8)/8.%E5%AE%9E%E6%88%98Spring%20Security%20Oauth2.0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83.assets/image-20200801153020890.png">
-<meta property="article:published_time" content="2021-03-12T02:15:06.370Z">
-<meta property="article:modified_time" content="2021-03-12T02:15:06.371Z">
+<meta property="article:published_time" content="2021-03-12T02:17:43.856Z">
+<meta property="article:modified_time" content="2021-03-12T02:17:43.856Z">
 <meta property="article:author" content="luyanan">
 <meta property="article:tag" content="Rust">
 <meta name="twitter:card" content="summary">
@@ -238,7 +238,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -418,8 +418,7 @@
 <li>使用该<code>token</code> 通过网关访问订单服务中的测试资源</li>
 </ol>
 <h3 id="7-1-token-获取"><a href="#7-1-token-获取" class="headerlink" title="7.1 token 获取"></a>7.1 token 获取</h3><p>访问<code>http://localhost:8004/uaa/oauth/token</code>, 注意:此处的端口为网关的端口</p>
-<img src="8.%E5%AE%9E%E6%88%98Spring%20Security%20Oauth2.0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83.assets/image-20200801152554057.png" alt="image-20200801152554057" style="zoom:200%;" />
-
+<p><img src="8.%E5%AE%9E%E6%88%98Spring%20Security%20Oauth2.0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83.assets/image-20200801152554057.png" alt="image-20200801152554057"></p>
 <p>返回内容:</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;access_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsicmVzMSJdLCJ1c2VyX25hbWUiOiJ6aGFuZ3NhbiIsInNjb3BlIjpbIlJPTEVfQURNSU4iLCJST0xFX1VTRVIiLCJST0xFX0FQSSJdLCJleHAiOjE1OTYyNzA1NTAsImF1dGhvcml0aWVzIjpbInAxIl0sImp0aSI6ImE1ODFkN2JiLWQ3ZmQtNDc3Yi1hNWM0LTgxN2UwOGQ4N2QzYiIsImNsaWVudF9pZCI6ImMxIn0.AkD2rd8AnAst2gv0KdwkNta6d0Hy1tz-qNO-euMmHkw&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;token_type&quot;</span>: <span class="string">&quot;bearer&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;refresh_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsicmVzMSJdLCJ1c2VyX25hbWUiOiJ6aGFuZ3NhbiIsInNjb3BlIjpbIlJPTEVfQURNSU4iLCJST0xFX1VTRVIiLCJST0xFX0FQSSJdLCJhdGkiOiJhNTgxZDdiYi1kN2ZkLTQ3N2ItYTVjNC04MTdlMDhkODdkM2IiLCJleHAiOjE1OTY1MjI1NTAsImF1dGhvcml0aWVzIjpbInAxIl0sImp0aSI6Ijg5NTIyMjA0LWUwYTgtNDNiNy1hYWM4LTUzMWUyNWEyZTYzMSIsImNsaWVudF9pZCI6ImMxIn0.tbtuWBgYZfBiAZLdwZq27CqFwW5PyytEcbQfSpjxHXo&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;expires_in&quot;</span>: <span class="number">7199</span>,</span><br><span class="line">    <span class="attr">&quot;scope&quot;</span>: <span class="string">&quot;ROLE_ADMIN ROLE_USER ROLE_API&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;jti&quot;</span>: <span class="string">&quot;a581d7bb-d7fd-477b-a5c4-817e08d87d3b&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -491,8 +490,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/Istio%E6%9E%B6%E6%9E%84%E5%8E%9F%E7%90%86%E5%92%8C%E5%AE%9E%E6%88%98(2)/" rel="prev" title="Istio架构原理和实战(2)">
-      <i class="fa fa-chevron-left"></i> Istio架构原理和实战(2)
+    <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%AE%A4%E8%AF%81(6)/" rel="prev" title="分布式系统认证(6)">
+      <i class="fa fa-chevron-left"></i> 分布式系统认证(6)
     </a></div>
       <div class="post-nav-item">
     <a href="/%E5%9F%BA%E4%BA%8ESpring%20Security%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83(3)/" rel="next" title="基于Spring Security认证授权(3)">
@@ -556,4 +555,143 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E6%88%98Spring-Security-Oauth2-0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83"><span class="nav-number">1.</span> <span class="na
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E6%88%98Spring-Security-Oauth2-0%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%88%E6%9D%83%E4%B8%AD%E5%BF%83"><span class="nav-number">1.</span> <span class="nav-text">实战Spring Security Oauth2.0搭建分布式授权中心</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90"><span class="nav-number">1.1.</span> <span class="nav-text">1. 需求分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%88%B6%E5%B7%A5%E7%A8%8B-spring-security-oauth2-demo"><span class="nav-number">1.2.</span> <span class="nav-text">2. 父工程 spring-security-oauth2-demo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-eureka-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="nav-number">1.3.</span> <span class="nav-text">3. eureka 注册中心</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-pom-xml"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 pom.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E4%B8%BB%E5%90%AF%E5%8A%A8%E7%B1%BB-EurekaApplication"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2  主启动类 EurekaApplication</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-application-yml-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3 application.yml 配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E6%B5%8B%E8%AF%95"><span class="nav-number">1.3.4.</span> <span class="nav-text">3.4 测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-UAA-%E6%8E%88%E6%9D%83%E8%AE%A4%E8%AF%81%E4%B8%AD%E5%BF%83"><span class="nav-number">1.4.</span> <span class="nav-text">4. UAA 授权认证中心</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-pom-xml"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 pom.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-UaaApplication-%E4%B8%BB%E5%90%AF%E5%8A%A8%E7%B1%BB"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2  UaaApplication  主启动类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-application-yml-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3  application.yml 配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-%E6%8E%88%E6%9D%83%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%92%8C%E6%8E%88%E6%9D%83%E7%A0%81sql%E5%AF%BC%E5%85%A5"><span class="nav-number">1.4.4.</span> <span class="nav-text">4.4  授权客户端和授权码sql导入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-%E9%85%8D%E7%BD%AEjwt%E7%9A%84token-%E4%BB%A4%E7%89%8C%E6%96%B9%E6%A1%88"><span class="nav-number">1.4.5.</span> <span class="nav-text">4.5 配置jwt的token 令牌方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-6-%E6%8E%88%E6%9D%83%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.6.</span> <span class="nav-text">4.6 授权服务器配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-7-%E5%AE%89%E5%85%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.7.</span> <span class="nav-text">4.7  安全配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E7%BD%91%E5%85%B3"><span class="nav-number">1.5.</span> <span class="nav-text">5 . 网关</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-pom-xml-%E4%BE%9D%E8%B5%96"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1  pom.xml 依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E4%B8%BB%E5%90%AF%E5%8A%A8%E7%B1%BB"><span class="nav-number">1.5.2.</span> <span class="nav-text">5.2  主启动类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-application-yml-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">1.5.3.</span> <span class="nav-text">5.3 application.yml 配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-%E8%B5%84%E6%BA%90%E6%9C%8D%E5%8A%A1%E9%85%8D%E7%BD%AE"><span class="nav-number">1.5.4.</span> <span class="nav-text">5.4 资源服务配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-5-%E4%BB%A4%E7%89%8C%E9%85%8D%E7%BD%AE"><span class="nav-number">1.5.5.</span> <span class="nav-text">5.5   令牌配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-6-%E5%AE%89%E5%85%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">1.5.6.</span> <span class="nav-text">5.6  安全配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-7-%E8%BF%87%E6%BB%A4%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">1.5.7.</span> <span class="nav-text">5.7   过滤器配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-8-%E9%85%8D%E7%BD%AE%E7%B1%BB"><span class="nav-number">1.5.8.</span> <span class="nav-text">5.8  配置类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-Order-%E8%B5%84%E6%BA%90%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.6.</span> <span class="nav-text">6. Order 资源服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-pom-xml-%E4%BE%9D%E8%B5%96"><span class="nav-number">1.6.1.</span> <span class="nav-text">6.1 pom.xml 依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E4%B8%BB%E5%90%AF%E5%8A%A8%E7%B1%BB"><span class="nav-number">1.6.2.</span> <span class="nav-text">6.2  主启动类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-application-yml-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">1.6.3.</span> <span class="nav-text">6.3 application.yml 配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-%E4%BB%A4%E7%89%8C%E9%85%8D%E7%BD%AE"><span class="nav-number">1.6.4.</span> <span class="nav-text">6.4  令牌配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-%E8%B5%84%E6%BA%90%E6%9C%8D%E5%8A%A1%E9%85%8D%E7%BD%AE"><span class="nav-number">1.6.5.</span> <span class="nav-text">6.5  资源服务配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-6-web%E5%AE%89%E5%85%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">1.6.6.</span> <span class="nav-text">6.6 web安全配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-7-token%E6%8B%A6%E6%88%AA%E5%99%A8"><span class="nav-number">1.6.7.</span> <span class="nav-text">6.7  token拦截器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-8-%E7%BC%96%E5%86%99%E8%B5%84%E6%BA%90"><span class="nav-number">1.6.8.</span> <span class="nav-text">6.8 编写资源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E9%9B%86%E6%88%90%E6%B5%8B%E8%AF%95"><span class="nav-number">1.7.</span> <span class="nav-text">7 集成测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-token-%E8%8E%B7%E5%8F%96"><span class="nav-number">1.7.1.</span> <span class="nav-text">7.1 token 获取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%90%BA%E5%B8%A6token-%E8%AE%BF%E9%97%AEOrder-%E8%B5%84%E6%BA%90"><span class="nav-number">1.7.2.</span> <span class="nav-text">携带token 访问Order 资源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A0%B4%E5%9D%8F%E6%B5%8B%E8%AF%95"><span class="nav-number">1.7.3.</span> <span class="nav-text">破坏测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E6%89%A9%E5%B1%95%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF"><span class="nav-number">1.8.</span> <span class="nav-text">8.  扩展用户信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90"><span class="nav-number">1.8.1.</span> <span class="nav-text">8.1 需求分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-%E4%BF%AE%E6%94%B9-UserDetailService"><span class="nav-number">1.8.2.</span> <span class="nav-text">8.2 修改  UserDetailService</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-%E4%BF%AE%E6%94%B9%E8%B5%84%E6%BA%90%E6%9C%8D%E5%8A%A1%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="nav-number">1.8.3.</span> <span class="nav-text">8.3 修改资源服务过滤器</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">215</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

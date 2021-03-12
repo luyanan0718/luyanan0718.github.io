@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84CICD(7)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%AF%B9%E6%AF%94/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84CICD(7)/" class="post-title-link" itemprop="url">基于kubernetes的CICD(7)</a>
+            <a href="/Spring%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%AF%B9%E6%AF%94/" class="post-title-link" itemprop="url">Spring中常用的设计对比</a>
         </h2>
 
         <div class="post-meta">
@@ -230,7 +230,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -238,7 +238,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
                 </span>
             </span>
 
@@ -253,355 +253,63 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="基于kubernetes的CICD-md"><a href="#基于kubernetes的CICD-md" class="headerlink" title="基于kubernetes的CICD.md"></a>基于kubernetes的CICD.md</h1><blockquote>
-<p>思考: 当我们需要部署一个项目到k8s中的时候,需要编写<code>Dockerfile</code>-&gt; 打包-&gt; <code>push</code> 镜像-&gt; 编写k8s 配置文件-&gt; 在进行启动等等。 </p>
-<p>当我们需要对这个项目的某些代码进行修改的时候,还要重新打包-&gt;push镜像-&gt;k8s启动等等. </p>
-</blockquote>
-<p><img src="http://files.luyanan.com//img/20200430100422.png" alt="image-20200430100403943"></p>
-<blockquote>
-<p>思考: 如果能够按照上述图解一样,在本地进行开发,然后<code>git push</code> 到<code>guthub</code>, 就能访问最终的应用多好. </p>
-</blockquote>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a>1. 环境准备</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84CICD(7)/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/MyBatis%E6%8F%92%E4%BB%B6%E5%8E%9F%E7%90%86(3)/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/MyBatis%E6%8F%92%E4%BB%B6%E5%8E%9F%E7%90%86(3)/" class="post-title-link" itemprop="url">MyBatis插件原理(3)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mybatis/" itemprop="url" rel="index"><span itemprop="name">mybatis</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="3-MyBatis插件原理"><a href="#3-MyBatis插件原理" class="headerlink" title="3. MyBatis插件原理"></a>3. MyBatis插件原理</h1><hr>
-<p>Mybatis 通过提供插件机制,让我们可以根据自己的需要去增强Mybatis 的功能</p>
-<p>需要注意的是,如果没有完全理解Mybatis的运行原理和插件的工作方式,最好不要使用插件,因为他会改变底层的工作逻辑,给系统带来很大的影响.</p>
-<h4 id="1-猜想"><a href="#1-猜想" class="headerlink" title="1. 猜想"></a>1. 猜想</h4>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/MyBatis%E6%8F%92%E4%BB%B6%E5%8E%9F%E7%90%86(3)/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Mybatis%20%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%92%8C%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86(2)/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Mybatis%20%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%92%8C%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86(2)/" class="post-title-link" itemprop="url">Mybatis 体系结构和工作原理(2)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mybatis/" itemprop="url" rel="index"><span itemprop="name">mybatis</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="2-Mybatis-体系结构和工作原理"><a href="#2-Mybatis-体系结构和工作原理" class="headerlink" title="2. Mybatis 体系结构和工作原理"></a>2. Mybatis 体系结构和工作原理</h1><hr>
-<h3 id="Mybatis的工作流程分析"><a href="#Mybatis的工作流程分析" class="headerlink" title="Mybatis的工作流程分析"></a>Mybatis的工作流程分析</h3><p>  首先,在Mybatis启动的时候解析配置文件,包括全局配置文件和映射器文件,这里面包含了我们怎么去控制Mybatis的行为,和我们要对数据库下达的命令,也就是我们的SQL信息,我们会把他们解析为一个configuration对象</p>
-<p>接下来就是我们操作数据库的接口,他在应用程序和数据库的中间,代表我们和数据库之间的一次连接,这个就是sqlSession对象.</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Mybatis%20%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%92%8C%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86(2)/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Mybatis%20%E7%BC%96%E7%A8%8B%E5%BC%8F%E5%BC%80%E5%8F%91(1)/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Mybatis%20%E7%BC%96%E7%A8%8B%E5%BC%8F%E5%BC%80%E5%8F%91(1)/" class="post-title-link" itemprop="url">Mybatis 编程式开发(1)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mybatis/" itemprop="url" rel="index"><span itemprop="name">mybatis</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <hr>
-<h1 id="1-Mybatis-编程式开发"><a href="#1-Mybatis-编程式开发" class="headerlink" title="1. Mybatis 编程式开发"></a>1. Mybatis 编程式开发</h1><hr>
-<h3 id="编程式使用"><a href="#编程式使用" class="headerlink" title="编程式使用"></a>编程式使用</h3><p>&nbsp;&nbsp;&nbsp;大部分时候，我们都是在 Spring 里面去集成 MyBatis。因为 Spring 对 MyBatis 的<br>一些操作进行的封装，我们不能直接看到它的本质，所以先看下不使用容器的时候，也<br>就是编程的方式，MyBatis 怎么使用。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Mybatis%20%E7%BC%96%E7%A8%8B%E5%BC%8F%E5%BC%80%E5%8F%91(1)/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Mybatis%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93(5)/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Mybatis%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93(5)/" class="post-title-link" itemprop="url">Mybatis 设计模式总结(5)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mybatis/" itemprop="url" rel="index"><span itemprop="name">mybatis</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="5-Mybatis-设计模式总结"><a href="#5-Mybatis-设计模式总结" class="headerlink" title="5.  Mybatis 设计模式总结"></a>5.  Mybatis 设计模式总结</h1><table>
+          <h1 id="spring-中常用的设计模式对比"><a href="#spring-中常用的设计模式对比" class="headerlink" title="spring 中常用的设计模式对比"></a>spring 中常用的设计模式对比</h1><table>
 <thead>
 <tr>
 <th>设计模式</th>
-<th>类</th>
+<th>一句话归纳</th>
+<th>举例</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>工厂</td>
-<td>SqlSessionFactory,ObjectFactory,MapperProxyFactory</td>
+<td>工厂模式(Factory)</td>
+<td>只对结果负责,封装创建过程</td>
+<td>BeanFactory,Calender</td>
 </tr>
 <tr>
-<td>建造者</td>
-<td>XMLConfigBuilder,XMLMapperBuilder,XMLStatementBuilder</td>
+<td>单例模式(Singleton)</td>
+<td>保证独一无二</td>
+<td>ApplicationContext,Calender</td>
 </tr>
 <tr>
-<td>单例模式</td>
-<td>SqlSessionFactory,Configuration</td>
+<td>原型模式(Prototype)</td>
+<td>克隆</td>
+<td>ArrayList,PrototypeBean</td>
 </tr>
 <tr>
-<td>代理模式</td>
-<td>绑定:MappeProxy<br> 延迟加载:ProxyFactory(CGLIB,javassit)<br> 插件:Plugin<br> Spring继承Mybatis:SqlSessionTemplate 的内部类SqlSessionIntercepor<br> Mybatis 自带连接池:PoolDataSource管理的 PooledConnection<br> 日志打印:  ConnectionLogger,StatementLogger</td>
+<td>代理模式(Proxy)</td>
+<td>增强职责</td>
+<td>ProxyFactoryBean,JDKDynamicAopFactory,CglibAopFactory</td>
 </tr>
 <tr>
-<td>适配器模式</td>
-<td>logger 模块,对于Log4j,JDK logger,这些没有直接实现 slg4j接口的日志组件,需要适配器</td>
+<td>委派模式(Delegate)</td>
+<td>干活算员工的,功劳算项目经理的</td>
+<td>DispatcherServlet,BeanDefinitionParserDelegate</td>
 </tr>
 <tr>
-<td>模板方法</td>
-<td>BaseExecutor与子类SimpleExecutor,BatchExecutor,ReuseExecutor</td>
+<td>策略模式(Strategy)</td>
+<td>用户选择,结果统一</td>
+<td>InstantiationStrategy</td>
 </tr>
 <tr>
-<td>装饰器模式</td>
-<td>LoggerCache,LruCache等对PrepetualCache的装饰,CachingExecutor对其他Executor的装饰</td>
+<td>模板模式(Template)</td>
+<td>流程标准化,自己实现定制</td>
+<td>jdbcTemplate,HttpServlet</td>
 </tr>
 <tr>
-<td>责任链模式</td>
-<td>InterceptorChain</td>
+<td>适配器模式(Adapter)</td>
+<td>兼容转换头</td>
+<td>AdvisorAdapter,HandlerAdapter</td>
+</tr>
+<tr>
+<td>装饰器模式(Decorator)</td>
+<td>包装,同宗同源</td>
+<td>BufferedReader,InputStream,OutputStream,HttpHeadResponseDecorator</td>
+</tr>
+<tr>
+<td>观察者模式(Observer)</td>
+<td>任务完成时通知</td>
+<td>ContextLoaderListener</td>
 </tr>
 </tbody></table>
 
@@ -623,7 +331,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Mybatis%E6%BA%90%E7%A0%81%E8%B0%83%E8%AF%95(6)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%9C%A8Spring%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8(14.3)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -637,7 +345,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Mybatis%E6%BA%90%E7%A0%81%E8%B0%83%E8%AF%95(6)/" class="post-title-link" itemprop="url">Mybatis源码调试(6)</a>
+            <a href="/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%9C%A8Spring%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8(14.3)/" class="post-title-link" itemprop="url">代理模式在Spring中的应用(14</a>
         </h2>
 
         <div class="post-meta">
@@ -647,7 +355,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -655,7 +363,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mybatis/" itemprop="url" rel="index"><span itemprop="name">mybatis</span></a>
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
                 </span>
             </span>
 
@@ -670,12 +378,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="6-Mybatis源码调试"><a href="#6-Mybatis源码调试" class="headerlink" title="6. Mybatis源码调试"></a>6. Mybatis源码调试</h1><hr>
-<hr>
-<h3 id="1-版本与源码"><a href="#1-版本与源码" class="headerlink" title="1. 版本与源码"></a>1. 版本与源码</h3><p>在引入jar之后，点开代码，首先是反编译的代码，没有相关的注释，在IDEA里面右上角会出现Download Sources和Choose Sources。IDEA里面直接下载官方的源代码包。</p>
+          <h1 id="14-3-代理模式在Spring中的应用"><a href="#14-3-代理模式在Spring中的应用" class="headerlink" title="14.3 代理模式在Spring中的应用"></a>14.3 代理模式在Spring中的应用</h1><p>先看ProxyFactoryBean类,核心方法为getObject(),我们来看一下源码,</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Nullable</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getObject</span><span class="params">()</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.initializeAdvisorChain();</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.isSingleton()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.getSingletonInstance();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.targetName == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">this</span>.logger.warn(<span class="string">&quot;Using non-singleton proxies with singleton targets is often undesirable. Enable prototype proxies by setting the &#x27;targetName&#x27; property.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.newPrototypeInstance();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在getObject()方法中,主要调用getSingletonInstance()方法和newPrototypeInstance()方法,在Spring的配置当中,如果不做任何的设置,那么Spring代理生成的的Bean都是单例对象.如果修改scope则每次创建一个新的原型对象.<br><br>Spring利用动态代理实现AOP有两个非常重要的类,一个是JdkDynamicAopProxy类和CglibAopProxy类</p>
+<h5 id="Spring中大代理选择原则"><a href="#Spring中大代理选择原则" class="headerlink" title="Spring中大代理选择原则:"></a>Spring中大代理选择原则:</h5>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Mybatis%E6%BA%90%E7%A0%81%E8%B0%83%E8%AF%95(6)/#more" rel="contents">
+              <a class="btn" href="/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%9C%A8Spring%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8(14.3)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -699,7 +408,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Mybatis%E4%B8%8ESpring%E6%95%B4%E5%90%88%E5%88%86%E6%9E%90(4)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/CENTOS%207%20%E5%92%8C%20JDK%20%E6%B7%BB%E5%8A%A0%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -713,7 +422,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Mybatis%E4%B8%8ESpring%E6%95%B4%E5%90%88%E5%88%86%E6%9E%90(4)/" class="post-title-link" itemprop="url">Mybatis与Spring整合分析(4)</a>
+            <a href="/CENTOS%207%20%E5%92%8C%20JDK%20%E6%B7%BB%E5%8A%A0%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93/" class="post-title-link" itemprop="url">CENTOS 7 和 JDK 添加中文字体</a>
         </h2>
 
         <div class="post-meta">
@@ -723,7 +432,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -731,7 +440,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mybatis/" itemprop="url" rel="index"><span itemprop="name">mybatis</span></a>
+                  <a href="/categories/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" itemprop="url" rel="index"><span itemprop="name">疑难杂症</span></a>
                 </span>
             </span>
 
@@ -746,12 +455,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="4-Mybatis于Spring-整合分析"><a href="#4-Mybatis于Spring-整合分析" class="headerlink" title="4. Mybatis于Spring 整合分析"></a>4. Mybatis于Spring 整合分析</h1><hr>
-<h4 id="与-Spring-整合分析"><a href="#与-Spring-整合分析" class="headerlink" title="与 Spring 整合分析"></a>与 Spring 整合分析</h4><p><a target="_blank" rel="noopener" href="http://www.mybatis.org/spring/zh/index.html">http://www.mybatis.org/spring/zh/index.html</a><br>这里我们以传统的Spring为例,因为配置更加直观,在Spring中使用配置注册是一样的.</p>
-<p>在前面,我们基于编程式的工程已经弄清楚了Mybatis的工作流程,核心模块和底层原理。编程式的工作,也就是Mybatis的原声API 里面有三个核心对象: SqlSessionFacyory,SqlSession,MapperProxy.</p>
+          <h1 id="CENTOS-7-和-JDK-添加中文字体"><a href="#CENTOS-7-和-JDK-添加中文字体" class="headerlink" title="CENTOS 7 和 JDK 添加中文字体"></a>CENTOS 7 和 JDK 添加中文字体</h1><p>【1】在我们的 Windows 的 <strong>C:\Windows\Fonts</strong> 下面选择一个中文字体，如宋体，先拷贝到桌面，然后字体就变成了英文的：*<strong>*SIMSUN.TTC**</strong></p>
+<p> <img src="https://img2018.cnblogs.com/blog/979767/201809/979767-20180920164849487-905318821.png" alt="img"></p>
+<p>备注：我这里只是写了 Windows 的，没有用过 Mac 系列的 …</p>
+<p> 【2】在服务器上面建立相关目录，为了便于区分，我们把目录名字叫做 <strong><em>\</em>zh_CN**</strong>：</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Mybatis%E4%B8%8ESpring%E6%95%B4%E5%90%88%E5%88%86%E6%9E%90(4)/#more" rel="contents">
+              <a class="btn" href="/CENTOS%207%20%E5%92%8C%20JDK%20%E6%B7%BB%E5%8A%A0%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -775,7 +485,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/MySQL%E4%BA%8B%E5%8A%A1%E4%B8%8E%E9%94%81%E8%AF%A6%E8%A7%A3(4)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20Boot%20%E5%87%BA%E7%8E%B0Failed%20to%20decode%20downloaded%20font%E5%92%8COTS%20parsing%20error%20Failed%20to%20convert%20WOFF%202.0%20font%20to%20SFNT/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -789,7 +499,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/MySQL%E4%BA%8B%E5%8A%A1%E4%B8%8E%E9%94%81%E8%AF%A6%E8%A7%A3(4)/" class="post-title-link" itemprop="url">MySQL事务与锁详解(4)</a>
+            <a href="/Spring%20Boot%20%E5%87%BA%E7%8E%B0Failed%20to%20decode%20downloaded%20font%E5%92%8COTS%20parsing%20error%20Failed%20to%20convert%20WOFF%202.0%20font%20to%20SFNT/" class="post-title-link" itemprop="url">Spring Boot 出现Failed to decode downloaded font和OTS parsing error Failed to convert WOFF 2</a>
         </h2>
 
         <div class="post-meta">
@@ -799,7 +509,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -807,7 +517,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                  <a href="/categories/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" itemprop="url" rel="index"><span itemprop="name">疑难杂症</span></a>
                 </span>
             </span>
 
@@ -822,11 +532,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="MySQL事务和锁详解"><a href="#MySQL事务和锁详解" class="headerlink" title="MySQL事务和锁详解"></a>MySQL事务和锁详解</h1><h2 id="1-什么是数据库的事务"><a href="#1-什么是数据库的事务" class="headerlink" title="1. 什么是数据库的事务"></a>1. 什么是数据库的事务</h2><h3 id="1-1-事务的典型场景"><a href="#1-1-事务的典型场景" class="headerlink" title="1.1 事务的典型场景"></a>1.1 事务的典型场景</h3><p>在项目中,什么地方会用到事务,或者配置了事务? 无论是在方法上加注解, 还是配置切面.</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tx:advice</span> <span class="attr">id</span>=<span class="string">&quot;txAdvice&quot;</span> <span class="attr">transaction-manager</span>=<span class="string">&quot;transactionManager&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;save*&quot;</span> <span class="attr">rollback-for</span>=<span class="string">&quot;Throwable&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;add*&quot;</span> <span class="attr">rollback-for</span>=<span class="string">&quot;Throwable&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;send*&quot;</span> <span class="attr">rollback-for</span>=<span class="string">&quot;Throwable&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;insert*&quot;</span> <span class="attr">rollback-for</span>=<span class="string">&quot;Throwable&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tx:advice</span>&gt;</span></span><br></pre></td></tr></table></figure>
+          <h1 id="Spring-Boot-出现”Failed-to-decode-downloaded-font”和”OTS-parsing-error-Failed-to-convert-WOFF-2-0-font-to-SFNT”"><a href="#Spring-Boot-出现”Failed-to-decode-downloaded-font”和”OTS-parsing-error-Failed-to-convert-WOFF-2-0-font-to-SFNT”" class="headerlink" title="Spring Boot 出现”Failed to decode downloaded font”和”OTS parsing error: Failed to convert WOFF 2.0 font to SFNT”"></a>Spring Boot 出现”Failed to decode downloaded font”和”OTS parsing error: Failed to convert WOFF 2.0 font to SFNT”</h1><p>准确来讲，应该是maven项目使用Bootstrap时，出现</p>
+<p>“<strong>Failed to decode downloaded font</strong>“和”<strong>OTS parsing error: Failed to convert WOFF 2.0 font to SFNT</strong>“</p>
+<p>导致图标出不来的问题。</p>
+<p>解决方案：</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/MySQL%E4%BA%8B%E5%8A%A1%E4%B8%8E%E9%94%81%E8%AF%A6%E8%A7%A3(4)/#more" rel="contents">
+              <a class="btn" href="/Spring%20Boot%20%E5%87%BA%E7%8E%B0Failed%20to%20decode%20downloaded%20font%E5%92%8COTS%20parsing%20error%20Failed%20to%20convert%20WOFF%202.0%20font%20to%20SFNT/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -850,7 +562,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/MySQL%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93(5)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/elasticsratch%E9%97%AE%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -864,7 +576,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/MySQL%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93(5)/" class="post-title-link" itemprop="url">MySQL性能优化总结(5)</a>
+            <a href="/elasticsratch%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">elasticsratch问题</a>
         </h2>
 
         <div class="post-meta">
@@ -874,7 +586,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -882,7 +594,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                  <a href="/categories/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" itemprop="url" rel="index"><span itemprop="name">疑难杂症</span></a>
                 </span>
             </span>
 
@@ -897,12 +609,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="MySQL性能优化总结"><a href="#MySQL性能优化总结" class="headerlink" title="MySQL性能优化总结"></a><img src="C:/Users/luyanan/AppData/Roaming/Typora/typora-user-images/image-20200519093843796.png" alt="image-20200519093843796">MySQL性能优化总结</h1><h2 id="1-优化思路"><a href="#1-优化思路" class="headerlink" title="1. 优化思路"></a>1. 优化思路</h2><p>作为开发人员,说到数据库性能优化,你的思路是怎么样的呢? </p>
-<p>或者具体一点, 如果在面试中遇到这个问题: 你会从哪些维度来优化数据库,你会怎么回答呢? </p>
-<p>我们说到性能优化,其实大部分的时候想要实现的目标就是让我们的查询更快. 一个查询动作又是由很多个环节组成的,每个环接都会消耗时间。 </p>
+          <h2 id="max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-least"><a href="#max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-increase-to-at-least" class="headerlink" title="max virtual memory areas vm.max_map_count [65530] is too low, increase to at least "></a><code>max virtual memory areas vm.max_map_count [65530] is too low, increase to at least </code></h2><p>修改/etc/sysctl.conf文件，增加配置vm.max_map_count=262144</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vi &#x2F;etc&#x2F;sysctl.conf</span><br><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
+
+<p>　执行命令sysctl -p生效</p>
+<h2 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/MySQL%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93(5)/#more" rel="contents">
+              <a class="btn" href="/elasticsratch%E9%97%AE%E9%A2%98/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -926,7 +640,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/MySQL%E6%9E%B6%E6%9E%84(2)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%92%8C%E7%89%B9%E7%82%B9(2)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -940,7 +654,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/MySQL%E6%9E%B6%E6%9E%84(2)/" class="post-title-link" itemprop="url">MySQL架构(2)</a>
+            <a href="/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%92%8C%E7%89%B9%E7%82%B9(2)/" class="post-title-link" itemprop="url">分库分表的类型和特点(2)</a>
         </h2>
 
         <div class="post-meta">
@@ -950,7 +664,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -958,7 +672,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
                 </span>
             </span>
 
@@ -973,21 +687,316 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="MySQL架构"><a href="#MySQL架构" class="headerlink" title="MySQL架构"></a>MySQL架构</h1><h2 id="1-模块详解"><a href="#1-模块详解" class="headerlink" title="1. 模块详解"></a>1. 模块详解</h2><p><img src="http://files.luyanan.com//img/20200514171158.png" alt="image-20200514171157637"></p>
-<ol>
-<li><code>Connector</code>:  用来支持各种语言和SQL的交互, 比如<code>php</code>、<code>Python</code>、<code>Java</code>的<code>JDBC</code>.,</li>
-<li><code>Management Serveices &amp; Utilities</code>: 系统管理和控制工具,包括备份恢复、MySQL复制、集群等等. </li>
-<li><code>Connection Pool</code>: 连接池,管理需要缓冲的资源,包括用户密码权限线程等. </li>
-<li><code>SQL Interface</code>: 用来接收用户的SQL命令,返回用户需要的查询结果. </li>
-<li><code>Parser</code>:  用来解析SQL语句</li>
-<li><code>Optimizer</code>:查询优化器</li>
-<li><code>Cache and Buffer</code>: 查询缓存,除了行记录的缓存之外，还有表缓存、key缓存、权限缓存等等. </li>
-<li><code>Pluggable Storage Engines</code>:插件式引擎,它提供API给服务层使用,跟具体的文件打交道. </li>
-</ol>
-<h2 id="2-架构分层"><a href="#2-架构分层" class="headerlink" title="2. 架构分层"></a>2. 架构分层</h2>
+          <h1 id="分库分表的类型和特点"><a href="#分库分表的类型和特点" class="headerlink" title="分库分表的类型和特点"></a>分库分表的类型和特点</h1><p>从维度来说可以分为两种: 一种是垂直, 一种是水平</p>
+<p><strong>垂直切分</strong>: 基于表和字段划分, 表结构不同, 我们有单表的分表， 也有多库的分表. </p>
+<p><strong>水平切分</strong>: 基于数据切分, 表结构相同, 数据不同, 也有同库的水平切分和多库的切分 </p>
+<p><img src="http://files.luyanan.com//img/20200404134317.png" alt="image-20200404134155501"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/MySQL%E6%9E%B6%E6%9E%84(2)/#more" rel="contents">
+              <a class="btn" href="/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%92%8C%E7%89%B9%E7%82%B9(2)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B9%8BSharding-JDBC(5)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B9%8BSharding-JDBC(5)/" class="post-title-link" itemprop="url">分库分表之Sharding-JDBC(5)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="分库分表之Sharding-JDBC"><a href="#分库分表之Sharding-JDBC" class="headerlink" title="分库分表之Sharding-JDBC"></a>分库分表之<a target="_blank" rel="noopener" href="https://gitee.com/Sharding-Sphere/sharding-sphere">Sharding-JDBC</a></h1><h2 id="1-架构与核心概念"><a href="#1-架构与核心概念" class="headerlink" title="1. 架构与核心概念"></a>1. 架构与核心概念</h2><h3 id="1-1-发展历史"><a href="#1-1-发展历史" class="headerlink" title="1.1 发展历史"></a>1.1 发展历史</h3><p>它是从当当网的内部架构<code>ddframe</code>  里面的一个分库分表的模块脱胎出来的, 用来解决当当的分库分表问题, 把跟业务相关的敏感的代码剥离后, 就得到了<code>Sharding-JDBC</code>. 它是一个工作在客户端的分库分表的解决方案. </p>
+<p><code>DubboX</code>、<code>Elastic-job</code>  也是当当开源出来的产品. </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B9%8BSharding-JDBC(5)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B9%8BMycat(3)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B9%8BMycat(3)/" class="post-title-link" itemprop="url">分库分表之Mycat(3)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="分库分表之Mycat"><a href="#分库分表之Mycat" class="headerlink" title="分库分表之Mycat"></a>分库分表之Mycat</h1><p>官网: <a target="_blank" rel="noopener" href="http://www.mycat.io/">http://www.mycat.io/</a></p>
+<p>Mycat 概要介绍： <a target="_blank" rel="noopener" href="https://github.com/MyCATApache/Mycat-Server">https://github.com/MyCATApache/Mycat-Server</a></p>
+<p>入门指南: <a target="_blank" rel="noopener" href="https://github.com/MyCATApache/Mycat-doc/tree/master/%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97">https://github.com/MyCATApache/Mycat-doc/tree/master/%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97</a></p>
+<h2 id="1-Mycat介绍和核心概念"><a href="#1-Mycat介绍和核心概念" class="headerlink" title="1.Mycat介绍和核心概念"></a>1.Mycat介绍和核心概念</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B9%8BMycat(3)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6(4)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6(4)/" class="post-title-link" itemprop="url">Mysql主从复制(4)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Mysql主从复制"><a href="#Mysql主从复制" class="headerlink" title="Mysql主从复制"></a>Mysql主从复制</h1><h2 id="1-主从复制的含义"><a href="#1-主从复制的含义" class="headerlink" title="1. 主从复制的含义"></a>1. 主从复制的含义</h2><p>在Mysql多服务区的架构中, 至少要有一个主节点(<code>master</code>),跟主节点相对的, 我们把他叫做从节点(<code>slave</code>). 主从复制, 就是把主节点的数据复制到一个或者多个从节点. 主服务器和从服务器可以在不同的ip上, 通过远程连接来同步数据, 这个是异步的过程. </p>
+<h2 id="2-主从复制的形式"><a href="#2-主从复制的形式" class="headerlink" title="2. 主从复制的形式"></a>2. 主从复制的形式</h2><p>一主一从/一主多从</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6(4)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8(1)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8(1)/" class="post-title-link" itemprop="url">为什么要分库分表(1)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="为什么要分库分表"><a href="#为什么要分库分表" class="headerlink" title="为什么要分库分表"></a>为什么要分库分表</h1><h2 id="1-数据库性能瓶颈的出现"><a href="#1-数据库性能瓶颈的出现" class="headerlink" title="1. 数据库性能瓶颈的出现"></a>1. 数据库性能瓶颈的出现</h2><p>对于应用来说, 如果是数据库性能出现问题, 要么是无法获取连接, 是因为在高并发的情况下连接数不够了。要么是操作数据变慢了, 数据库处理数据的效率出现了问题. 要么是存储出现了问题, 比如单机存储的数据量太大了, 存储的问题也可能会导致性能的问题. </p>
+<p>归根结底都是收到了硬件的影响, 比如<code>CPU</code>、内存、磁盘、网络等等. 但是我们优化肯定不可能直接从扩展硬件出手, 因为带来的收益和投入比例太差. </p>
+<p>所以我们先来分析一下, 当我们处理数据出现无法连接,或者变慢的时候, 我们可以从哪些层面入手呢? </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1010,7 +1019,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1078,14 +1087,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">229</span>
+          <span class="site-state-item-count">215</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-count">41</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">

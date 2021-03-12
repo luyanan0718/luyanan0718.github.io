@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/vue/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BD%BF%E7%94%A8Netty%E6%89%8B%E5%86%99tomcat(3)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/vue/" class="post-title-link" itemprop="url">vue</a>
+            <a href="/%E4%BD%BF%E7%94%A8Netty%E6%89%8B%E5%86%99tomcat(3)/" class="post-title-link" itemprop="url">使用Netty手写tomcat(3)</a>
         </h2>
 
         <div class="post-meta">
@@ -229,9 +229,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,11 +238,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/vue/" itemprop="url" rel="index"><span itemprop="name">vue</span></a>
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
                 </span>
             </span>
 
@@ -258,17 +253,469 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="vue"><a href="#vue" class="headerlink" title="vue"></a>vue</h1><p>Vue (读音 /vjuː/，类似于 <strong>view</strong>) 是一套用于构建用户界面的<strong>渐进式框架</strong>。与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与<a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/guide/single-file-components.html">现代化的工具链</a>以及各种<a target="_blank" rel="noopener" href="https://github.com/vuejs/awesome-vue#libraries--plugins">支持类库</a>结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。</p>
-<p><code>MVVM</code>思想</p>
-<ul>
-<li><code>M</code>:<code>module</code> 包含数据和一些基本的操作</li>
-<li><code>V</code>: <code>view</code>视图,页面渲染结果</li>
-<li><code>VM</code>:<code>view-module</code>模型和视图间的双向操作</li>
+          <h1 id="使用Netty手写Tomcat容器"><a href="#使用Netty手写Tomcat容器" class="headerlink" title="使用Netty手写Tomcat容器"></a>使用Netty手写Tomcat容器</h1><p>前面学了一下netty的使用，我们知道Tomcat的底层也是使用的Netty, 这里使用Netty手写一个麻雀虽小五脏俱全的Tomcat容器</p>
+<h2 id="请求类封装-Request"><a href="#请求类封装-Request" class="headerlink" title="请求类封装     Request"></a>请求类封装     Request</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.formula.netty.tomcat.http;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.netty.channel.ChannelHandlerContext;</span><br><span class="line"><span class="keyword">import</span> io.netty.handler.codec.http.HttpRequest;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2019/9/19</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;请求封装&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Request</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ChannelHandlerContext chc;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> HttpRequest httpRequest;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Request</span><span class="params">(ChannelHandlerContext chc, HttpRequest httpRequest)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.chc = chc;</span><br><span class="line">        <span class="keyword">this</span>.httpRequest = httpRequest;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getUrl</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.httpRequest.uri();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> httpRequest.method().name();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="返回封装"><a href="#返回封装" class="headerlink" title="返回封装"></a>返回封装</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E4%BD%BF%E7%94%A8Netty%E6%89%8B%E5%86%99tomcat(3)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Netty%E9%AB%98%E6%80%A7%E8%83%BD%E4%B9%8B%E9%81%93(6)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Netty%E9%AB%98%E6%80%A7%E8%83%BD%E4%B9%8B%E9%81%93(6)/" class="post-title-link" itemprop="url">Netty高性能之道(6)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Netty高性能之道"><a href="#Netty高性能之道" class="headerlink" title="Netty高性能之道"></a>Netty高性能之道</h1><h2 id="1-背景介绍"><a href="#1-背景介绍" class="headerlink" title="1. 背景介绍"></a>1. 背景介绍</h2><h3 id="1-Netty惊人的性能数据"><a href="#1-Netty惊人的性能数据" class="headerlink" title="1. Netty惊人的性能数据"></a>1. Netty惊人的性能数据</h3><p>通过使用Netty(NIO框架) 相比于传统基于Java 序列化+ BIO(同步阻塞IO)的通信框架， 性能提升了8倍多.</p>
+<h3 id="2-传统RPC-调用性能差的三宗罪"><a href="#2-传统RPC-调用性能差的三宗罪" class="headerlink" title="2. 传统RPC 调用性能差的三宗罪"></a>2. 传统RPC 调用性能差的三宗罪</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Netty%E9%AB%98%E6%80%A7%E8%83%BD%E4%B9%8B%E9%81%93(6)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Netty%E7%BC%96%E8%A7%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF(13)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Netty%E7%BC%96%E8%A7%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF(13)/" class="post-title-link" itemprop="url">Netty编解码的艺术(13)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Netty-编解码的艺术"><a href="#Netty-编解码的艺术" class="headerlink" title="Netty 编解码的艺术"></a>Netty 编解码的艺术</h1><h2 id="1-什么是拆包-粘包"><a href="#1-什么是拆包-粘包" class="headerlink" title="1. 什么是拆包/粘包"></a>1. 什么是拆包/粘包</h2><h3 id="1-TCP-粘包-拆包"><a href="#1-TCP-粘包-拆包" class="headerlink" title="1. TCP 粘包/拆包"></a>1. TCP 粘包/拆包</h3><p>TCP 是一个”流”协议, 所谓流, 就是没有界限的一长串二进制数据, TCP 作为传输协议并不了解业务数据的具体含义, 它会根据TCP缓冲区的实际情况进行数据包的划分, 所以在业务上认为是一个完整的包, 可能会被TCP 拆分成多个包进行发送, 也有可能把多个小的包封装成一个大的数据包发送, 这就是所谓的TCP 粘包和拆包问题.</p>
+<p>同样, 在Netty 的编码器中, 也会对半包和粘包问题做相应的处理. 什么是半包? 顾名思义就是不完整的数据包, 因为Netty 在轮询读事件的时候, 每次将channel 中读取的数据, 不一定是一个完整的数据包, 这种情况下, 就叫半包。 粘包同样也不难理解, 如果Client 往Server 发送数据包, 如果发送频繁很有可能会将多个数据都发送到通道中, 如果在server 在读取的时候可能会读取到超过一个完整数据包的长度, 这种情况叫粘包. 有关半包和粘包, 如下图所示：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Netty%E7%BC%96%E8%A7%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF(13)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Netty%E5%A4%A7%E5%8A%A8%E8%84%89Pipeline(10)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Netty%E5%A4%A7%E5%8A%A8%E8%84%89Pipeline(10)/" class="post-title-link" itemprop="url">Netty大动脉Pipeline(10)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Netty-大动脉Pileline"><a href="#Netty-大动脉Pileline" class="headerlink" title="Netty 大动脉Pileline"></a>Netty 大动脉Pileline</h1><h2 id="1-Pepeline-设计原理"><a href="#1-Pepeline-设计原理" class="headerlink" title="1. Pepeline 设计原理"></a>1. Pepeline 设计原理</h2><h3 id="1-1-Channel-与-ChannelPipeline"><a href="#1-1-Channel-与-ChannelPipeline" class="headerlink" title="1.1 Channel 与 ChannelPipeline"></a>1.1 Channel 与 ChannelPipeline</h3><p>相信大家已经知道了, 在Netty中每个Channel 都有且仅有一个ChannelPipeline 与之对应, 他们的组成关系如下:</p>
+<p><img src="http://files.luyanan.com//img/20190929092313.png"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Netty%E5%A4%A7%E5%8A%A8%E8%84%89Pipeline(10)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf(12.1)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf(12.1)/" class="post-title-link" itemprop="url">Netty内存分配ByteBuf(12</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Netty-内存分配ByteBuf"><a href="#Netty-内存分配ByteBuf" class="headerlink" title="Netty 内存分配ByteBuf"></a>Netty 内存分配ByteBuf</h1><h2 id="1-初始ByteBuf"><a href="#1-初始ByteBuf" class="headerlink" title="1. 初始ByteBuf"></a>1. 初始ByteBuf</h2><p>ByteBuf 是Netty 整个结构里面最为底层的模块,主要负责把数据从底层IO里面读到ByteBuf.然后传递给应用程序. 应用程序出了完成后再把数据封装成ByteBuf 写回到IO. 所以, ByteBuf 是直接与底层打交道的一层抽象.  这块内容, 相对于Netty 其他模块来说,是非常复杂的. 但是没关系, 我会把这部分内容分别拆解, 从不同的角度来分析ByteBuf的分配和回收. 本章主要从内存与内存管理的抽象、不同规格大小和不同类型的内存的分配策略以及内存的回收过程来展开.</p>
+<h3 id="1-ByteBuf-的基本结构"><a href="#1-ByteBuf-的基本结构" class="headerlink" title="1. ByteBuf 的基本结构"></a>1. ByteBuf 的基本结构</h3><p>我们可以首先来看一下Netty 官方对ByteBuf 的描述如下：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf(12.1)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf(12.2)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf(12.2)/" class="post-title-link" itemprop="url">Netty内存分配ByteBuf(12</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="4-Pooled-池化内存分配"><a href="#4-Pooled-池化内存分配" class="headerlink" title="4. Pooled 池化内存分配"></a>4. Pooled 池化内存分配</h2><h3 id="1-PooledByteBufAllocator-简述"><a href="#1-PooledByteBufAllocator-简述" class="headerlink" title="1. PooledByteBufAllocator 简述"></a>1. PooledByteBufAllocator 简述</h3><p>现在开始, 我们来分析Pooled 池化内存的分配原理, 我们首先还是先找到 AbstractByteBufAllocator 的子类 PooledByteBufAllocator  实现的分配内存的两个方法. newDirectBuffer()方法和 newHeapBuffer()方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> ByteBuf <span class="title">newHeapBuffer</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">int</span> maxCapacity)</span> </span>&#123;</span><br><span class="line">        PoolThreadCache cache = threadCache.get();</span><br><span class="line">        PoolArena&lt;<span class="keyword">byte</span>[]&gt; heapArena = cache.heapArena;</span><br><span class="line"></span><br><span class="line">        ByteBuf buf;</span><br><span class="line">        <span class="keyword">if</span> (heapArena != <span class="keyword">null</span>) &#123;</span><br><span class="line">            buf = heapArena.allocate(cache, initialCapacity, maxCapacity);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            buf = <span class="keyword">new</span> UnpooledHeapByteBuf(<span class="keyword">this</span>, initialCapacity, maxCapacity);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> toLeakAwareBuffer(buf);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> ByteBuf <span class="title">newDirectBuffer</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">int</span> maxCapacity)</span> </span>&#123;</span><br><span class="line">        PoolThreadCache cache = threadCache.get();</span><br><span class="line">        PoolArena&lt;ByteBuffer&gt; directArena = cache.directArena;</span><br><span class="line"></span><br><span class="line">        ByteBuf buf;</span><br><span class="line">        <span class="keyword">if</span> (directArena != <span class="keyword">null</span>) &#123;</span><br><span class="line">            buf = directArena.allocate(cache, initialCapacity, maxCapacity);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (PlatformDependent.hasUnsafe()) &#123;</span><br><span class="line">                buf = UnsafeByteBufUtil.newUnsafeDirectByteBuf(<span class="keyword">this</span>, initialCapacity, maxCapacity);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                buf = <span class="keyword">new</span> UnpooledDirectByteBuf(<span class="keyword">this</span>, initialCapacity, maxCapacity);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> toLeakAwareBuffer(buf);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们发现这两个方法大体结构上是一样的. 我们以newDirectBuffer 为例简单的分析一下：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf(12.2)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Netty%E4%B8%AD%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F(14)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Netty%E4%B8%AD%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F(14)/" class="post-title-link" itemprop="url">Netty中的设计模式(14)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Netty中的设计模式"><a href="#Netty中的设计模式" class="headerlink" title="Netty中的设计模式"></a>Netty中的设计模式</h1><h2 id="1-单例模式"><a href="#1-单例模式" class="headerlink" title="1. 单例模式"></a>1. 单例模式</h2><h3 id="1-特点"><a href="#1-特点" class="headerlink" title="1. 特点:"></a>1. 特点:</h3><ul>
+<li>一个类在任何情况下只有一个对象,并提供一个全局访问点.</li>
+<li>可延迟创建</li>
+<li>避免线程安全问题.</li>
 </ul>
-<p>视图和数据通过<code>VM</code> 绑定起来,模型里面有变化会自动的通过<code>Directives</code> 填写到视图中,视图表单中添加了内容也会自动的通过<code>DOM Listeners</code> 保存到模型中</p>
+<h3 id="2-案例分析"><a href="#2-案例分析" class="headerlink" title="2. 案例分析:"></a>2. 案例分析:</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/vue/#more" rel="contents">
+              <a class="btn" href="/Netty%E4%B8%AD%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F(14)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -292,7 +739,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/ES6/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Java%20IO%20%20%20%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -306,7 +753,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/ES6/" class="post-title-link" itemprop="url">ES6</a>
+            <a href="/Java%20IO%20%20%20%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF(1)/" class="post-title-link" itemprop="url">Java IO   演进之路(1)</a>
         </h2>
 
         <div class="post-meta">
@@ -315,9 +762,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -325,11 +771,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/ES6/" itemprop="url" rel="index"><span itemprop="name">ES6</span></a>
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
                 </span>
             </span>
 
@@ -344,13 +786,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="ES6"><a href="#ES6" class="headerlink" title="ES6"></a>ES6</h1><p><code>ECMAScript6.0</code> (以下简称<code>ES6</code>,<code>ECMAScript</code> 是一种由<code>Ecma</code> 国际通过<code>ECMA-262</code>标准化的脚本),是<code>javaScript</code> 语言的下一代标准,2015年6月份正式发布,从<code>ES6</code>  开始的版本号采用年号,如<code>ES2015</code>,就是<code>ES6</code>. <code>ES2016</code> 就是<code>ES7</code></p>
-<p><code>ECMAScript</code> 是规范,<code>JavaScript</code> 则是具体的实现. </p>
-<p>在<code>ES6</code> 中,加入了很多新的特性. </p>
-<h2 id="1-声明变量"><a href="#1-声明变量" class="headerlink" title="1. 声明变量"></a>1. 声明变量</h2>
+          <h1 id="Java-IO-演进之路"><a href="#Java-IO-演进之路" class="headerlink" title="Java IO  演进之路"></a>Java IO  演进之路</h1><p>在此之前, 必须要了解几个概念</p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><h3 id="阻塞-Block-和非阻塞-Non-Block"><a href="#阻塞-Block-和非阻塞-Non-Block" class="headerlink" title="阻塞(Block) 和非阻塞(Non-Block)"></a>阻塞(Block) 和非阻塞(Non-Block)</h3><p>阻塞和非阻塞是进程在访问数据的时候,数据是否准备就绪的一种处理方式,当数据没有准备的时候</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/ES6/#more" rel="contents">
+              <a class="btn" href="/Java%20IO%20%20%20%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -374,7 +814,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Docker%E6%8C%81%E4%B9%85%E5%8C%96(4)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -388,7 +828,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="post-title-link" itemprop="url">序列化和反序列化</a>
+            <a href="/Docker%E6%8C%81%E4%B9%85%E5%8C%96(4)/" class="post-title-link" itemprop="url">Docker持久化(4)</a>
         </h2>
 
         <div class="post-meta">
@@ -397,9 +837,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -407,11 +846,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/2-%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">2. 分布式架构基础</span></a>
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
                 </span>
             </span>
 
@@ -426,328 +861,50 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="序列化和反序列化"><a href="#序列化和反序列化" class="headerlink" title="序列化和反序列化"></a>序列化和反序列化</h1><h2 id="Java领域中对象如何传输"><a href="#Java领域中对象如何传输" class="headerlink" title="Java领域中对象如何传输"></a>Java领域中对象如何传输</h2><h3 id="基于socket-进行对象传输"><a href="#基于socket-进行对象传输" class="headerlink" title="基于socket 进行对象传输"></a>基于socket 进行对象传输</h3><p>User</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.notes.serial;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2019/9/2</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(String name, Integer age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(Integer age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;User&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;name=&#x27;&quot;</span> + name + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, age=&quot;</span> + age +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
+          <h1 id="Docker-数据持久化"><a href="#Docker-数据持久化" class="headerlink" title="Docker 数据持久化"></a>Docker 数据持久化</h1><h2 id="1-Volume"><a href="#1-Volume" class="headerlink" title="1. Volume"></a>1. <code>Volume</code></h2><ol>
+<li><p>创建<code>mysql</code> 数据库的<code>contailer</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name mysql01 -e MYSQL_ROOT_PASSWORD=jack123 mysql</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看<code>volume</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker volume ls</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>具体查看该<code>volume</code></p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker volume inspect</span><br><span class="line">48507d0e7936f94eb984adf8177ec50fc6a7ecd8745ea0bc165ef485371589e8</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>名字不好看,name太长, 修改一下</p>
+<p> <code>-v mysql01_volume:/var/lib/mysql</code> 表示给上述的<code>vloume</code> 起一个能够识别的名字</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name mysql01 -v mysql01_volume:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=jack123 mysql</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看<code>volume</code> </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker volume ls</span><br><span class="line">docker volume inspect mysql01 vloume</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>真的能够持久化保存数据吗? 不妨做个试验</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 进入容器</span></span><br><span class="line">docker <span class="built_in">exec</span> -it mysql01 bash</span><br><span class="line"><span class="comment">## 登录mysql服务</span></span><br><span class="line">mysql -uroot -pjack123</span><br><span class="line"><span class="comment">## 创建测试库</span></span><br><span class="line">create database db_test</span><br><span class="line"><span class="comment">## 退出mysql, 退出`contailer`</span></span><br><span class="line"><span class="comment">## 删除mysql 容器</span></span><br><span class="line">docker rm -f mysql01</span><br><span class="line"><span class="comment">## 查看`volume`</span></span><br><span class="line">docker volume ls</span><br><span class="line"><span class="comment">## 发现`volume` 还在</span></span><br><span class="line">DRIVER VOLUME NAME</span><br><span class="line"><span class="built_in">local</span> mysql01_volume</span><br><span class="line"><span class="comment"># 新建一个mysql container，并且指定使用&quot;mysql01_volume&quot;</span></span><br><span class="line">docker run -d --name test-mysql -v mysql01_volume:/var/lib/mysql -e</span><br><span class="line">MYSQL_ROOT_PASSWORD=jack123 mysql</span><br><span class="line"><span class="comment"># 进入容器,登录mysql 服务,查看数据库</span></span><br><span class="line">docker <span class="built_in">exec</span> -it test-mysql bash</span><br><span class="line">mysql -uroot -pjack123</span><br><span class="line">show database;</span><br><span class="line"><span class="comment"># 可以发现db_test仍然在</span></span><br><span class="line"> 可以发现db_test仍然在</span><br><span class="line">| information_schema |</span><br><span class="line">| db_test |</span><br><span class="line">| mysql |</span><br><span class="line">| performance_schema |</span><br><span class="line">| sys</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%9F%BA%E4%BA%8ESocket%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AARPC%E6%A1%86%E6%9E%B6/">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%9F%BA%E4%BA%8ESocket%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AARPC%E6%A1%86%E6%9E%B6/" class="post-title-link" itemprop="url">基于Socket手写一个RPC框架</a>
-        </h2>
 
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/2-%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">2. 分布式架构基础</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="这里基于Socket-手写一个五脏俱全的RPC-框架"><a href="#这里基于Socket-手写一个五脏俱全的RPC-框架" class="headerlink" title="这里基于Socket 手写一个五脏俱全的RPC 框架"></a>这里基于Socket 手写一个五脏俱全的RPC 框架</h1><h2 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h2><p>我们这里先建两个项目</p>
-<p>rpc-server-api : 用于存放需要对外的接口类</p>
-<p>rpc-server-prodiver： 存放业务代码的项目</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%9F%BA%E4%BA%8ESocket%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AARPC%E6%A1%86%E6%9E%B6/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Http%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Http%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">Http 通信协议</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/2-%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">2. 分布式架构基础</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Http-通信协议"><a href="#Http-通信协议" class="headerlink" title="Http  通信协议"></a>Http  通信协议</h1><h2 id="Http通信协议的基本原理"><a href="#Http通信协议的基本原理" class="headerlink" title="Http通信协议的基本原理"></a>Http通信协议的基本原理</h2><p>http协议在远程通信场景中的应用还是挺广泛的,包括现在主流的微服务架构的通信都是基于http协议,. 由于经常使用的关系,所以大家对于http协议的理解还是比较深刻的,我这里就直接帮大家梳理一下http协议的基本原理</p>
-<h3 id="一次Http协议的基本请求"><a href="#一次Http协议的基本请求" class="headerlink" title="一次Http协议的基本请求"></a>一次Http协议的基本请求</h3><p>我们先来思考一个问题,我们在浏览器输入一个网址后,浏览器是如何展示目标网址中的内容的? 内容是从哪里来的?</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Http%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/" class="post-title-link" itemprop="url">任务调度之Quartz</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/" itemprop="url" rel="index"><span itemprop="name">任务调度</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="任务调度之Quartz"><a href="#任务调度之Quartz" class="headerlink" title="任务调度之Quartz"></a>任务调度之Quartz</h1><h2 id="1-漫谈任务调度"><a href="#1-漫谈任务调度" class="headerlink" title="1. 漫谈任务调度"></a>1. 漫谈任务调度</h2><h3 id="1-1-什么时候需要任务调度"><a href="#1-1-什么时候需要任务调度" class="headerlink" title="1.1 什么时候需要任务调度"></a>1.1 什么时候需要任务调度</h3><h4 id="1-1-1-任务调度的背景"><a href="#1-1-1-任务调度的背景" class="headerlink" title="1.1.1 任务调度的背景"></a>1.1.1 任务调度的背景</h4><p>在业务系统中,有很多这样的场景:</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/" class="post-title-link" itemprop="url">任务调度之Eliastic-Job</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/" itemprop="url" rel="index"><span itemprop="name">任务调度</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="任务调度之Eliastic-Job-md"><a href="#任务调度之Eliastic-Job-md" class="headerlink" title="任务调度之Eliastic-Job.md"></a>任务调度之Eliastic-Job.md</h1><h2 id="1-1-任务调度高级需求"><a href="#1-1-任务调度高级需求" class="headerlink" title="1.1 任务调度高级需求"></a>1.1 任务调度高级需求</h2><p><code>Quartz</code> 的不足:</p>
-<ol>
-<li>作业只能通过DB 抢占随机负载, 无法协调. </li>
-<li>作业不能分片, 单个任务数据太多了跑不完,消耗线程,负载不均匀. </li>
-<li>作业日志可视化监控,统计. </li>
+</li>
 </ol>
-<h3 id="1-2-发展历史"><a href="#1-2-发展历史" class="headerlink" title="1.2 发展历史"></a>1.2 发展历史</h3>
+<h2 id="2-Bing-Mounting"><a href="#2-Bing-Mounting" class="headerlink" title="2. Bing Mounting"></a>2. Bing Mounting</h2><ol>
+<li><p>创建<code>tomcat</code> 容器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name tomcat01 -p 9090:8080 -v /tmp/<span class="built_in">test</span>:/usr/<span class="built_in">local</span>/tomcat/webapps/<span class="built_in">test</span> tomcat</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看两个目录</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">centos：<span class="built_in">cd</span> /tmp/<span class="built_in">test</span></span><br><span class="line">tomcat容器：<span class="built_in">cd</span> /usr/<span class="built_in">local</span>/tomcat/webapps/<span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在<code>centos</code>的<code>/tmp/test</code> 中新建一个<code>1.html</code>并且也有内容</p>
+</li>
+<li><p>在<code>centos7</code> 上访问该路径,<code>curl localhost:9090/test/1.html</code></p>
+</li>
+<li><p>在<code>wim</code> 浏览器上通过<code>ip</code> 访问</p>
+<p><img src="http://files.luyanan.com//img/20200417165112.png" alt="image-20200417165051450"></p>
+</li>
+</ol>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/#more" rel="contents">
+              <a class="btn" href="/Docker%E6%8C%81%E4%B9%85%E5%8C%96(4)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -771,7 +928,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%90%AD%E5%BB%BAVPS%E6%9C%8D%E5%8A%A1/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Docker%E5%88%9D%E4%BB%8B%E7%BB%8D(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -785,7 +942,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%90%AD%E5%BB%BAVPS%E6%9C%8D%E5%8A%A1/" class="post-title-link" itemprop="url">Linux环境下搭建VPS服务</a>
+            <a href="/Docker%E5%88%9D%E4%BB%8B%E7%BB%8D(1)/" class="post-title-link" itemprop="url">Docker初介绍(1)</a>
         </h2>
 
         <div class="post-meta">
@@ -794,9 +951,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -804,7 +960,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/vpn/" itemprop="url" rel="index"><span itemprop="name">vpn</span></a>
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
                 </span>
             </span>
 
@@ -819,172 +975,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="linux-环境下搭建vps-服务"><a href="#linux-环境下搭建vps-服务" class="headerlink" title="linux 环境下搭建vps 服务"></a>linux 环境下搭建vps 服务</h3><blockquote>
-<p>说明:</p>
-<blockquote>
-<p>由于大部分的VPN被封,无意间接触到了VPS（Virtual Private Server 虚拟专用服务器，可用于FQ），所以简单记录下VPS服务搭建流程。</p>
+          <h1 id="Docker初介绍"><a href="#Docker初介绍" class="headerlink" title="Docker初介绍"></a>Docker初介绍</h1><h2 id="1-What-is-Docker"><a href="#1-What-is-Docker" class="headerlink" title="1. What is Docker"></a>1. What is Docker</h2><h3 id="1-1-官网首页"><a href="#1-1-官网首页" class="headerlink" title="1.1 官网首页"></a>1.1 <a target="_blank" rel="noopener" href="https://www.docker.com/">官网首页</a></h3><blockquote>
+<p>Modernize your applications, accelerate innovation Securely build, share and run modern applications anywhere</p>
 </blockquote>
-</blockquote>
-<blockquote>
-<blockquote>
-<p>此教程基于centos7,使用阿里服务器(香港区域,可访问外网)进行搭建</p>
-</blockquote>
-</blockquote>
-<h4 id="1-安装组件"><a href="#1-安装组件" class="headerlink" title="1. 安装组件"></a>1. 安装组件</h4><h5 id="1-1-安装python-组件"><a href="#1-1-安装python-组件" class="headerlink" title="1.1 安装python 组件"></a>1.1 安装python 组件</h5>
+<h3 id="1-2-Docs"><a href="#1-2-Docs" class="headerlink" title="1.2 Docs"></a>1.2 <a target="_blank" rel="noopener" href="https://docs.docker.com/get-started/">Docs</a></h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%90%AD%E5%BB%BAVPS%E6%9C%8D%E5%8A%A1/#more" rel="contents">
+              <a class="btn" href="/Docker%E5%88%9D%E4%BB%8B%E7%BB%8D(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
           <!--/noindex-->
         
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BASpringBoot%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BASpringBoot%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">深入浅出SpringBoot核心原理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring-Boot/" itemprop="url" rel="index"><span itemprop="name">Spring Boot</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="深入浅出SpringBoot核心原理"><a href="#深入浅出SpringBoot核心原理" class="headerlink" title="深入浅出SpringBoot核心原理"></a>深入浅出SpringBoot核心原理</h1><h2 id="1-SpringBoot-的基本认识"><a href="#1-SpringBoot-的基本认识" class="headerlink" title="1. SpringBoot 的基本认识"></a>1. SpringBoot 的基本认识</h2><p>不管是不是Spring Cloud Netflix  还是Spring Cloud Alibaba, 都是基于SpringBoot 这个框架来构建的.</p>
-<h3 id="1-什么是SpringBoot"><a href="#1-什么是SpringBoot" class="headerlink" title="1. 什么是SpringBoot"></a>1. 什么是SpringBoot</h3><p>对于Sping框架,我们接触的比较多的应该是Spring MVC和Spring. 而Spring 的核心在于IOC(控制反转)和ID(依赖注入). 而这些框架在使用的过程中需要配置大量的XML，或者需要做很多繁琐的配置. </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BASpringBoot%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%BE%85%E8%A1%A5%E5%85%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%BE%85%E8%A1%A5%E5%85%85/" class="post-title-link" itemprop="url">待补充</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring-Boot/" itemprop="url" rel="index"><span itemprop="name">Spring Boot</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="这里是添加一些需要补充的知识"><a href="#这里是添加一些需要补充的知识" class="headerlink" title="这里是添加一些需要补充的知识"></a>这里是添加一些需要补充的知识</h2><h3 id="ComponentScan-详解"><a href="#ComponentScan-详解" class="headerlink" title="@ComponentScan 详解"></a>@ComponentScan 详解</h3><blockquote>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u012326462/article/details/82765485">https://blog.csdn.net/u012326462/article/details/82765485</a></p>
-</blockquote>
-
       
     </div>
 
@@ -1002,7 +1004,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/20/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/22/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/20/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/22/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1070,14 +1072,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">229</span>
+          <span class="site-state-item-count">215</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-count">41</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">

@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F(8)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%9F%BA%E4%BA%8ESocket%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AARPC%E6%A1%86%E6%9E%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F(8)/" class="post-title-link" itemprop="url">设计模式之桥接模式(8)</a>
+            <a href="/%E5%9F%BA%E4%BA%8ESocket%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AARPC%E6%A1%86%E6%9E%B6/" class="post-title-link" itemprop="url">基于Socket手写一个RPC框架</a>
         </h2>
 
         <div class="post-meta">
@@ -230,7 +230,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -238,7 +238,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/2-%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">2. 分布式架构基础</span></a>
                 </span>
             </span>
 
@@ -253,12 +257,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="8-设计模式之桥接模式-Bridge-Pattren"><a href="#8-设计模式之桥接模式-Bridge-Pattren" class="headerlink" title="8. 设计模式之桥接模式(Bridge Pattren)"></a>8. 设计模式之桥接模式(Bridge Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Bridge  模式又叫桥接模式,是构造型的设计模式之一.Bridge 模式是基于类的最小设计原型,使用封装,聚合以及继承等行为来让不同的类承担不同的责任.它的主要特点是把抽象与行为实现分离开来,从而可以保证和部分的独立性以及应对他们的功能扩展</p>
-<h3 id="2-角色和职责"><a href="#2-角色和职责" class="headerlink" title="2. 角色和职责"></a>2. 角色和职责</h3>
+          <h1 id="这里基于Socket-手写一个五脏俱全的RPC-框架"><a href="#这里基于Socket-手写一个五脏俱全的RPC-框架" class="headerlink" title="这里基于Socket 手写一个五脏俱全的RPC 框架"></a>这里基于Socket 手写一个五脏俱全的RPC 框架</h1><h2 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h2><p>我们这里先建两个项目</p>
+<p>rpc-server-api : 用于存放需要对外的接口类</p>
+<p>rpc-server-prodiver： 存放业务代码的项目</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F(8)/#more" rel="contents">
+              <a class="btn" href="/%E5%9F%BA%E4%BA%8ESocket%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AARPC%E6%A1%86%E6%9E%B6/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -282,7 +286,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F(25)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Http%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -296,7 +300,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F(25)/" class="post-title-link" itemprop="url">设计模式之模板模式(25)</a>
+            <a href="/Http%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">Http 通信协议</a>
         </h2>
 
         <div class="post-meta">
@@ -306,7 +310,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -314,7 +318,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/2-%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">2. 分布式架构基础</span></a>
                 </span>
             </span>
 
@@ -329,12 +337,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="25-设计模式之模板模式-Template-Pattern"><a href="#25-设计模式之模板模式-Template-Pattern" class="headerlink" title="25. 设计模式之模板模式(Template  Pattern)"></a>25. 设计模式之模板模式(Template  Pattern)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>模板方法是行为模式的一种,它把具体特定步骤算法中的某些必要的处理委让给抽象方法,通过子类继承对抽象方法的不同实现改变整个算法的行为.</p>
-<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
+          <h1 id="Http-通信协议"><a href="#Http-通信协议" class="headerlink" title="Http  通信协议"></a>Http  通信协议</h1><h2 id="Http通信协议的基本原理"><a href="#Http通信协议的基本原理" class="headerlink" title="Http通信协议的基本原理"></a>Http通信协议的基本原理</h2><p>http协议在远程通信场景中的应用还是挺广泛的,包括现在主流的微服务架构的通信都是基于http协议,. 由于经常使用的关系,所以大家对于http协议的理解还是比较深刻的,我这里就直接帮大家梳理一下http协议的基本原理</p>
+<h3 id="一次Http协议的基本请求"><a href="#一次Http协议的基本请求" class="headerlink" title="一次Http协议的基本请求"></a>一次Http协议的基本请求</h3><p>我们先来思考一个问题,我们在浏览器输入一个网址后,浏览器是如何展示目标网址中的内容的? 内容是从哪里来的?</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F(25)/#more" rel="contents">
+              <a class="btn" href="/Http%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -358,7 +365,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F(22)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E7%9A%84%E6%BC%94%E8%BF%9B%E8%BF%87%E7%A8%8B(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -372,7 +379,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F(22)/" class="post-title-link" itemprop="url">设计模式之状态模式(22)</a>
+            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E7%9A%84%E6%BC%94%E8%BF%9B%E8%BF%87%E7%A8%8B(1)/" class="post-title-link" itemprop="url">分布式架构的演进过程(1)</a>
         </h2>
 
         <div class="post-meta">
@@ -382,7 +389,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -390,7 +397,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/1-%E6%BC%AB%E8%B0%88%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">1. 漫谈分布式架构</span></a>
                 </span>
             </span>
 
@@ -405,12 +416,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="22-设计模式之状态模式-State-Pattern"><a href="#22-设计模式之状态模式-State-Pattern" class="headerlink" title="22. 设计模式之状态模式(State Pattern)"></a>22. 设计模式之状态模式(State Pattern)</h2><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>状态模式是行为模式的一种,State模式允许改变对象的内部状态而改变对象的行为,这个对象表现的好像修改了他的类一样.</p>
-<h3 id="2-使用场景"><a href="#2-使用场景" class="headerlink" title="2. 使用场景"></a>2. 使用场景</h3>
+          <h1 id="分布式架构的演进过程"><a href="#分布式架构的演进过程" class="headerlink" title="分布式架构的演进过程"></a>分布式架构的演进过程</h1><h2 id="架构的本质"><a href="#架构的本质" class="headerlink" title="架构的本质"></a>架构的本质</h2><p>一个软件系统随着功能越来越多,调用量急剧增长,整个系统逐渐碎片化,越来越无序,最终无法维护和扩展,所以系统在一段时间的野蛮生长之后,也需要及时干预,避免越来越无序.架构的本质就是对系统进行有序化的重构,使系统不断进化,</p>
+<p>那架构是怎么实现无序带有序的呢？基本的手段就是分和合,先把系统打散,然后重新组合.分的过程是把系统拆分成各个子系统/模块/组件.拆的时候,首先要解决每个组件的定位问题,然后才能划分彼此的边界,实现合理的拆分.合就是根据最终要求,把各个分离的组件有机整合在一起,相对来说,第一步的拆分更难.</p>
+<p>拆分的结果使得开发人员能够做到业务聚焦,技能聚焦,实现开发敏捷,合的结果是系统变得柔性,可以因需而变,实现业务敏捷.</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F(22)/#more" rel="contents">
+              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E7%9A%84%E6%BC%94%E8%BF%9B%E8%BF%87%E7%A8%8B(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -434,7 +445,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%A9%BA%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%BC%8F(23)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%BF%9C%E7%A8%8B%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE(2)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -448,7 +459,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%A9%BA%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%BC%8F(23)/" class="post-title-link" itemprop="url">设计模式之空对象模式(23)</a>
+            <a href="/%E8%BF%9C%E7%A8%8B%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE(2)/" class="post-title-link" itemprop="url">远程通信协议(2)</a>
         </h2>
 
         <div class="post-meta">
@@ -458,7 +469,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -466,7 +477,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/1-%E6%BC%AB%E8%B0%88%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">1. 漫谈分布式架构</span></a>
                 </span>
             </span>
 
@@ -481,12 +496,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="23-设计模式之空对象模式-Null-Object-Pattern"><a href="#23-设计模式之空对象模式-Null-Object-Pattern" class="headerlink" title="23. 设计模式之空对象模式(Null Object Pattern)"></a>23. 设计模式之空对象模式(Null Object Pattern)</h2><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1.概念"></a>1.概念</h3><p>在空对象模式中,一个空对象取代NULL 对象实例的检查.Null对象不是检查空值,而是反应一个不做任何动作的关系.这样的Null对象也可以在数据不可用的时候提供默认行为.<br><br>在空对象模式中,我们可以创建么一个指定各种要执行的操作的抽象类和扩展该类的实体类,还创建一个未对该类做任何实现的空对象类,改空对象类无缝的使用在需要检查空值的地方.</p>
-<h3 id="2-代码示例"><a href="#2-代码示例" class="headerlink" title="2. 代码示例"></a>2. 代码示例</h3>
+          <h1 id="远程通信协议"><a href="#远程通信协议" class="headerlink" title="远程通信协议"></a>远程通信协议</h1><h2 id="一个http-请求的整个流程"><a href="#一个http-请求的整个流程" class="headerlink" title="一个http 请求的整个流程"></a>一个http 请求的整个流程</h2><p>在分布式架构中,有一个很重要的环节,就是分布式网络中的计算机节点彼此之间需要通信,这个通信的过程一定会涉及到通信协议相关的知识点.</p>
+<p>我们每天都在用浏览器访问各种网站,作为用户来说,只需要输入一个网址并且正确跳转就行,但是作为程序员,看到的可能是这个响应背后的整体流程,所以我想通过一个http请求的整个流程来进行讲解通信的知识,</p>
+<h3 id="负责域名解析的DNS服务"><a href="#负责域名解析的DNS服务" class="headerlink" title="负责域名解析的DNS服务"></a>负责域名解析的DNS服务</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%A9%BA%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%BC%8F(23)/#more" rel="contents">
+              <a class="btn" href="/%E8%BF%9C%E7%A8%8B%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE(2)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -510,7 +525,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F(24)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -524,7 +539,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F(24)/" class="post-title-link" itemprop="url">设计模式之策略模式(24)</a>
+            <a href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/" class="post-title-link" itemprop="url">任务调度之Quartz</a>
         </h2>
 
         <div class="post-meta">
@@ -534,7 +549,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -542,7 +557,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/" itemprop="url" rel="index"><span itemprop="name">任务调度</span></a>
                 </span>
             </span>
 
@@ -557,11 +572,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="24-设计模式之策略模式-Strategy-Pattern"><a href="#24-设计模式之策略模式-Strategy-Pattern" class="headerlink" title="24. 设计模式之策略模式(Strategy Pattern)"></a>24. 设计模式之策略模式(Strategy Pattern)</h1><hr>
-<h2 id="1-概念"><a href="#1-概念" class="headerlink" title="1.概念"></a>1.概念</h2><h6 id="其思想主要是针对一组算法-将每一种算法都封装到具有共同接口的独立的类中-从而使他们之间可以相互替换-策略模式最大的特点使得算法可以在不影响客户端的情况下发生变化-从而改变不同的功能"><a href="#其思想主要是针对一组算法-将每一种算法都封装到具有共同接口的独立的类中-从而使他们之间可以相互替换-策略模式最大的特点使得算法可以在不影响客户端的情况下发生变化-从而改变不同的功能" class="headerlink" title="其思想主要是针对一组算法,将每一种算法都封装到具有共同接口的独立的类中,从而使他们之间可以相互替换.策略模式最大的特点使得算法可以在不影响客户端的情况下发生变化,从而改变不同的功能"></a>其思想主要是针对一组算法,将每一种算法都封装到具有共同接口的独立的类中,从而使他们之间可以相互替换.策略模式最大的特点使得算法可以在不影响客户端的情况下发生变化,从而改变不同的功能</h6><h2 id="2-特点"><a href="#2-特点" class="headerlink" title="2.特点"></a>2.特点</h2>
+          <h1 id="任务调度之Quartz"><a href="#任务调度之Quartz" class="headerlink" title="任务调度之Quartz"></a>任务调度之Quartz</h1><h2 id="1-漫谈任务调度"><a href="#1-漫谈任务调度" class="headerlink" title="1. 漫谈任务调度"></a>1. 漫谈任务调度</h2><h3 id="1-1-什么时候需要任务调度"><a href="#1-1-什么时候需要任务调度" class="headerlink" title="1.1 什么时候需要任务调度"></a>1.1 什么时候需要任务调度</h3><h4 id="1-1-1-任务调度的背景"><a href="#1-1-1-任务调度的背景" class="headerlink" title="1.1.1 任务调度的背景"></a>1.1.1 任务调度的背景</h4><p>在业务系统中,有很多这样的场景:</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F(24)/#more" rel="contents">
+              <a class="btn" href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -585,7 +599,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F(1)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -599,7 +613,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F(1)/" class="post-title-link" itemprop="url">设计模式之简单工厂模式(1)</a>
+            <a href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/" class="post-title-link" itemprop="url">任务调度之Eliastic-Job</a>
         </h2>
 
         <div class="post-meta">
@@ -609,7 +623,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -617,7 +631,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/" itemprop="url" rel="index"><span itemprop="name">任务调度</span></a>
                 </span>
             </span>
 
@@ -632,12 +646,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="1-设计模式之工厂模式"><a href="#1-设计模式之工厂模式" class="headerlink" title="1. 设计模式之工厂模式"></a>1. 设计模式之工厂模式</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p> 工厂模式属于类的创建型模式 又叫静态工厂方法模式.通过专门定义一个类 来负责创建其他类的实例,被创建的实例通常都具有共同的父类</p>
-<h3 id="2-模式中包含的角色及其指责"><a href="#2-模式中包含的角色及其指责" class="headerlink" title="2. 模式中包含的角色及其指责"></a>2. 模式中包含的角色及其指责</h3>
+          <h1 id="任务调度之Eliastic-Job-md"><a href="#任务调度之Eliastic-Job-md" class="headerlink" title="任务调度之Eliastic-Job.md"></a>任务调度之Eliastic-Job.md</h1><h2 id="1-1-任务调度高级需求"><a href="#1-1-任务调度高级需求" class="headerlink" title="1.1 任务调度高级需求"></a>1.1 任务调度高级需求</h2><p><code>Quartz</code> 的不足:</p>
+<ol>
+<li>作业只能通过DB 抢占随机负载, 无法协调. </li>
+<li>作业不能分片, 单个任务数据太多了跑不完,消耗线程,负载不均匀. </li>
+<li>作业日志可视化监控,统计. </li>
+</ol>
+<h3 id="1-2-发展历史"><a href="#1-2-发展历史" class="headerlink" title="1.2 发展历史"></a>1.2 发展历史</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F(1)/#more" rel="contents">
+              <a class="btn" href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -661,7 +679,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F(10)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%90%AD%E5%BB%BAVPS%E6%9C%8D%E5%8A%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -675,7 +693,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F(10)/" class="post-title-link" itemprop="url">设计模式之组合模式(10)</a>
+            <a href="/Linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%90%AD%E5%BB%BAVPS%E6%9C%8D%E5%8A%A1/" class="post-title-link" itemprop="url">Linux环境下搭建VPS服务</a>
         </h2>
 
         <div class="post-meta">
@@ -685,7 +703,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -693,7 +711,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/vpn/" itemprop="url" rel="index"><span itemprop="name">vpn</span></a>
                 </span>
             </span>
 
@@ -708,12 +726,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="10-设计模式之组合模式-Composite-Pattren"><a href="#10-设计模式之组合模式-Composite-Pattren" class="headerlink" title="10 . 设计模式之组合模式(Composite Pattren)"></a>10 . 设计模式之组合模式(Composite Pattren)</h1><hr>
-<h3 id="1-概念组合"><a href="#1-概念组合" class="headerlink" title="1. 概念组合"></a>1. 概念组合</h3><p>组合模式是构造性的设计模式之一.通过递归手段来实现树形的对象结构,并可以通过一个对象来访问整个对象树</p>
-<h3 id="2-角色和职责"><a href="#2-角色和职责" class="headerlink" title="2. 角色和职责"></a>2. 角色和职责</h3>
+          <h3 id="linux-环境下搭建vps-服务"><a href="#linux-环境下搭建vps-服务" class="headerlink" title="linux 环境下搭建vps 服务"></a>linux 环境下搭建vps 服务</h3><blockquote>
+<p>说明:</p>
+<blockquote>
+<p>由于大部分的VPN被封,无意间接触到了VPS（Virtual Private Server 虚拟专用服务器，可用于FQ），所以简单记录下VPS服务搭建流程。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>此教程基于centos7,使用阿里服务器(香港区域,可访问外网)进行搭建</p>
+</blockquote>
+</blockquote>
+<h4 id="1-安装组件"><a href="#1-安装组件" class="headerlink" title="1. 安装组件"></a>1. 安装组件</h4><h5 id="1-1-安装python-组件"><a href="#1-1-安装python-组件" class="headerlink" title="1.1 安装python 组件"></a>1.1 安装python 组件</h5>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F(10)/#more" rel="contents">
+              <a class="btn" href="/Linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%90%AD%E5%BB%BAVPS%E6%9C%8D%E5%8A%A1/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -737,7 +764,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F(11)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/tomcat%E5%9F%BA%E7%A1%80%E8%AE%A4%E7%9F%A5(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -751,7 +778,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F(11)/" class="post-title-link" itemprop="url">设计模式之装饰器模式(11)</a>
+            <a href="/tomcat%E5%9F%BA%E7%A1%80%E8%AE%A4%E7%9F%A5(1)/" class="post-title-link" itemprop="url">tomcat基础认知(1)</a>
         </h2>
 
         <div class="post-meta">
@@ -761,7 +788,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -769,7 +796,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/tomcat/" itemprop="url" rel="index"><span itemprop="name">tomcat</span></a>
                 </span>
             </span>
 
@@ -784,12 +811,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="11-设计模式之装饰模式-Decorator-Pattren"><a href="#11-设计模式之装饰模式-Decorator-Pattren" class="headerlink" title="11. 设计模式之装饰模式(Decorator Pattren)"></a>11. 设计模式之装饰模式(Decorator Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>装饰模式又叫包装模式,通过一种对客户端透明的方式来扩展对象的功能,是继承关系的一个替换方案.</p>
-<h3 id="2-角色和职责"><a href="#2-角色和职责" class="headerlink" title="2. 角色和职责"></a>2. 角色和职责</h3>
+          <h1 id="tomcat基础认知"><a href="#tomcat基础认知" class="headerlink" title="tomcat基础认知"></a>tomcat基础认知</h1><h2 id="1-What-is-Tomcat"><a href="#1-What-is-Tomcat" class="headerlink" title="1. What is Tomcat"></a>1. What is Tomcat</h2><h3 id="1-1-Tomcat-官网"><a href="#1-1-Tomcat-官网" class="headerlink" title="1.1 Tomcat 官网"></a>1.1 <code>Tomcat</code> 官网</h3><p><code>官网</code>: <a target="_blank" rel="noopener" href="https://tomcat.apache.org/">https://tomcat.apache.org</a></p>
+<blockquote>
+<p>The Apache Tomcat® software is an open source implementation of the Java Servlet, JavaServer Pages, Java Expression Language and Java WebSocket technologies.</p>
+</blockquote>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F(11)/#more" rel="contents">
+              <a class="btn" href="/tomcat%E5%9F%BA%E7%A1%80%E8%AE%A4%E7%9F%A5(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -813,7 +841,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%A3%E9%87%8A%E5%99%A8%E6%A8%A1%E5%BC%8F(17)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/tomcat%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E5%92%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96(2)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -827,7 +855,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%A3%E9%87%8A%E5%99%A8%E6%A8%A1%E5%BC%8F(17)/" class="post-title-link" itemprop="url">设计模式之解释器模式(17)</a>
+            <a href="/tomcat%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E5%92%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96(2)/" class="post-title-link" itemprop="url">tomcat源码解读和性能优化(2)</a>
         </h2>
 
         <div class="post-meta">
@@ -837,7 +865,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -845,7 +873,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/tomcat/" itemprop="url" rel="index"><span itemprop="name">tomcat</span></a>
                 </span>
             </span>
 
@@ -860,12 +888,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="17-设计模式之解释器模式-Interpreter-Pattern"><a href="#17-设计模式之解释器模式-Interpreter-Pattern" class="headerlink" title="17. 设计模式之解释器模式(Interpreter Pattern)"></a>17. 设计模式之解释器模式(Interpreter Pattern)</h2><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>解释器模式是行为模式的一种,通过建立一个解释器,对于特定的计算机程序设计语言,用来解释预先定义的文法.简单的说,Interpreter 模式是一种简单的语法解释器构架</p>
-<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
+          <h1 id="tomcat源码解读和性能优化"><a href="#tomcat源码解读和性能优化" class="headerlink" title="tomcat源码解读和性能优化"></a>tomcat源码解读和性能优化</h1><h2 id="1-源码解读"><a href="#1-源码解读" class="headerlink" title="1. 源码解读"></a>1. 源码解读</h2><h3 id="1-1-BootStrap"><a href="#1-1-BootStrap" class="headerlink" title="1.1 BootStrap"></a>1.1 <code>BootStrap</code></h3><p><code>BootStrap</code> 是<code>tomcat</code>的入口类.</p>
+<p><code>org.apache.catalina.startup.Bootstrap#main</code></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%A3%E9%87%8A%E5%99%A8%E6%A8%A1%E5%BC%8F(17)/#more" rel="contents">
+              <a class="btn" href="/tomcat%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E5%92%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96(2)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -889,7 +916,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F(21)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E6%B5%85%E8%B0%88%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1(13)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -903,7 +930,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F(21)/" class="post-title-link" itemprop="url">设计模式之观察者模式(21)</a>
+            <a href="/%E6%B5%85%E8%B0%88%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1(13)/" class="post-title-link" itemprop="url">浅谈分布式事务(13)</a>
         </h2>
 
         <div class="post-meta">
@@ -913,7 +940,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -921,7 +948,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -936,12 +963,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="21-设计模式之观察者模式-Observer-Pattern"><a href="#21-设计模式之观察者模式-Observer-Pattern" class="headerlink" title="21. 设计模式之观察者模式(Observer Pattern)"></a>21. 设计模式之观察者模式(Observer Pattern)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Observer模式是行为模式的一种,它的作用是当一个对象的状态发生变化的时候,能够自动的通知其他的关联对象,自动刷新对象状态.<br><br>Observer模式提供给关联对象一种同步通信的手段,使某个对象与依赖他的其他对象之间保持状态同步.</p>
-<h3 id="2-使用场景"><a href="#2-使用场景" class="headerlink" title="2. 使用场景"></a>2. 使用场景</h3>
+          <h2 id="浅谈分布式事务"><a href="#浅谈分布式事务" class="headerlink" title="浅谈分布式事务"></a>浅谈分布式事务</h2><hr>
+<p>现今互联网界，分布式系统和微服务架构盛行。一个简单操作，在服务端非常可能是由<br>多个服务和数据库实例协同完成的。在一致性要求较高的场景下，多个独立操作之间的<br>一致性问题显得格外棘手。</p>
+<p>基于水平扩容能力和成本考虑，传统的强一致的解决方案（e.g.单机事务）纷纷被抛弃。<br>其理论依据就是响当当的 CAP 原理。往往为了可用性和分区容错性，忍痛放弃强一致支<br>持，转而追求最终一致性。</p>
+<h4 id="分布式系统的特性"><a href="#分布式系统的特性" class="headerlink" title="分布式系统的特性"></a>分布式系统的特性</h4>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F(21)/#more" rel="contents">
+              <a class="btn" href="/%E6%B5%85%E8%B0%88%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1(13)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -964,7 +992,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/11/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/13/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/11/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/13/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1032,14 +1060,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">229</span>
+          <span class="site-state-item-count">215</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-count">41</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">

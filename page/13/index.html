@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%AE%BF%E9%97%AE%E8%80%85%E6%A8%A1%E5%BC%8F(26)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8(12)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%AE%BF%E9%97%AE%E8%80%85%E6%A8%A1%E5%BC%8F(26)/" class="post-title-link" itemprop="url">设计模式之访问者模式(26)</a>
+            <a href="/spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8(12)/" class="post-title-link" itemprop="url">spring 注解大全(12)</a>
         </h2>
 
         <div class="post-meta">
@@ -230,7 +230,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -238,7 +238,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -253,12 +253,105 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="26-设计模式之访问者模式-Visitor-Pattern"><a href="#26-设计模式之访问者模式-Visitor-Pattern" class="headerlink" title="26. 设计模式之访问者模式(Visitor Pattern)"></a>26. 设计模式之访问者模式(Visitor Pattern)</h2><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>访问者模式是行为模式的一种,它分离对象的数据和行为,使用Visitor模式可以不修改已有类的情况下,增加新的操作.</p>
-<h3 id="2-使用场景"><a href="#2-使用场景" class="headerlink" title="2. 使用场景"></a>2. 使用场景</h3>
+          <h1 id="Spring-注解大全"><a href="#Spring-注解大全" class="headerlink" title="Spring 注解大全"></a>Spring 注解大全</h1><h3 id="核心注解"><a href="#核心注解" class="headerlink" title="核心注解"></a>核心注解</h3><table>
+<thead>
+<tr>
+<th>注解</th>
+<th>介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@Documented</td>
+<td>将会在被此注解注解的元素的javadoc文档中列出注解，一般都打上这个注解没坏处</td>
+</tr>
+<tr>
+<td>@Target</td>
+<td>注解能被应用的目标元素，比如类、方法、属性、参数等等</td>
+</tr>
+<tr>
+<td></td>
+<td>@Retention</td>
+</tr>
+<tr>
+<td>@Inherited</td>
+<td>如果子类没有定义注解的话，能自动从父类获取定义了继承属性的注解，比如Spring的@Service是没有继承特性的，但是@Transactional是有继承特性的，在OO继承体系中使用Spring注解的时候请特别注意这点，理所当然认为注解是能被子类继承的话可能会引起不必要的Bug，需要仔细斟酌是否开启继承</td>
+</tr>
+<tr>
+<td>@Repeatable</td>
+<td>Java 8 引入的特性，通过关联注解容器定义可重复注解，小小语法糖提高了代码可读性，对于元素有多个重复注解其实是很常见的事情，比如某方法可以是A角色可以访问也可以是B角色可以访问，某方法需要定时任务执行，要在A条件执行也需要在B条件执行</td>
+</tr>
+<tr>
+<td>@Native</td>
+<td>是否在.h头文件中生成被标记的字段，除非原生程序需要和Java程序交互，否则很少会用到这个元注解</td>
+</tr>
+</tbody></table>
+<h3 id="spring-核心注解"><a href="#spring-核心注解" class="headerlink" title="spring 核心注解"></a>spring 核心注解</h3><table>
+<thead>
+<tr>
+<th>注解</th>
+<th>介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@Controller</td>
+<td>定义表现层组件</td>
+</tr>
+<tr>
+<td>@Service</td>
+<td>定义业务逻辑层组件</td>
+</tr>
+<tr>
+<td>@Repository</td>
+<td>定义数据访问层组件</td>
+</tr>
+<tr>
+<td>@Component</td>
+<td>定义其他组件</td>
+</tr>
+<tr>
+<td>@Autowired</td>
+<td>自动装配</td>
+</tr>
+<tr>
+<td>@Required</td>
+<td>用于在setter方法标记属性值需要由Spring 进行装配,目前这个方法已经被spring 废弃,推荐使用构造方法注入</td>
+</tr>
+<tr>
+<td>@Qualifier</td>
+<td>用于给Bean定义修饰语来注入相应的bean</td>
+</tr>
+<tr>
+<td>@Value</td>
+<td>用于注入属性配置或者Spel表达式</td>
+</tr>
+<tr>
+<td>@Lookup</td>
+<td>可以实现方法的注入,如果我们的类是单例的,但是又希望Spring注入的依赖的对象是Prototype生命周期（每次new一个出来）的，这个时候可以通过此注解进行方法注入</td>
+</tr>
+<tr>
+<td>@EnableTransactionManagement</td>
+<td>用于开启事务管理，使用Spring Boot如果引入Spring Data的话不需要手动开启（不过建议大家在使用事务的时候还是通过日志来验证事务管理是否生效）</td>
+</tr>
+<tr>
+<td>@Transactional</td>
+<td>用于开启事务以及设置传播性、隔离性、回滚条件等；</td>
+</tr>
+<tr>
+<td>@TransactionalEventListener</td>
+<td>用于配置事务的回调方法，可以在事务提交前、提交后、完成后以及回滚后几个阶段接受回调事件。</td>
+</tr>
+<tr>
+<td>@Order</td>
+<td>可以设置Spring管理对象的加载顺序，在之前介绍AOP的文章中我们看到有的时候我们必须通过设置合理的@Order来合理安排切面的切入顺序避免一些问题，还有在一些业务场景中，我们往往会去定义一组类似于Filter的@Component，然后会从容器获得一组Bean，这个时候业务组件的运行顺序往往会比较重要，也可以通过这个方式进行排序</td>
+</tr>
+<tr>
+<td>@AliasFor</td>
+<td>注解可以设置一组注解属性相互作为别名，对于有歧义的时候会使代码更清晰，此外还有一个用途是创建复合注解，Spring MVC的@GetMapping注解就是基于@RequestMapping这个注解创建的复合注解，我们可以很方便得通过这种方式来实现注解的继承</td>
+</tr>
+</tbody></table>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%AE%BF%E9%97%AE%E8%80%85%E6%A8%A1%E5%BC%8F(26)/#more" rel="contents">
+              <a class="btn" href="/spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8(12)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -282,7 +375,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F(15)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%E7%89%88%E6%9C%AC%20%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83(4)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -296,7 +389,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F(15)/" class="post-title-link" itemprop="url">设计模式之责任链模式(15)</a>
+            <a href="/Spring%E7%89%88%E6%9C%AC%20%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83(4)/" class="post-title-link" itemprop="url">Spring版本 命名规范(4)</a>
         </h2>
 
         <div class="post-meta">
@@ -306,7 +399,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -314,7 +407,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -329,12 +422,40 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="15-责任链模式-Chain-of-Responsibility-COR"><a href="#15-责任链模式-Chain-of-Responsibility-COR" class="headerlink" title="15. 责任链模式(Chain of Responsibility )(COR)"></a>15. 责任链模式(Chain of Responsibility )(COR)</h2><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Chain of Responsibility(COR) 模式也叫作职责链模式或者责任连锁模式,是行为模式之一.该模式构造一系列分别担当不同职责的类的对象来共同完成一个任务,这些类的对象之间像链条一样紧密相连,所以被称作职责链模式</p>
-<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
+          <h1 id="4-Spring-版本命名规范"><a href="#4-Spring-版本命名规范" class="headerlink" title="4. Spring 版本命名规范"></a>4. Spring 版本命名规范</h1><h3 id="常见软件的版本号命名"><a href="#常见软件的版本号命名" class="headerlink" title="常见软件的版本号命名"></a>常见软件的版本号命名</h3><table>
+<thead>
+<tr>
+<th>软件</th>
+<th>升级过程</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>linux Kernel</td>
+<td>0.0.1 ,1.0.0,2.6.32</td>
+<td>若用X.Y.Z表示,则偶数Y 表示稳定版本,奇书Y 表示开发版本</td>
+</tr>
+<tr>
+<td>Window</td>
+<td>Windows 98,windows 2000,windows XP</td>
+<td>最大的特点就是杂乱无章,毫无规律</td>
+</tr>
+<tr>
+<td>SSH  Cleint</td>
+<td>0.9.8</td>
+<td></td>
+</tr>
+<tr>
+<td>OpenStack</td>
+<td>2014.1.3 2015.1.1.dev8</td>
+<td>日期命令</td>
+</tr>
+</tbody></table>
+<p>从上可以看出,不同的软件版本号风格各异,随着系统的规模越大,依赖的软件越多,如果这些软件没有遵循一套规范的命名风格,容易造成 Dependency Hell.所以 当我们发布版本的时候,版本号的命名需要遵循某种规则,其中Semantic Versionong2.0.0 定义了一套简单的规则以及条件来约束版本号的配置和增长.本文根据Semantic Versioning2.0.0 和Semantic Versioning3.0.0 选择性的整理出版本号命名规则指南.</p>
+<h3 id="语义化版本命名通行规则"><a href="#语义化版本命名通行规则" class="headerlink" title="语义化版本命名通行规则"></a>语义化版本命名通行规则</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F(15)/#more" rel="contents">
+              <a class="btn" href="/Spring%E7%89%88%E6%9C%AC%20%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83(4)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -358,7 +479,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%87%E6%BB%A4%E5%99%A8%E6%A8%A1%E5%BC%8F(9)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E6%80%BB%E7%BB%93(10)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -372,7 +493,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%87%E6%BB%A4%E5%99%A8%E6%A8%A1%E5%BC%8F(9)/" class="post-title-link" itemprop="url">设计模式之过滤器模式(9)</a>
+            <a href="/Spring%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E6%80%BB%E7%BB%93(10)/" class="post-title-link" itemprop="url">Spring编程思想总结(10)</a>
         </h2>
 
         <div class="post-meta">
@@ -382,7 +503,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -390,7 +511,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -405,12 +526,114 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="9-设计模式之过滤器模式-Filter-Pattren"><a href="#9-设计模式之过滤器模式-Filter-Pattren" class="headerlink" title="9. 设计模式之过滤器模式(Filter Pattren)"></a>9. 设计模式之过滤器模式(Filter Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1.概念"></a>1.概念</h3><p>过滤器模式或标准模式是一种设计模式,这种模式允许开发人员使用不同的标准来过滤一组对象,通过逻辑运算以解耦的方式把他们链接起来.这种类型的设计模式属于结构性模式.它组合多个标准来获得单一标准.</p>
-<h3 id="2-代码"><a href="#2-代码" class="headerlink" title="2. 代码"></a>2. 代码</h3>
+          <h1 id="10-Spring-编程思想总结"><a href="#10-Spring-编程思想总结" class="headerlink" title="10 . Spring 编程思想总结"></a>10 . Spring 编程思想总结</h1><table>
+<thead>
+<tr>
+<th>Spring思想</th>
+<th>应用场景(特点)</th>
+<th>一句话归纳</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OOP</td>
+<td>Object Oriented Programming(面向对象编程)用程序归纳总结生活中的一切事物</td>
+<td>封装,继承,多态</td>
+</tr>
+<tr>
+<td>BOP</td>
+<td>Bean Oriented Programming(面向Bean 编程) 面向Bean(普通的java类)设计程序</td>
+<td>一切从Bean开始</td>
+</tr>
+<tr>
+<td>AOP</td>
+<td>Aspect Origented Programming(面向切面编程) 找出多个类中有一定规律的代码,开发时拆开,运行时再合并,面向切面编程,既面向规则编程</td>
+<td>解耦,专人做专事</td>
+</tr>
+<tr>
+<td>IOC</td>
+<td>Inversion of Control(控制反转) 将new对象的动作交给Spring管理,并由Spring保存已经创建的对象(IOC容器)</td>
+<td>转交控制权(既控制权反转)</td>
+</tr>
+<tr>
+<td>DL/DI</td>
+<td>Dependency Injection (依赖注入)或者Dependency Lookup(依赖查找) 依赖注入,依赖查找,Spring不仅保存自己创建的对象,而且保存对象和对象之间的关系.注入既赋值,主要三种方式:构造方法,set方法,直接赋值</td>
+<td>赋值</td>
+</tr>
+</tbody></table>
+<h3 id="AOP在Spring中的应用"><a href="#AOP在Spring中的应用" class="headerlink" title="AOP在Spring中的应用"></a>AOP在Spring中的应用</h3><p>SpingAOP是一种编程范式,主要目的是将非功能性需求从功能性需求中分离出来,达到解耦的目的.主要应用场景由:Authentication(权限认证),Auto Caching(自动缓存处理),Error Handling(统一错误处理),Debugging(调式信息输出),Logging(日志记录),transactions(事务处理).现实生活中也常常用AOP思维来解决问题,如飞机组装,汽车组装等.<br><br>飞机各部件的零件会交给不同的厂家区生产,最终由组装工厂将各个部件组装成一个整理.将零件的生产交出去的主要目的是解耦,但是解耦之前必须由统一的标准.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring5%20%E6%96%B0%E7%89%B9%E6%80%A7%E7%AE%80%E8%BF%B0(3)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Spring5%20%E6%96%B0%E7%89%B9%E6%80%A7%E7%AE%80%E8%BF%B0(3)/" class="post-title-link" itemprop="url">Spring5 新特性简述(3)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="3-Spring5-新特性简述"><a href="#3-Spring5-新特性简述" class="headerlink" title="3. Spring5 新特性简述"></a>3. Spring5 新特性简述</h1><hr>
+<p>Spring 5 于 2017 年 9 月发布了通用版本 (GA)，它标志着自 2013 年 12 月以来第一个主要<br>Spring Framework 版本。它提供了一些人们期待已久的改进，还采用了一种全新的编程范例，以反应<br>式描述中陈述的反应式原则为基础。</p>
+<p>这个版本是很长时间以来最令人激动的 Spring Framework 版本。Spring 5 兼容 Java™8 和 JDK 9，<br>它集成了反应式流，以方便后续提供一种颠覆性方法来实现端点和 Web 应用程序开发。<br>当然，反应式编程不仅是此版本的主题，还是令许多程序员激动不已的重大特性。人们对能够针对负载<br>波动进行无缝扩展的容灾和响应式服务的需求在不断增加，Spring 5 很好地满足了这一需求。<br>我们将介绍 Java SE 8 和 Java EE 7 API 升级的基本内容、Spring 5 的新反应式编程模型、对 HTTP/2<br>支持，以及 Spring 通过 Kotlin 对函数式编程的全面支持。我还会简要介绍测试和性能增强，最后介<br>绍对 Spring 核心和容器的一般性修订。</p>
+<h4 id="升级到-Java-SE-8-和-Java-EE-7"><a href="#升级到-Java-SE-8-和-Java-EE-7" class="headerlink" title="升级到 Java SE 8 和 Java EE 7"></a>升级到 Java SE 8 和 Java EE 7</h4>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%87%E6%BB%A4%E5%99%A8%E6%A8%A1%E5%BC%8F(9)/#more" rel="contents">
+              <a class="btn" href="/Spring5%20%E6%96%B0%E7%89%B9%E6%80%A7%E7%AE%80%E8%BF%B0(3)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -434,7 +657,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F(18)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96(2)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -448,7 +671,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F(18)/" class="post-title-link" itemprop="url">设计模式之迭代器模式(18)</a>
+            <a href="/Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96(2)/" class="post-title-link" itemprop="url">Spring框架的前生今世(2)</a>
         </h2>
 
         <div class="post-meta">
@@ -458,7 +681,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -466,7 +689,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -481,12 +704,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="18-设计模式之迭代器模式-Iterator-Pattern"><a href="#18-设计模式之迭代器模式-Iterator-Pattern" class="headerlink" title="18.   设计模式之迭代器模式(Iterator Pattern)"></a>18.   设计模式之迭代器模式(Iterator Pattern)</h2><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Iterator模式是行为模式的一种,它把容器中包含的内部对象的访问委让给外部类,使用iterator(遍历)按顺序进行遍历访问的设计模式</p>
-<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
+          <h1 id="2-Spring的前世今生"><a href="#2-Spring的前世今生" class="headerlink" title="2 . Spring的前世今生"></a>2 . Spring的前世今生</h1><p>&emsp;&emsp;相信经历过不使用框架开发Web项目的70后、80后都会有如此感触，如今的程序员开发项目太轻松<br>了，基本只需要关心业务如何实现，通用技术问题只需要集成框架便可。早在2007年，一个基于Java<br>语言的开源框架正式发布，取了一个非常有活力且美好的名字，叫做 Spring。它是一个开源的轻量级<br>Java SE（Java标准版本）/Java EE（Java企业版本）开发应用框架，其目的是用于简化企业级应用程<br>序开发。应用程序是由一组相互协作的对象组成。而在传统应用程序开发中，一个完整的应用是由一组<br>相互协作的对象组成。所以开发一个应用除了要开发业务逻辑之外，最多的是关注如何使这些对象协作<br>来完成所需功能，而且要低耦合、高聚合。业务逻辑开发是不可避免的，那如果有个框架出来帮我们来<br>创建对象及管理这些对象之间的依赖关系。可能有人说了，比如“抽象工厂、工厂方法模式”不也可以</p>
+<p>帮我们创建对象，“生成器模式”帮我们处理对象间的依赖关系，不也能完成这些功能吗？可是这些又<br>需要我们创建另一些工厂类、生成器类，我们又要而外管理这些类，增加了我们的负担，如果能有种通<br>过配置方式来创建对象，管理对象之间依赖关系，我们不需要通过工厂和生成器来创建及管理对象之间<br>的依赖关系，这样我们是不是减少了许多工作，加速了开发，能节省出很多时间来干其他事。Spring<br>框架刚出来时主要就是来完成这个功能。</p>
+<p>&emsp;&emsp;Spring框架除了帮我们管理对象及其依赖关系，还提供像通用日志记录、性能统计、安全控制、异常处<br>理等面向切面的能力，还能帮我管理最头疼的数据库事务，本身提供了一套简单的JDBC访问实现，提<br>供与第三方数据访问框架集成（如Hibernate、JPA），与各种 JavaEE技术整合（如JavaMail、任务<br>调度等等），提供一套自己的Web层框架SpringMVC、而且还能非常简单的与第三方Web框架集成。<br>从这里我们可以认为 Spring 是一个超级粘合大平台，除了自己提供功能外，还提供粘合其他技术和框<br>架的能力，从而使我们可以更自由的选择到底使用什么技术进行开发。而且不管是JAVASE（C/S架构）<br>应用程序还是 JAVA EE（B/S架构）应用程序都可以使用这个平台进行开发。如今的 Spring 已经不再<br>是一个框架，早已成为了一种生态。SpringBoot的便捷式开发实现了零配置，SpringCloud全家桶，<br>提供了非常方便的解决方案。接下来，让我们来深入探讨Spring到底能给我们带来什么？</p>
+<h2 id="一切从Bean开始"><a href="#一切从Bean开始" class="headerlink" title="一切从Bean开始"></a>一切从Bean开始</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F(18)/#more" rel="contents">
+              <a class="btn" href="/Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96(2)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -510,7 +734,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F(7)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -524,7 +748,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F(7)/" class="post-title-link" itemprop="url">设计模式之适配器模式(7)</a>
+            <a href="/Spring%20%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85(1)/" class="post-title-link" itemprop="url">Spring 源码编译和安装(1)</a>
         </h2>
 
         <div class="post-meta">
@@ -534,7 +758,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -542,7 +766,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -557,12 +781,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="7-设计模式之适配器模式-Adapter-Pattren"><a href="#7-设计模式之适配器模式-Adapter-Pattren" class="headerlink" title="7. 设计模式之适配器模式(Adapter Pattren)"></a>7. 设计模式之适配器模式(Adapter Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Adapter 模式也叫适配器模式,是构造性模式的一种,通过Adapter模式可以改变已有类(或外部类)的接口形式.将一个类的接口转换成客户希望的另外一个接口.Apadter 模式使得原本由于接口不兼容而不能一起工作的哪些类可以一起工作.</p>
-<h3 id="2-角色及其职责"><a href="#2-角色及其职责" class="headerlink" title="2. 角色及其职责"></a>2. 角色及其职责</h3>
+          <h1 id="1-Spring-源码编译和安装"><a href="#1-Spring-源码编译和安装" class="headerlink" title="1. Spring 源码编译和安装"></a>1. Spring 源码编译和安装</h1><hr>
+<h3 id="Spring5源码下载注意事项"><a href="#Spring5源码下载注意事项" class="headerlink" title="Spring5源码下载注意事项"></a>Spring5源码下载注意事项</h3><p>首先你的JDK需要升级到1.8以上。Spring3.0开始,Spring源码采用github托管，不再提供官网下载<br>链接。这里不做过多赘述，大家可自行去github网站下载，我们使用的版本下载链接为：<br><a target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-framework/archive/v5.0.2.RELEASE.zip%EF%BC%8C%E4%B8%8B%E8%BD%BD%E5%AE%8C%E6%88%90%E5%90%8E%EF%BC%8C">https://github.com/spring-projects/spring-framework/archive/v5.0.2.RELEASE.zip，下载完成后，</a><br>解压源码包会看到以下文件目录：</p>
+<h3 id="基于Gradle的源码构建技巧"><a href="#基于Gradle的源码构建技巧" class="headerlink" title="基于Gradle的源码构建技巧"></a>基于Gradle的源码构建技巧</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F(7)/#more" rel="contents">
+              <a class="btn" href="/Spring%20%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -586,7 +810,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/jsonpath%E7%9A%84%E4%BB%8B%E7%BB%8D/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88(9)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -600,7 +824,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/jsonpath%E7%9A%84%E4%BB%8B%E7%BB%8D/" class="post-title-link" itemprop="url">jsonpath的介绍</a>
+            <a href="/Spring%20%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88(9)/" class="post-title-link" itemprop="url">Spring 事务详谈(9)</a>
         </h2>
 
         <div class="post-meta">
@@ -610,7 +834,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -618,7 +842,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -633,13 +857,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="jsonpath的介绍"><a href="#jsonpath的介绍" class="headerlink" title="jsonpath的介绍:"></a>jsonpath的介绍:</h1><p>JsonPath是一种简单的方法来提取给定JSON文档的部分内容。 JsonPath有许多编程语言，如Javascript，Python和PHP，Java。</p>
-<p>JsonPath提供的json解析非常强大，它提供了类似正则表达式的语法，基本上可以满足所有你想要获得的json内容。</p>
-<p>github上有它的应用:<a target="_blank" rel="noopener" href="https://github.com/json-path/JsonPath">https://github.com/json-path/JsonPath</a> </p>
-<p>JsonPath可在Central Maven存储库中找到。 Maven用户将其添加到您的POM:</p>
+          <h1 id="9-Spring-事务详谈"><a href="#9-Spring-事务详谈" class="headerlink" title="9. Spring 事务详谈"></a>9. Spring 事务详谈</h1><hr>
+<hr>
+<h3 id="从Spring事务配置说起"><a href="#从Spring事务配置说起" class="headerlink" title="从Spring事务配置说起"></a>从Spring事务配置说起</h3><p>先看看Spring事务的基础配置</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/jsonpath%E7%9A%84%E4%BB%8B%E7%BB%8D/#more" rel="contents">
+              <a class="btn" href="/Spring%20%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88(9)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -663,7 +886,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Window10%20%E5%88%A9%E7%94%A8WSL2%20%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%E4%BB%A5%E5%8F%8Adocker/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20MVC%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90(8)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -677,7 +900,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Window10%20%E5%88%A9%E7%94%A8WSL2%20%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%E4%BB%A5%E5%8F%8Adocker/" class="post-title-link" itemprop="url">Window10 利用WSL2 安装Linux子系统以及docker</a>
+            <a href="/Spring%20MVC%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90(8)/" class="post-title-link" itemprop="url">Spring MVC 源码分析(8)</a>
         </h2>
 
         <div class="post-meta">
@@ -687,7 +910,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -695,7 +918,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%89%E8%A3%85/" itemprop="url" rel="index"><span itemprop="name">安装</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -710,11 +933,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Window10-利用WSL2-安装Linux子系统以及docker"><a href="#Window10-利用WSL2-安装Linux子系统以及docker" class="headerlink" title="Window10 利用WSL2 安装Linux子系统以及docker"></a>Window10 利用WSL2 安装Linux子系统以及docker</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>windows10目前推出了WSL2，相对于WSL采用API转换的方式， WSL2 则完全不同，win10 开始内置了一个轻量级虚拟机，经过不断的优化，这个虚拟机实现了与 windows 的高度集成，实现了虚拟机的高性能运行，WSL2 便是运行在虚拟机上的一个完整的 linux 内核。因此WSL2给了在windows更接近原生linux的体验，同时wsl2 的开启速度有了非常明显的提升，几乎不需要再等待。本文探讨在win10专业版上利用WSL2安装docker的2种方式。</p>
-<h1 id="操作实践"><a href="#操作实践" class="headerlink" title="操作实践"></a>操作实践</h1><h2 id="1-开启安装windows10的WSL2功能"><a href="#1-开启安装windows10的WSL2功能" class="headerlink" title="1.开启安装windows10的WSL2功能"></a>1.开启安装windows10的WSL2功能</h2>
+          <h1 id="8-Spring-MVC-源码分析"><a href="#8-Spring-MVC-源码分析" class="headerlink" title="8. Spring MVC 源码分析"></a>8. Spring MVC 源码分析</h1><h2 id="Spring-MVC初体验"><a href="#Spring-MVC初体验" class="headerlink" title="Spring MVC初体验"></a>Spring MVC初体验</h2><hr>
+<hr>
+<h3 id="初探Spring-MVC请求处理流程"><a href="#初探Spring-MVC请求处理流程" class="headerlink" title="初探Spring MVC请求处理流程"></a>初探Spring MVC请求处理流程</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Window10%20%E5%88%A9%E7%94%A8WSL2%20%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%E4%BB%A5%E5%8F%8Adocker/#more" rel="contents">
+              <a class="btn" href="/Spring%20MVC%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90(8)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -738,7 +962,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%8EThreadPoolExecutor%E7%B1%BB%E6%B5%85%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20%E4%B8%AD%E7%BB%8F%E5%85%B8%E7%9A%84%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98(11)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -752,7 +976,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%8EThreadPoolExecutor%E7%B1%BB%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">线程池与ThreadPoolExecutor类浅析</a>
+            <a href="/Spring%20%E4%B8%AD%E7%BB%8F%E5%85%B8%E7%9A%84%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98(11)/" class="post-title-link" itemprop="url">Spring 中经典的高频面试题(11)</a>
         </h2>
 
         <div class="post-meta">
@@ -761,9 +985,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -771,7 +994,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -786,11 +1009,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="线程池与ThreadPoolExecutor类浅析"><a href="#线程池与ThreadPoolExecutor类浅析" class="headerlink" title="线程池与ThreadPoolExecutor类浅析"></a>线程池与ThreadPoolExecutor类浅析</h1><h2 id="一、Thread直接创建线程的弊端"><a href="#一、Thread直接创建线程的弊端" class="headerlink" title="一、Thread直接创建线程的弊端"></a>一、Thread直接创建线程的弊端</h2><p>（1）每次new Thread新建对象，性能差。<br>（2）线程缺乏统一管理，可能无限制的新建线程，相互竞争，有可能占用过多系统资源导致死机或OOM。<br>（3）缺少更多的功能，如更多执行、定期执行、线程中断。<br>（4）其他弊端，大家自行脑补，多动脑，没坏处，哈哈。</p>
-<h2 id="二、线程池的好处"><a href="#二、线程池的好处" class="headerlink" title="二、线程池的好处"></a>二、线程池的好处</h2><p>（1）重用存在的线程，减少对象创建、消亡的开销，性能佳。<br>（2）可以有效控制最大并发线程数，提高系统资源利用率，同时可以避免过多资源竞争，避免阻塞。<br>（3）提供定时执行、定期执行、单线程、并发数控制等功能。<br>（4）提供支持线程池监控的方法，可对线程池的资源进行实时监控。<br>（5）其他好处，大家自行脑补，多动脑，没坏处，哈哈。</p>
+          <h1 id="11-Spring-中经典的高频面试题"><a href="#11-Spring-中经典的高频面试题" class="headerlink" title="11 . Spring 中经典的高频面试题"></a>11 . Spring 中经典的高频面试题</h1><h3 id="1、什么是-Spring-框架？Spring-框架有哪些主要模块？"><a href="#1、什么是-Spring-框架？Spring-框架有哪些主要模块？" class="headerlink" title="1、什么是 Spring 框架？Spring 框架有哪些主要模块？"></a>1、什么是 Spring 框架？Spring 框架有哪些主要模块？</h3><p>Spring 框架是一个为 Java 应用程序的开发提供了综合、广泛的基础性支持的 Java 平台。Spring 帮助<br>开发者解决了开发中基础性的问题，使得开发人员可以专注于应用程序的开发。Spring 框架本身亦是按<br>照设计模式精心打造，这使得我们可以在开发环境中安心的集成 Spring 框架，不必担心 Spring 是如何<br>在后台进行工作的。</p>
+<p>Spring 框架至今已集成了 20 多个模块。这些模块主要被分如下图所示的核心容器、数据访问/集成,、 Web、AOP（面向切面编程）、工具、消息和测试模块。</p>
+<h3 id="2、使用-Spring-框架能带来哪些好处？"><a href="#2、使用-Spring-框架能带来哪些好处？" class="headerlink" title="2、使用 Spring 框架能带来哪些好处？"></a>2、使用 Spring 框架能带来哪些好处？</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%8EThreadPoolExecutor%E7%B1%BB%E6%B5%85%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/Spring%20%E4%B8%AD%E7%BB%8F%E5%85%B8%E7%9A%84%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98(11)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -814,7 +1038,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20IOC%E7%9A%84%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(5)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -828,7 +1052,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/" class="post-title-link" itemprop="url">类加载器</a>
+            <a href="/Spring%20IOC%E7%9A%84%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(5)/" class="post-title-link" itemprop="url">Spring IOC的 源码解析(5)</a>
         </h2>
 
         <div class="post-meta">
@@ -837,9 +1061,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:17:43" itemprop="dateCreated datePublished" datetime="2021-03-12T10:17:43+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -847,7 +1070,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -862,91 +1085,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h1><h2 id="1-Java类加载器"><a href="#1-Java类加载器" class="headerlink" title="1. Java类加载器"></a>1. Java类加载器</h2><ul>
-<li>Java源代码.java文件通过编译成字节码.class文件后，需要被加载到Java虚拟机的内存空间中使用，这个过程就是类加载。类加载依靠的是Java类加载器</li>
-<li>Java类加载器是Java运行时环境的一部分，负责动态加载Java类到Java虚拟机的内存空间中。类通常是按需加载的，即第一次使用该类时才加载。由于有了类加载器，Java运行时系统不需要知道文件的位置与文件系统。</li>
-</ul>
-<h2 id="2-JVM的3个默认类加载器"><a href="#2-JVM的3个默认类加载器" class="headerlink" title="2. JVM的3个默认类加载器"></a>2. JVM的3个默认类加载器</h2><ol>
-<li>引导（Bootstrap）类加载器。由原生代码C语言编写，不继承java.lang.ClassLoader。负责加载核心Java库，存储在<java_home>/jre/lib目录中。</java_home></li>
-<li>扩展（Extensions）类加载器。用来在指明的目录中加载Java的扩展类。Java虚拟机的实现会提供一个扩展库目录。该类加载器在此目录里面查找并加载Java类。该类由sun.misc.Launcher$ExtClassLoader实现。</li>
-<li>Apps类加载器（也称系统类加载器）。根据Java应用程序的类路径来加载Java类。一般来说，Java应用程序的类都是由它来完成加载的，可以通过ClassLoader.getSystemClassLoader()来获取它。该类由sun.misc.Launcher$AppClassLoader来实现。</li>
+          <h1 id="5-Spring核心之IOC源码解析"><a href="#5-Spring核心之IOC源码解析" class="headerlink" title="5. Spring核心之IOC源码解析"></a>5. Spring核心之IOC源码解析</h1><h3 id="再谈IOC与DI"><a href="#再谈IOC与DI" class="headerlink" title="再谈IOC与DI"></a>再谈IOC与DI</h3><p>&emsp;&emsp;  IOC(Inversion of Control)控制反转：所谓控制反转，就是把原先我们代码里面需要实现的对象创<br>建、依赖的代码，反转给容器来帮忙实现。那么必然的我们需要创建一个容器，同时需要一种描述来让<br>容器知道需要创建的对象与对象的关系。这个描述最具体表现就是我们所看到的配置文件。<br>DI(DependencyInjection)依赖注入：就是指对象是被动接受依赖类而不是自己主动去找，换句话说就<br>是指对象不是从容器中查找它依赖的类，而是在容器实例化对象的时候主动将它依赖的类注入给它。<br>先从我们自己设计这样一个视角来考虑：</p>
+<ol>
+<li>对象和对象的关系怎么表示？</li>
 </ol>
+<p>可以用xml，properties文件等语义化配置文件表示。<br>2. 描述对象关系的文件存放在哪里？</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/#more" rel="contents">
+              <a class="btn" href="/Spring%20IOC%E7%9A%84%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(5)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
           <!--/noindex-->
         
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%BE%85%E8%A7%A3%E5%86%B3%E9%9D%A2%E8%AF%95%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%BE%85%E8%A7%A3%E5%86%B3%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-title-link" itemprop="url">待解决面试题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>hash 碰撞<br>jvm内存模型<br>秒杀系统设计<br>rpc设计</p>
-
       
     </div>
 
@@ -964,7 +1115,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1032,14 +1183,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">229</span>
+          <span class="site-state-item-count">215</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-count">41</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
