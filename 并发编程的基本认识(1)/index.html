@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. 并发编程的基本认识  并发的发展历史真空管和穿孔打卡">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并发编程的基本认识(1)">
+<meta property="og:url" content="http://luyanan.com/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86(1)/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="1. 并发编程的基本认识  并发的发展历史真空管和穿孔打卡">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com/ef36af88-9b03-4e6a-9462-7986c998cf16.jpg">
+<meta property="og:image" content="http://files.luyanan.com/f29457a3-a62e-452d-9057-d9ac30e4eb2e.jpg">
+<meta property="og:image" content="http://files.luyanan.com/8ead47f2-a22b-487b-bc84-0d1698136469.jpg">
+<meta property="og:image" content="http://files.luyanan.com/c72ff7f3-325b-4f8d-909e-082ae4bc0caf.png">
+<meta property="article:published_time" content="2021-03-12T02:15:06.294Z">
+<meta property="article:modified_time" content="2021-03-12T02:15:06.294Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com/ef36af88-9b03-4e6a-9462-7986c998cf16.jpg">
+
+<link rel="canonical" href="http://luyanan.com/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86(1)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>并发编程的基本认识(1) | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86(1)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          并发编程的基本认识(1)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">并发编程</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-并发编程的基本认识"><a href="#1-并发编程的基本认识" class="headerlink" title="1. 并发编程的基本认识"></a>1. 并发编程的基本认识</h1><hr>
+<hr>
+<h2 id="并发的发展历史"><a href="#并发的发展历史" class="headerlink" title="并发的发展历史"></a>并发的发展历史</h2><h3 id="真空管和穿孔打卡"><a href="#真空管和穿孔打卡" class="headerlink" title="真空管和穿孔打卡"></a>真空管和穿孔打卡</h3><p>最早的计算机智能解决简单的数据运算问题,比如正弦,余弦等.运行方式:</p>
+<ul>
+<li>程序员首先把程序写到纸上,然后穿孔成卡片,再把卡片盒带入到专门的输入室.</li>
+<li>输入室也有专门的操作员将卡片的程序输入到计算机上</li>
+<li>计算机运行完当前的任务后,把计算结果从打印机上进行输出,操作员再把打印出来的结果送入到输出室</li>
+<li>然后,操作员再继续从已经送入到输出室的卡片盒中读入另一个任务重复上述的步骤.<br><img src="http://files.luyanan.com/ef36af88-9b03-4e6a-9462-7986c998cf16.jpg" alt="image"></li>
+</ul>
+<blockquote>
+<p>操作员在机房里面来回调度资源,以及计算机同一个时刻只能运行一个程序,在程序输入的过程中,计算机处于空闲状态.而当时的计算机是非常昂贵的,人们为了减少这种资源的浪费,就采用了批处理系统来解决.</p>
+</blockquote>
+<h3 id="晶体管和批处理系统"><a href="#晶体管和批处理系统" class="headerlink" title="晶体管和批处理系统"></a>晶体管和批处理系统</h3><p>批处理操作系统的运行方式:</p>
+<ul>
+<li>在输入室收集全部的作业,然后用一台比较便宜的计算机把他们读取到磁带上.</li>
+<li>然后把磁带输入到计算机上,计算机通过读取磁带的指令来进行运算,最后把结果输出到磁带上.</li>
+</ul>
+<p>批处理操作系统的好处在于计算机会一直处于运算状态,合理的利用了计算机的资源(运行流程如下图所示)<br><img src="http://files.luyanan.com/f29457a3-a62e-452d-9057-d9ac30e4eb2e.jpg" alt="image"></p>
+<ol>
+<li>程序员把卡片拿到1401机</li>
+<li>1401机把批处理作业读取到磁带上</li>
+<li>操作员把输出磁带送到7094机</li>
+<li>7094机进行计算</li>
+<li>操作员把输出的磁带送到1401机</li>
+<li>1401机打印输出<blockquote>
+<p> 批处理操作系统虽然能够解决计算机的空闲问题,但是当某一个作业因为等待磁盘或者其他I/O操作而暂停的时候,那么CPU就只能阻塞到该I/O完成,对于CPU操作密集的程序,I/O操作相对较少,因为浪费的时间也很少,但是对于I/O操作较多的场景来说,CPU的资源就是属于严重浪费的.</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="集成电路和多道程序设计"><a href="#集成电路和多道程序设计" class="headerlink" title="集成电路和多道程序设计"></a>集成电路和多道程序设计</h3><p>多道程序设计的出现解决了这个问题,就是把内存分为几个部分,每一个部分放不同的程序.当一个程序需要等到I/O操作完成的时候,那么CPU可以切换执行内存的另一个程序,如果内存中可以同时存放足够多的程序,那CPU的利用率就可以接近100%.</p>
+<p>在这个时候,引入了第一个概念 <strong>进程</strong>,进程的本质是一个正在执行的程序,程序运行时系统就会创建一个进程,并且给每个进程分配独立的内存地址空间保证每个进程地址不会相互干扰.同时,在CPU对进程做时间片的切换的时候,保证进程切换过程中仍然要从进程切换之前运行的位置开始执行.所以进程通常还会包括程序计数器,堆栈指针。<br><img src="http://files.luyanan.com/8ead47f2-a22b-487b-bc84-0d1698136469.jpg" alt="image"></p>
+<blockquote>
+<p> 有了进程之后,可以让操作系统从宏观层面实现多应用并发,而并发的实现是通过CPU时间片不断的切换执行.对于单核CPU来说,在任意一个时刻只会有一个进程被CPU调度.</p>
+</blockquote>
+<h3 id="线程的出现"><a href="#线程的出现" class="headerlink" title="线程的出现"></a>线程的出现</h3><p>&lt; 有了进程之后,为什么还会发明线程呢？</p>
+<ol>
+<li>在多核CPU中,利用多线程可以实现真正意义上的并行执行.</li>
+<li>在一个应用进程中,会存在多个同时执行的任务,如果其中一个任务被阻塞,将会引起不依赖该任务的任务也被阻塞.通过对不同任务创建不同的线程去处理,可以提高程序处理的实时性.</li>
+<li>线程可以认为是轻量级的进程,所以线程的创建,销毁比进程更快.<h2 id="线程的应用"><a href="#线程的应用" class="headerlink" title="线程的应用"></a>线程的应用</h2><h3 id="如何应用多线程"><a href="#如何应用多线程" class="headerlink" title="如何应用多线程"></a>如何应用多线程</h3>在java中,有多种方式来实现多线层.继承Thread类,实现Runnable接口,使用ExecutorService,Callable,Future实现带返回结果的多线程.</li>
+</ol>
+<h4 id="继承Thread-类创建线程"><a href="#继承Thread-类创建线程" class="headerlink" title="继承Thread 类创建线程."></a>继承Thread 类创建线程.</h4><p>Thread类本质上是实现了Runnable接口的一个实例,代表一个线程的实例.启动线程的唯一的方法就是通过Thread类的start()方法.start()方法是一个native 方法,它会启动一个新的线程,并执行run()方法,这种方式实现多线层很简单,通过自己的类直接extend Thread,并重写run() 方法,就可以启动新线程并执行自己定义的run()方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">package com.notes.concurrent.thread;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author luyanan</span><br><span class="line"> * @since 2019&#x2F;7&#x2F;11</span><br><span class="line"> * &lt;p&gt;使用继承Thread的方式实现多线程&lt;&#x2F;p&gt;</span><br><span class="line"> **&#x2F;</span><br><span class="line">public class ThreadDemo extends Thread &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(&quot;我是使用继承Thread的方式实现的多线程&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ThreadDemo threadDemo1 &#x3D; new ThreadDemo();</span><br><span class="line">        threadDemo1.start();</span><br><span class="line">        ThreadDemo threadDemo2 &#x3D; new ThreadDemo();</span><br><span class="line">        threadDemo2.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">我是使用继承Thread的方式实现的多线程</span><br><span class="line">我是使用继承Thread的方式实现的多线程</span><br></pre></td></tr></table></figure>
+<h4 id="实现Runnable-接口创建线程"><a href="#实现Runnable-接口创建线程" class="headerlink" title="实现Runnable 接口创建线程"></a>实现Runnable 接口创建线程</h4><p>如果自己的类已经继承了一个类,就无法直接extends Thread,此时,可以实现一个Runnable接口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">package com.notes.concurrent.thread;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author luyanan</span><br><span class="line"> * @since 2019&#x2F;7&#x2F;11</span><br><span class="line"> * &lt;p&gt;通过实现Runnable接口实现多线程&lt;&#x2F;p&gt;</span><br><span class="line"> **&#x2F;</span><br><span class="line">public class RunnableDemo implements Runnable &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName()+&quot;--通过实现Runnable接口实现多线程&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        RunnableDemo runnableDemo1 &#x3D; new RunnableDemo();</span><br><span class="line">        RunnableDemo runnableDemo2 &#x3D; new RunnableDemo();</span><br><span class="line"></span><br><span class="line">        new Thread(runnableDemo1,&quot;runnableDemo1&quot;).start();</span><br><span class="line">        new Thread(runnableDemo2,&quot;runnableDemo2&quot;).start();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">runnableDemo1--通过实现Runnable接口实现多线程</span><br><span class="line">runnableDemo2--通过实现Runnable接口实现多线程</span><br></pre></td></tr></table></figure>
+<h4 id="实现Callable接口-通过FutureTask包装器来创建Thread线程"><a href="#实现Callable接口-通过FutureTask包装器来创建Thread线程" class="headerlink" title="实现Callable接口 通过FutureTask包装器来创建Thread线程"></a>实现Callable接口 通过FutureTask包装器来创建Thread线程</h4><p>有的时候,我们可能需要让执行的线程在执行完成之后,提供一个返回值给当前的主线程,主线程需要依赖这个值进行后续的逻辑处理,那么这个时候,就需要用到带返回值的线程了.java中提供了这样的线程机制</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">package com.notes.concurrent.thread;</span><br><span class="line"></span><br><span class="line">import java.util.concurrent.Callable;</span><br><span class="line">import java.util.concurrent.ExecutorService;</span><br><span class="line">import java.util.concurrent.Executors;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author luyanan</span><br><span class="line"> * @since 2019&#x2F;7&#x2F;11</span><br><span class="line"> * &lt;p&gt;实现Callable接口 通过FutureTask包装器来创建Thread线程&lt;&#x2F;p&gt;</span><br><span class="line"> **&#x2F;</span><br><span class="line">public class CallableDemo implements Callable&lt;String&gt; &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String call() throws Exception &#123;</span><br><span class="line"></span><br><span class="line">        int a &#x3D; 1;</span><br><span class="line">        int b &#x3D; 2;</span><br><span class="line">        return &quot;返回结果:&quot; + (a + b);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        ExecutorService executorService &#x3D; Executors.newFixedThreadPool(1);</span><br><span class="line">        CallableDemo callableDemo &#x3D; new CallableDemo();</span><br><span class="line">        executorService.submit(callableDemo);</span><br><span class="line">        System.out.println(callableDemo.call());</span><br><span class="line">        executorService.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">返回结果:3</span><br></pre></td></tr></table></figure>
+
+<h3 id="多线程的实际应用场景"><a href="#多线程的实际应用场景" class="headerlink" title="多线程的实际应用场景"></a>多线程的实际应用场景</h3><p>其实大家在工作中应该很少有场景能够应用多线程,因为基于业务开发来说,很多使用异步的场景我们都通过分布式消息队列来做了.当不是说多线程就不会被用到,如果看一些项目的源码,就会发现线程的使用无处不在.</p>
+<p>之前看zookeeper 源码的时候看到一个比较有意思的异步责任链模式</p>
+<p>Request</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">package com.notes.concurrent.thread.chain;</span><br><span class="line"></span><br><span class="line">import lombok.Data;</span><br><span class="line">import lombok.ToString;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author luyanan</span><br><span class="line"> * @since 2019&#x2F;7&#x2F;11</span><br><span class="line"> * &lt;p&gt;&lt;&#x2F;p&gt;</span><br><span class="line"> **&#x2F;</span><br><span class="line">@ToString</span><br><span class="line">@Data</span><br><span class="line">public class Request &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>RequestProcessor</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">package com.notes.concurrent.thread.chain;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author luyanan</span><br><span class="line"> * @since 2019&#x2F;7&#x2F;11</span><br><span class="line"> * &lt;p&gt;&lt;&#x2F;p&gt;</span><br><span class="line"> **&#x2F;</span><br><span class="line">@FunctionalInterface</span><br><span class="line">public interface RequestProcessor &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    void processRequest(Request request);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>PrintProcessor</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">package com.notes.concurrent.thread.chain;</span><br><span class="line"></span><br><span class="line">import java.util.concurrent.LinkedBlockingQueue;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author luyanan</span><br><span class="line"> * @since 2019&#x2F;7&#x2F;11</span><br><span class="line"> * &lt;p&gt;输出执行链&lt;&#x2F;p&gt;</span><br><span class="line"> **&#x2F;</span><br><span class="line">public class PrintProcessor extends Thread implements RequestProcessor &#123;</span><br><span class="line"></span><br><span class="line">    private RequestProcessor nextRequestProcessor;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    LinkedBlockingQueue&lt;Request&gt; requests &#x3D; new LinkedBlockingQueue&lt;&gt;();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public PrintProcessor() &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public PrintProcessor(RequestProcessor requestProcessor) &#123;</span><br><span class="line">        this.nextRequestProcessor &#x3D; requestProcessor;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line"></span><br><span class="line">        while (true) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                Request take &#x3D; requests.take();</span><br><span class="line">&#x2F;&#x2F;                if(null !&#x3D; nextRequestProcessor)&#123;</span><br><span class="line">                    System.out.println(&quot;PrintProcessor &quot; + take.getName());</span><br><span class="line">                    nextRequestProcessor.processRequest(take);</span><br><span class="line">&#x2F;&#x2F;                &#125;</span><br><span class="line"></span><br><span class="line">            &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void processRequest(Request request) &#123;</span><br><span class="line">        requests.add(request);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>SaveProcessor</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">package com.notes.concurrent.thread.chain;</span><br><span class="line"></span><br><span class="line">import java.util.concurrent.LinkedBlockingQueue;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author luyanan</span><br><span class="line"> * @since 2019&#x2F;7&#x2F;11</span><br><span class="line"> * &lt;p&gt;输出执行链&lt;&#x2F;p&gt;</span><br><span class="line"> **&#x2F;</span><br><span class="line">public class SaveProcessor extends Thread implements RequestProcessor &#123;</span><br><span class="line"></span><br><span class="line">    private RequestProcessor nextRequestProcessor;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    LinkedBlockingQueue&lt;Request&gt; requests &#x3D; new LinkedBlockingQueue&lt;&gt;();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public SaveProcessor() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public SaveProcessor(RequestProcessor requestProcessor) &#123;</span><br><span class="line">        this.nextRequestProcessor &#x3D; requestProcessor;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line"></span><br><span class="line">        while (true) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                Request take &#x3D; requests.take();</span><br><span class="line">                System.out.println(&quot;SaveProcessor &quot; + take.getName());</span><br><span class="line">                if(null !&#x3D; nextRequestProcessor)&#123;</span><br><span class="line">                    nextRequestProcessor.processRequest(take);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void processRequest(Request request) &#123;</span><br><span class="line">        requests.add(request);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>ChainTest</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">package com.notes.concurrent.thread.chain;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author luyanan</span><br><span class="line"> * @since 2019&#x2F;7&#x2F;11</span><br><span class="line"> * &lt;p&gt;&lt;&#x2F;p&gt;</span><br><span class="line"> **&#x2F;</span><br><span class="line">public class ChainTest &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SaveProcessor saveProcessor &#x3D; new SaveProcessor();</span><br><span class="line">        saveProcessor.start();</span><br><span class="line">        PrintProcessor   printProcessor &#x3D; new PrintProcessor(saveProcessor);</span><br><span class="line">        printProcessor.start();</span><br><span class="line">        Request request &#x3D; new Request();</span><br><span class="line">        request.setName(&quot;one&quot;);</span><br><span class="line"></span><br><span class="line">        printProcessor.processRequest(request);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PrintProcessor one</span><br><span class="line">SaveProcessor one</span><br></pre></td></tr></table></figure>
+
+<h3 id="并发编程的基础"><a href="#并发编程的基础" class="headerlink" title="并发编程的基础"></a>并发编程的基础</h3><p>基本应用搞清楚后,我们再来基于Java 线程的基础切入来逐步去深入挖掘线程的整体模型.</p>
+<h4 id="线程的生命周期"><a href="#线程的生命周期" class="headerlink" title="线程的生命周期"></a>线程的生命周期</h4><p>java线程既然能够创建,那么也势必会被销毁,所以线程是存在生命周期的,那么我们接下来从线程的生命周期开始去了解线程.</p>
+<p>线程一共有6种状态(NEW,RUNNABLE,BLOCKED,WAITING,TIME_WAITING,TERMINATED)</p>
+<h5 id="NEW"><a href="#NEW" class="headerlink" title="NEW"></a>NEW</h5><p>NEW:初始状态,线程被构建,但是还没有调用start() 方法</p>
+<h5 id="RUNNABLE"><a href="#RUNNABLE" class="headerlink" title="RUNNABLE"></a>RUNNABLE</h5><p>RUNNABLE: 运行状态,JAVA 线程把操作系统中的就绪和运行状态统一称为”运行中”</p>
+<h5 id="BLOCKED"><a href="#BLOCKED" class="headerlink" title="BLOCKED"></a>BLOCKED</h5><p>BLOCKED: 阻塞状态,表示线程进入等待状态,也就是线程因为某种原因放弃了堆CPU使用权,阻塞也分为几种情况:</p>
+<ul>
+<li><strong>等待阻塞</strong>: 运行的线程执行 wait方法,jvm会把当前的线程放入到等待队列</li>
+<li><strong>同步阻塞</strong>:运行的线程在获取对象的同步锁的时候,若该同步锁被其他线程锁占用,那么jvm 会把当前的线程放入到锁池中</li>
+<li><strong>其他阻塞</strong>:运行的线程执行 Thread.sleep() 或者 t.join() 方法,或者发出了I/O请求时,jvm会把当前的线程设置为阻塞状态,当sleep 结束,join 线程终止 ,io处理完毕则线程恢复.</li>
+</ul>
+<h5 id="TIME-WAITING"><a href="#TIME-WAITING" class="headerlink" title="TIME_WAITING"></a>TIME_WAITING</h5><p>TIME_WAITING: 超时等待状态,超时以后自动返回.</p>
+<h5 id="TERMINATED"><a href="#TERMINATED" class="headerlink" title="TERMINATED"></a>TERMINATED</h5><p>TERMINATED:终止状态,表示当前线程执行完毕<br><img src="http://files.luyanan.com/c72ff7f3-325b-4f8d-909e-082ae4bc0caf.png" alt="image"><br>通过代码演示线程的状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">package com.notes.concurrent.thread;</span><br><span class="line"></span><br><span class="line">import java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author luyanan</span><br><span class="line"> * @since 2019&#x2F;7&#x2F;12</span><br><span class="line"> * &lt;p&gt;线程的状态&lt;&#x2F;p&gt;</span><br><span class="line"> **&#x2F;</span><br><span class="line">public class ThreadStatus &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; TIME_WAITING</span><br><span class="line">        new Thread(() -&gt; &#123;</span><br><span class="line"></span><br><span class="line">            try &#123;</span><br><span class="line">                TimeUnit.SECONDS.sleep(100);</span><br><span class="line">            &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, &quot;time_waiting&quot;).start();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; WAITING,线程在hreadStatus 类锁上通过wait 进行等待</span><br><span class="line">        new Thread(() -&gt; &#123;</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                synchronized (ThreadStatus.class) &#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                        ThreadStatus.class.wait();</span><br><span class="line">                    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, &quot;WAITING&quot;).start();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;线程在ThreadStatus 加锁后,不会释放锁</span><br><span class="line"></span><br><span class="line">        new Thread(new BlockedDemo(),&quot;BlockedDemo_01&quot;).start();</span><br><span class="line">        new Thread(new BlockedDemo(),&quot;BlockedDemo_02&quot;).start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    static class BlockedDemo extends Thread &#123;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            synchronized (BlockedDemo.class) &#123;</span><br><span class="line">                while (true)&#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                        TimeUnit.SECONDS.sleep(100);</span><br><span class="line">                    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>启动一个线程前,最好为这个线程设置线程名称,因为这样在使用 jstack分析程序或者进行问题排查的时候,就会给开发人员提供一些提示.</p>
+<p><strong>显示线程的状态</strong></p>
+<ol>
+<li>运行该实例,打开终端或者命令提示符,输入”jps”(显示当前所有java进程pid,window用户如果显示找不见此命令,去jdk的bin目录下运行)<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ jps</span><br><span class="line">11056</span><br><span class="line">12064 Launcher</span><br><span class="line">15184 RemoteMavenServer</span><br><span class="line">18480 ThreadStatus</span><br><span class="line">19328 Jps</span><br><span class="line">15028 jar</span><br><span class="line">19224 Launcher</span><br><span class="line">14444 Launcher</span><br><span class="line">2252 WebApplication</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li>根据上一步骤获取的pid,继续输入 jstack pid(jstack是java虚拟机自带的一种堆栈追踪工具.jstack用于打印出给定的java进程ID或者core file 或者远程调试服务器的java堆栈信息)<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line"> jstack 18480</span><br><span class="line">2019-07-12 12:58:50</span><br><span class="line">Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.151-b12 mixed mode):</span><br><span class="line"></span><br><span class="line">&quot;DestroyJavaVM&quot; #17 prio&#x3D;5 os_prio&#x3D;0 tid&#x3D;0x0000000003143800 nid&#x3D;0x3284 waiting o                                                                                                                                  n condition [0x0000000000000000]</span><br><span class="line">   java.lang.Thread.State: RUNNABLE</span><br><span class="line"></span><br><span class="line">&quot;BlockedDemo_02&quot; #16 prio&#x3D;5 os_prio&#x3D;0 tid&#x3D;0x000000001e780800 nid&#x3D;0x1c0 waiting f                                                                                                                                  or monitor entry [0x000000001f33f000]</span><br><span class="line">   java.lang.Thread.State: BLOCKED (on object monitor)</span><br><span class="line">        at com.notes.concurrent.thread.ThreadStatus$BlockedDemo.run(ThreadStatus                                                                                                                                  .java:52)</span><br><span class="line">        - waiting to lock &lt;0x000000076bc1ab70&gt; (a java.lang.Class for com.notes.                                                                                                                                  concurrent.thread.ThreadStatus$BlockedDemo)</span><br><span class="line">        at java.lang.Thread.run(Thread.java:748)</span><br><span class="line"></span><br><span class="line">&quot;BlockedDemo_01&quot; #14 prio&#x3D;5 os_prio&#x3D;0 tid&#x3D;0x000000001e780000 nid&#x3D;0x3c74 waiting                                                                                                                                   on condition [0x000000001f23f000]</span><br><span class="line">   java.lang.Thread.State: TIMED_WAITING (sleeping)</span><br><span class="line">        at java.lang.Thread.sleep(Native Method)</span><br><span class="line">        at java.lang.Thread.sleep(Thread.java:340)</span><br><span class="line">        at java.util.concurrent.TimeUnit.sleep(TimeUnit.java:386)</span><br><span class="line">        at com.notes.concurrent.thread.ThreadStatus$BlockedDemo.run(ThreadStatus                                                                                                                                  .java:52)</span><br><span class="line">        - locked &lt;0x000000076bc1ab70&gt; (a java.lang.Class for com.notes.concurren                                                                                                                                  t.thread.ThreadStatus$BlockedDemo)</span><br><span class="line">        at java.lang.Thread.run(Thread.java:748)</span><br><span class="line"></span><br><span class="line">&quot;WAITING&quot; #12 prio&#x3D;5 os_prio&#x3D;0 tid&#x3D;0x000000001e77f000 nid&#x3D;0x19b4 in Object.wait(                                                                                                                                  ) [0x000000001f13f000]</span><br><span class="line">   java.lang.Thread.State: WAITING (on object monitor)</span><br><span class="line">        at java.lang.Object.wait(Native Method)</span><br><span class="line">        - waiting on &lt;0x000000076b7b59b0&gt; (a java.lang.Class for com.notes.concu                                                                                                                                  rrent.thread.ThreadStatus)</span><br><span class="line">        at java.lang.Object.wait(Object.java:502)</span><br><span class="line">        at com.notes.concurrent.thread.ThreadStatus.lambda$main$1(ThreadStatus.j                                                                                                                                  ava:30)</span><br><span class="line">        - locked &lt;0x000000076b7b59b0&gt; (a java.lang.Class for com.notes.concurren                                                                                                                                  t.thread.ThreadStatus)</span><br><span class="line">        at com.notes.concurrent.thread.ThreadStatus$$Lambda$2&#x2F;381259350.run(Unkn                                                                                                                                  own Source)</span><br><span class="line">        at java.lang.Thread.run(Thread.java:748)</span><br><span class="line"></span><br><span class="line">&quot;Service Thread&quot; #10 daemon prio&#x3D;9 os_prio&#x3D;0 tid&#x3D;0x000000001dc7f000 nid&#x3D;0x1f5c r                                                                                                                                  unnable [0x0000000000000000]</span><br><span class="line">   java.lang.Thread.State: RUNNABLE</span><br><span class="line"></span><br><span class="line">&quot;C1 CompilerThread2&quot; #9 daemon prio&#x3D;9 os_prio&#x3D;2 tid&#x3D;0x000000001dc60000 nid&#x3D;0x89c                                                                                                                                   waiting on condition [0x0000000000000000]</span><br><span class="line">   java.lang.Thread.State: RUNNABLE</span><br><span class="line"></span><br><span class="line">&quot;C2 CompilerThread1&quot; #8 daemon prio&#x3D;9 os_prio&#x3D;2 tid&#x3D;0x000000001dc07800 nid&#x3D;0x338                                                                                                                                  c waiting on condition [0x0000000000000000]</span><br><span class="line">   java.lang.Thread.State: RUNNABLE</span><br><span class="line"></span><br><span class="line">&quot;C2 CompilerThread0&quot; #7 daemon prio&#x3D;9 os_prio&#x3D;2 tid&#x3D;0x000000001dc04800 nid&#x3D;0x111                                                                                                                                  c waiting on condition [0x0000000000000000]</span><br><span class="line">   java.lang.Thread.State: RUNNABLE</span><br><span class="line"></span><br><span class="line">&quot;Monitor Ctrl-Break&quot; #6 daemon prio&#x3D;5 os_prio&#x3D;0 tid&#x3D;0x000000001dbf2000 nid&#x3D;0x492                                                                                                                                  c runnable [0x000000001e23f000]</span><br><span class="line">   java.lang.Thread.State: RUNNABLE</span><br><span class="line">        at java.net.SocketInputStream.socketRead0(Native Method)</span><br><span class="line">        at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)</span><br><span class="line">        at java.net.SocketInputStream.read(SocketInputStream.java:171)</span><br><span class="line">        at java.net.SocketInputStream.read(SocketInputStream.java:141)</span><br><span class="line">        at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)</span><br><span class="line">        at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)</span><br><span class="line">        at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)</span><br><span class="line">        - locked &lt;0x000000076b8ca230&gt; (a java.io.InputStreamReader)</span><br><span class="line">        at java.io.InputStreamReader.read(InputStreamReader.java:184)</span><br><span class="line">        at java.io.BufferedReader.fill(BufferedReader.java:161)</span><br><span class="line">        at java.io.BufferedReader.readLine(BufferedReader.java:324)</span><br><span class="line">        - locked &lt;0x000000076b8ca230&gt; (a java.io.InputStreamReader)</span><br><span class="line">        at java.io.BufferedReader.readLine(BufferedReader.java:389)</span><br><span class="line">        at com.intellij.rt.execution.application.AppMainV2$1.run(AppMainV2.java:                                                                                                                                  64)</span><br><span class="line"></span><br><span class="line">&quot;Attach Listener&quot; #5 daemon prio&#x3D;5 os_prio&#x3D;2 tid&#x3D;0x000000001db50800 nid&#x3D;0x25d8 w                                                                                                                                  aiting on condition [0x0000000000000000]</span><br><span class="line">   java.lang.Thread.State: RUNNABLE</span><br><span class="line"></span><br><span class="line">&quot;Signal Dispatcher&quot; #4 daemon prio&#x3D;9 os_prio&#x3D;2 tid&#x3D;0x000000001c7d0000 nid&#x3D;0x1f64                                                                                                                                   runnable [0x0000000000000000]</span><br><span class="line">   java.lang.Thread.State: RUNNABLE</span><br><span class="line"></span><br><span class="line">&quot;Finalizer&quot; #3 daemon prio&#x3D;8 os_prio&#x3D;1 tid&#x3D;0x0000000003238800 nid&#x3D;0x2720 in Obje                                                                                                                                  ct.wait() [0x000000001db3e000]</span><br><span class="line">   java.lang.Thread.State: WAITING (on object monitor)</span><br><span class="line">        at java.lang.Object.wait(Native Method)</span><br><span class="line">        - waiting on &lt;0x000000076b608ec8&gt; (a java.lang.ref.ReferenceQueue$Lock)</span><br><span class="line">        at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:143)</span><br><span class="line">        - locked &lt;0x000000076b608ec8&gt; (a java.lang.ref.ReferenceQueue$Lock)</span><br><span class="line">        at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:164)</span><br><span class="line">        at java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:209)</span><br><span class="line"></span><br><span class="line">&quot;Reference Handler&quot; #2 daemon prio&#x3D;10 os_prio&#x3D;2 tid&#x3D;0x0000000003233000 nid&#x3D;0xb28                                                                                                                                   in Object.wait() [0x000000001da3f000]</span><br><span class="line">   java.lang.Thread.State: WAITING (on object monitor)</span><br><span class="line">        at java.lang.Object.wait(Native Method)</span><br><span class="line">        - waiting on &lt;0x000000076b606b68&gt; (a java.lang.ref.Reference$Lock)</span><br><span class="line">        at java.lang.Object.wait(Object.java:502)</span><br><span class="line">        at java.lang.ref.Reference.tryHandlePending(Reference.java:191)</span><br><span class="line">        - locked &lt;0x000000076b606b68&gt; (a java.lang.ref.Reference$Lock)</span><br><span class="line">        at java.lang.ref.Reference$ReferenceHandler.run(Reference.java:153)</span><br><span class="line"></span><br><span class="line">&quot;VM Thread&quot; os_prio&#x3D;2 tid&#x3D;0x000000001c787000 nid&#x3D;0x2698 runnable</span><br><span class="line"></span><br><span class="line">&quot;GC task thread#0 (ParallelGC)&quot; os_prio&#x3D;0 tid&#x3D;0x0000000003158800 nid&#x3D;0x1204 runn                                                                                                                                  able</span><br><span class="line"></span><br><span class="line">&quot;GC task thread#1 (ParallelGC)&quot; os_prio&#x3D;0 tid&#x3D;0x000000000315a000 nid&#x3D;0x4240 runn                                                                                                                                  able</span><br><span class="line"></span><br><span class="line">&quot;GC task thread#2 (ParallelGC)&quot; os_prio&#x3D;0 tid&#x3D;0x000000000315b800 nid&#x3D;0x4a78 runn                                                                                                                                  able</span><br><span class="line"></span><br><span class="line">&quot;GC task thread#3 (ParallelGC)&quot; os_prio&#x3D;0 tid&#x3D;0x000000000315d000 nid&#x3D;0x3378 runn                                                                                                                                  able</span><br><span class="line"></span><br><span class="line">&quot;VM Periodic Task Thread&quot; os_prio&#x3D;2 tid&#x3D;0x000000001dce1000 nid&#x3D;0x38ac waiting on                                                                                                                                   condition</span><br><span class="line"></span><br><span class="line">JNI global references: 336</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<p>通过上面的分析,我们了解到了线程的生命周期,现在在整个生命周期中并不是固定的处于某个状态,而是随着代码的执行在不同的状态之间进行切换.</p>
+<h4 id="线程的启动"><a href="#线程的启动" class="headerlink" title="线程的启动"></a>线程的启动</h4><p>前面我们通过一些案例演示了线程的启动,也就是调动statr()方法去启动一个线程,当run方法中的代码执行完毕之后,线程的声明周期也将终止.调用start 方法的语义是当前线程告诉JVM,启动调用satrt方法的线层.</p>
+<h5 id="线程的启动原理"><a href="#线程的启动原理" class="headerlink" title="线程的启动原理"></a>线程的启动原理</h5><p>很多同学最早学习线程的时候会比较疑惑,启动一个线程为什么是调用start()方法,而不是run()方法,这里做一个简单的分析,先简单看一下start()方法的定义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">public synchronized void start() &#123;</span><br><span class="line">        &#x2F;**</span><br><span class="line">         * This method is not invoked for the main method thread or &quot;system&quot;</span><br><span class="line">         * group threads created&#x2F;set up by the VM. Any new functionality added</span><br><span class="line">         * to this method in the future may have to also be added to the VM.</span><br><span class="line">         *</span><br><span class="line">         * A zero status value corresponds to state &quot;NEW&quot;.</span><br><span class="line">         *&#x2F;</span><br><span class="line">        if (threadStatus !&#x3D; 0)</span><br><span class="line">            throw new IllegalThreadStateException();</span><br><span class="line"></span><br><span class="line">        &#x2F;* Notify the group that this thread is about to be started</span><br><span class="line">         * so that it can be added to the group&#39;s list of threads</span><br><span class="line">         * and the group&#39;s unstarted count can be decremented. *&#x2F;</span><br><span class="line">        group.add(this);</span><br><span class="line"></span><br><span class="line">        boolean started &#x3D; false;</span><br><span class="line">        try &#123;</span><br><span class="line">            start0();</span><br><span class="line">            started &#x3D; true;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                if (!started) &#123;</span><br><span class="line">                    group.threadStartFailed(this);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; catch (Throwable ignore) &#123;</span><br><span class="line">                &#x2F;* do nothing. If start0 threw a Throwable then</span><br><span class="line">                  it will be passed up the call stack *&#x2F;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private native void start0();</span><br></pre></td></tr></table></figure>
+<p>我们看到调用start()方法实际上是调用一个nactve方法satrt0()来启动一个线程,首先start0()这个方法是在Thread的静态块中注册的,代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public</span><br><span class="line">class Thread implements Runnable &#123;</span><br><span class="line">    &#x2F;* Make sure registerNatives is the first thing &lt;clinit&gt; does. *&#x2F;</span><br><span class="line">    private static native void registerNatives();</span><br><span class="line">    static &#123;</span><br><span class="line">        registerNatives();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>registerNatives的本地方法的定义在文件Thread.c,Thread.c 定义了各个操作系统平台要用到店关于线程的公共数据和操作,一下是Thread.c的全部内容</p>
+<p><a target="_blank" rel="noopener" href="http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/00cd9dc3c2b5/src/share/native/java/lang/Thread.c">http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/00cd9dc3c2b5/src/share/native/java/lang/Thread.c</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;*</span><br><span class="line"> * Copyright (c) 1994, 2003, Oracle and&#x2F;or its affiliates. All rights reserved.</span><br><span class="line"> * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.</span><br><span class="line"> *</span><br><span class="line"> * This code is free software; you can redistribute it and&#x2F;or modify it</span><br><span class="line"> * under the terms of the GNU General Public License version 2 only, as</span><br><span class="line"> * published by the Free Software Foundation.  Oracle designates this</span><br><span class="line"> * particular file as subject to the &quot;Classpath&quot; exception as provided</span><br><span class="line"> * by Oracle in the LICENSE file that accompanied this code.</span><br><span class="line"> *</span><br><span class="line"> * This code is distributed in the hope that it will be useful, but WITHOUT</span><br><span class="line"> * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or</span><br><span class="line"> * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License</span><br><span class="line"> * version 2 for more details (a copy is included in the LICENSE file that</span><br><span class="line"> * accompanied this code).</span><br><span class="line"> *</span><br><span class="line"> * You should have received a copy of the GNU General Public License version</span><br><span class="line"> * 2 along with this work; if not, write to the Free Software Foundation,</span><br><span class="line"> * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.</span><br><span class="line"> *</span><br><span class="line"> * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA</span><br><span class="line"> * or visit www.oracle.com if you need additional information or have any</span><br><span class="line"> * questions.</span><br><span class="line"> *&#x2F;</span><br><span class="line"></span><br><span class="line">&#x2F;*-</span><br><span class="line"> *      Stuff for dealing with threads.</span><br><span class="line"> *      originally in threadruntime.c, Sun Sep 22 12:09:39 1991</span><br><span class="line"> *&#x2F;</span><br><span class="line"></span><br><span class="line">#include &quot;jni.h&quot;</span><br><span class="line">#include &quot;jvm.h&quot;</span><br><span class="line"></span><br><span class="line">#include &quot;java_lang_Thread.h&quot;</span><br><span class="line"></span><br><span class="line">#define THD &quot;Ljava&#x2F;lang&#x2F;Thread;&quot;</span><br><span class="line">#define OBJ &quot;Ljava&#x2F;lang&#x2F;Object;&quot;</span><br><span class="line">#define STE &quot;Ljava&#x2F;lang&#x2F;StackTraceElement;&quot;</span><br><span class="line"></span><br><span class="line">#define ARRAY_LENGTH(a) (sizeof(a)&#x2F;sizeof(a[0]))</span><br><span class="line"></span><br><span class="line">static JNINativeMethod methods[] &#x3D; &#123;</span><br><span class="line">    &#123;&quot;start0&quot;,           &quot;()V&quot;,        (void *)&amp;JVM_StartThread&#125;,</span><br><span class="line">    &#123;&quot;stop0&quot;,            &quot;(&quot; OBJ &quot;)V&quot;, (void *)&amp;JVM_StopThread&#125;,</span><br><span class="line">    &#123;&quot;isAlive&quot;,          &quot;()Z&quot;,        (void *)&amp;JVM_IsThreadAlive&#125;,</span><br><span class="line">    &#123;&quot;suspend0&quot;,         &quot;()V&quot;,        (void *)&amp;JVM_SuspendThread&#125;,</span><br><span class="line">    &#123;&quot;resume0&quot;,          &quot;()V&quot;,        (void *)&amp;JVM_ResumeThread&#125;,</span><br><span class="line">    &#123;&quot;setPriority0&quot;,     &quot;(I)V&quot;,       (void *)&amp;JVM_SetThreadPriority&#125;,</span><br><span class="line">    &#123;&quot;yield&quot;,            &quot;()V&quot;,        (void *)&amp;JVM_Yield&#125;,</span><br><span class="line">    &#123;&quot;sleep&quot;,            &quot;(J)V&quot;,       (void *)&amp;JVM_Sleep&#125;,</span><br><span class="line">    &#123;&quot;currentThread&quot;,    &quot;()&quot; THD,     (void *)&amp;JVM_CurrentThread&#125;,</span><br><span class="line">    &#123;&quot;countStackFrames&quot;, &quot;()I&quot;,        (void *)&amp;JVM_CountStackFrames&#125;,</span><br><span class="line">    &#123;&quot;interrupt0&quot;,       &quot;()V&quot;,        (void *)&amp;JVM_Interrupt&#125;,</span><br><span class="line">    &#123;&quot;isInterrupted&quot;,    &quot;(Z)Z&quot;,       (void *)&amp;JVM_IsInterrupted&#125;,</span><br><span class="line">    &#123;&quot;holdsLock&quot;,        &quot;(&quot; OBJ &quot;)Z&quot;, (void *)&amp;JVM_HoldsLock&#125;,</span><br><span class="line">    &#123;&quot;getThreads&quot;,        &quot;()[&quot; THD,   (void *)&amp;JVM_GetAllThreads&#125;,</span><br><span class="line">    &#123;&quot;dumpThreads&quot;,      &quot;([&quot; THD &quot;)[[&quot; STE, (void *)&amp;JVM_DumpThreads&#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">#undef THD</span><br><span class="line">#undef OBJ</span><br><span class="line">#undef STE</span><br><span class="line"></span><br><span class="line">JNIEXPORT void JNICALL</span><br><span class="line">Java_java_lang_Thread_registerNatives(JNIEnv *env, jclass cls)</span><br><span class="line">&#123;</span><br><span class="line">    (*env)-&gt;RegisterNatives(env, cls, methods, ARRAY_LENGTH(methods));</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>从这段代码中可以看出,satrt0()实际上会执行JVM_StartThread方法,这个方法是干啥的呢?从名字上看,似乎是在JVM层面上启动一个线程,如果真的是这样的话,那么在JVM层面,一定会调用java定义的run方法.那么接下来就去找找答案,我们找到 jvm.cpp这个文件,这个文件需要下载 hotspot 的源码才能找见</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">JVM_ENTRY(void, JVM_StartThread(JNIEnv* env, jobject jthread))</span><br><span class="line">  JVMWrapper(&quot;JVM_StartThread&quot;);</span><br><span class="line">  JavaThread *native_thread &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; We cannot hold the Threads_lock when we throw an exception,</span><br><span class="line">  &#x2F;&#x2F; due to rank ordering issues. Example:  we might need to grab the</span><br><span class="line">  &#x2F;&#x2F; Heap_lock while we construct the exception.</span><br><span class="line">  bool throw_illegal_thread_state &#x3D; false;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; We must release the Threads_lock before we can post a jvmti event</span><br><span class="line">  &#x2F;&#x2F; in Thread::start.</span><br><span class="line">  &#123;</span><br><span class="line">    &#x2F;&#x2F; Ensure that the C++ Thread and OSThread structures aren&#39;t freed before</span><br><span class="line">    &#x2F;&#x2F; we operate.</span><br><span class="line">    MutexLocker mu(Threads_lock);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; Since JDK 5 the java.lang.Thread threadStatus is used to prevent</span><br><span class="line">    &#x2F;&#x2F; re-starting an already started thread, so we should usually find</span><br><span class="line">    &#x2F;&#x2F; that the JavaThread is null. However for a JNI attached thread</span><br><span class="line">    &#x2F;&#x2F; there is a small window between the Thread object being created</span><br><span class="line">    &#x2F;&#x2F; (with its JavaThread set) and the update to its threadStatus, so we</span><br><span class="line">    &#x2F;&#x2F; have to check for this</span><br><span class="line">    if (java_lang_Thread::thread(JNIHandles::resolve_non_null(jthread)) !&#x3D; NULL) &#123;</span><br><span class="line">      throw_illegal_thread_state &#x3D; true;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      &#x2F;&#x2F; We could also check the stillborn flag to see if this thread was already stopped, but</span><br><span class="line">      &#x2F;&#x2F; for historical reasons we let the thread detect that itself when it starts running</span><br><span class="line"></span><br><span class="line">      jlong size &#x3D;</span><br><span class="line">             java_lang_Thread::stackSize(JNIHandles::resolve_non_null(jthread));</span><br><span class="line">      &#x2F;&#x2F; Allocate the C++ Thread structure and create the native thread.  The</span><br><span class="line">      &#x2F;&#x2F; stack size retrieved from java is signed, but the constructor takes</span><br><span class="line">      &#x2F;&#x2F; size_t (an unsigned type), so avoid passing negative values which would</span><br><span class="line">      &#x2F;&#x2F; result in really large stacks.</span><br><span class="line">      size_t sz &#x3D; size &gt; 0 ? (size_t) size : 0;</span><br><span class="line">      native_thread &#x3D; new JavaThread(&amp;thread_entry, sz);</span><br><span class="line"></span><br><span class="line">      &#x2F;&#x2F; At this point it may be possible that no osthread was created for the</span><br><span class="line">      &#x2F;&#x2F; JavaThread due to lack of memory. Check for this situation and throw</span><br><span class="line">      &#x2F;&#x2F; an exception if necessary. Eventually we may want to change this so</span><br><span class="line">      &#x2F;&#x2F; that we only grab the lock if the thread was created successfully -</span><br><span class="line">      &#x2F;&#x2F; then we can also do this check and throw the exception in the</span><br><span class="line">      &#x2F;&#x2F; JavaThread constructor.</span><br><span class="line">      if (native_thread-&gt;osthread() !&#x3D; NULL) &#123;</span><br><span class="line">        &#x2F;&#x2F; Note: the current thread is not being used within &quot;prepare&quot;.</span><br><span class="line">        native_thread-&gt;prepare(jthread);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>JVM_ENTRY是用来定义 JVM_StartThread 函数的,在这个函数里面创建了一个真正和平台有关的本地线程,我们继续看newJavaThread做了什么事情,</p>
+<p>在hotspot的源码中,thread.cpp 文件中的1558行的位置可以找下如下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">JavaThread::JavaThread(ThreadFunction entry_point, size_t stack_sz) :</span><br><span class="line">  Thread()</span><br><span class="line">#if INCLUDE_ALL_GCS</span><br><span class="line">  , _satb_mark_queue(&amp;_satb_mark_queue_set),</span><br><span class="line">  _dirty_card_queue(&amp;_dirty_card_queue_set)</span><br><span class="line">#endif &#x2F;&#x2F; INCLUDE_ALL_GCS</span><br><span class="line">&#123;</span><br><span class="line">  if (TraceThreadEvents) &#123;</span><br><span class="line">    tty-&gt;print_cr(&quot;creating thread %p&quot;, this);</span><br><span class="line">  &#125;</span><br><span class="line">  initialize();</span><br><span class="line">  _jni_attach_state &#x3D; _not_attaching_via_jni;</span><br><span class="line">  set_entry_point(entry_point);</span><br><span class="line">  &#x2F;&#x2F; Create the native thread itself.</span><br><span class="line">  &#x2F;&#x2F; %note runtime_23</span><br><span class="line">  os::ThreadType thr_type &#x3D; os::java_thread;</span><br><span class="line">  thr_type &#x3D; entry_point &#x3D;&#x3D; &amp;compiler_thread_entry ? os::compiler_thread :</span><br><span class="line">                                                     os::java_thread;</span><br><span class="line">  os::create_thread(this, thr_type, stack_sz);</span><br><span class="line">  _safepoint_visible &#x3D; false;</span><br><span class="line">  &#x2F;&#x2F; The _osthread may be NULL here because we ran out of memory (too many threads active).</span><br><span class="line">  &#x2F;&#x2F; We need to throw and OutOfMemoryError - however we cannot do this here because the caller</span><br><span class="line">  &#x2F;&#x2F; may hold a lock and all locks must be unlocked before throwing the exception (throwing</span><br><span class="line">  &#x2F;&#x2F; the exception consists of creating the exception object &amp; initializing it, initialization</span><br><span class="line">  &#x2F;&#x2F; will leave the VM via a JavaCall and then all locks must be unlocked).</span><br><span class="line">  &#x2F;&#x2F;</span><br><span class="line">  &#x2F;&#x2F; The thread is still suspended when we reach here. Thread must be explicit started</span><br><span class="line">  &#x2F;&#x2F; by creator! Furthermore, the thread must also explicitly be added to the Threads list</span><br><span class="line">  &#x2F;&#x2F; by calling Threads:add. The reason why this is not done here, is because the thread</span><br><span class="line">  &#x2F;&#x2F; object must be fully initialized (take a look at JVM_Start)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这个方法有两个参数,第一个是函数名称,线程创建成功之后会根据这个函数名称调用对用的函数,第二个是当前进程中已经有的线程数量.最后我们重点关注一下os::create_thread,实际上就是调用平台创建线程的方法来创建线程.</p>
+<p>接下来就是线程的启动,会调用Thread.cpp文件中的 Thread::start(Thread* thread) 方法,代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">void Thread::start(Thread* thread) &#123;</span><br><span class="line">  trace(&quot;start&quot;, thread);</span><br><span class="line">  &#x2F;&#x2F; Start is different from resume in that its safety is guaranteed by context or</span><br><span class="line">  &#x2F;&#x2F; being called from a Java method synchronized on the Thread object.</span><br><span class="line">  if (!DisableStartThread) &#123;</span><br><span class="line">    if (thread-&gt;is_Java_thread()) &#123;</span><br><span class="line">      &#x2F;&#x2F; Initialize the thread state to RUNNABLE before starting this thread.</span><br><span class="line">      &#x2F;&#x2F; Can not set it after the thread started because we do not know the</span><br><span class="line">      &#x2F;&#x2F; exact thread state at that time. It could be in MONITOR_WAIT or</span><br><span class="line">      &#x2F;&#x2F; in SLEEPING or some other state.</span><br><span class="line">      java_lang_Thread::set_thread_status(((JavaThread*)thread)-&gt;threadObj(),</span><br><span class="line">                                          java_lang_Thread::RUNNABLE);</span><br><span class="line">    &#125;</span><br><span class="line">    os::start_thread(thread);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>start方法中有一个函数调用,os::start_thread(thread); 调用平台启动线程的方法,最终会调用Thread.cpp文件中的 JavaThread::run()方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#x2F;&#x2F; The first routine called by a new Java thread</span><br><span class="line">void JavaThread::run() &#123;</span><br><span class="line">  &#x2F;&#x2F; initialize thread-local alloc buffer related fields</span><br><span class="line">  this-&gt;initialize_tlab();</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; used to test validitity of stack trace backs</span><br><span class="line">  this-&gt;record_base_of_stack_pointer();</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; Record real stack base and size.</span><br><span class="line">  this-&gt;record_stack_base_and_size();</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; Initialize thread local storage; set before calling MutexLocker</span><br><span class="line">  this-&gt;initialize_thread_local_storage();</span><br><span class="line"></span><br><span class="line">  this-&gt;create_stack_guard_pages();</span><br><span class="line"></span><br><span class="line">  this-&gt;cache_global_variables();</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; Thread is now sufficient initialized to be handled by the safepoint code as being</span><br><span class="line">  &#x2F;&#x2F; in the VM. Change thread state from _thread_new to _thread_in_vm</span><br><span class="line">  ThreadStateTransition::transition_and_fence(this, _thread_new, _thread_in_vm);</span><br><span class="line"></span><br><span class="line">  assert(JavaThread::current() &#x3D;&#x3D; this, &quot;sanity check&quot;);</span><br><span class="line">  assert(!Thread::current()-&gt;owns_locks(), &quot;sanity check&quot;);</span><br><span class="line"></span><br><span class="line">  DTRACE_THREAD_PROBE(start, this);</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; This operation might block. We call that after all safepoint checks for a new thread has</span><br><span class="line">  &#x2F;&#x2F; been completed.</span><br><span class="line">  this-&gt;set_active_handles(JNIHandleBlock::allocate_block());</span><br><span class="line"></span><br><span class="line">  if (JvmtiExport::should_post_thread_life()) &#123;</span><br><span class="line">    JvmtiExport::post_thread_start(this);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  EventThreadStart event;</span><br><span class="line">  if (event.should_commit()) &#123;</span><br><span class="line">     event.set_javalangthread(java_lang_Thread::thread_id(this-&gt;threadObj()));</span><br><span class="line">     event.commit();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; We call another function to do the rest so we are sure that the stack addresses used</span><br><span class="line">  &#x2F;&#x2F; from there will be lower than the stack base just computed</span><br><span class="line">  thread_main_inner();</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; Note, thread is no longer valid at this point!</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="线程的终止"><a href="#线程的终止" class="headerlink" title="线程的终止"></a>线程的终止</h4><p>线程的终止,并不是简单的调用stop命令去,虽然api现在可以调用,但是和其他的线程控制方法如 suppend,resume 一样都是过期了的方法 不建议使用,就拿stop来说,stop方法在结束一个线程的时候并不会保证线程的资源正常释放,因此会导致程序可能会出现一些不确定的状态.</p>
+<p>要优雅的去中断一个线程,在线程中提供了一个interrupt 方法</p>
+<h5 id="interrupt方法"><a href="#interrupt方法" class="headerlink" title="interrupt方法"></a>interrupt方法</h5><p>当其他的线程通过调用当前线程的interrupt 方法,表示向当前线程打个招呼,告诉他可以中断线程的执行,至于什么时候中断,取决于当前线程自己.</p>
+<p>线程通过检查自身是否被中断,可以通过isInterrupted() 来判断是否被中断.</p>
+<p>通过下面这个例子,来实现线程终止的逻辑</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">package com.notes.concurrent.thread;</span><br><span class="line"></span><br><span class="line">import java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author luyanan</span><br><span class="line"> * @since 2019&#x2F;7&#x2F;12</span><br><span class="line"> * &lt;p&gt;线程中断演示&lt;&#x2F;p&gt;</span><br><span class="line"> **&#x2F;</span><br><span class="line">public class InterruptDemo &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    private static int i;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line"></span><br><span class="line">        Thread thread &#x3D; new Thread(() -&gt; &#123;</span><br><span class="line">            &#x2F;&#x2F;默认情况下isInterrupted返回false,通过thread.interrupt 设置为true</span><br><span class="line">            while (!Thread.currentThread().isInterrupted()) &#123;</span><br><span class="line"></span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(&quot;num:&quot; + i);</span><br><span class="line"></span><br><span class="line">        &#125;);</span><br><span class="line">        thread.start();</span><br><span class="line">        TimeUnit.SECONDS.sleep(1);</span><br><span class="line"></span><br><span class="line">        thread.interrupt();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>通过这种标识位或者中断操作的方式能够使线程在终止的时候有机会去清理资源,而不是武断的去将线程停止,因为这种终止线程的方式更加安全和优雅.</p>
+<h5 id="Thread-interrupted"><a href="#Thread-interrupted" class="headerlink" title="Thread.interrupted"></a>Thread.interrupted</h5><p>上面的案例中,通过interrupt 设置了一个标识告诉线程可以终止了,线程中还提供了静态方法Thread.interrupted()对设置中断标识的线程复位.比如在上面的案例中,外面的线程调用thread.interrupt 来设置中断标识,而在线程里面,又通过Thread.interrupted 把线程的标识又进行了复位.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">package com.notes.concurrent.thread;</span><br><span class="line"></span><br><span class="line">import java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author luyanan</span><br><span class="line"> * @since 2019&#x2F;7&#x2F;12</span><br><span class="line"> * &lt;p&gt;线程复位演示&lt;&#x2F;p&gt;</span><br><span class="line"> **&#x2F;</span><br><span class="line">public class InterruptedDemo &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    private static int i;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">        Thread thread &#x3D; new Thread(() -&gt; &#123;</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                if (Thread.currentThread().isInterrupted()) &#123;</span><br><span class="line">                    System.out.println(&quot;before:&quot; + Thread.currentThread().isInterrupted());</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F;对线程进行复位</span><br><span class="line">                    Thread.interrupted();</span><br><span class="line">                    System.out.println(&quot;after:&quot; + Thread.currentThread().isInterrupted());</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, &quot;Interrupted&quot;);</span><br><span class="line">        thread.start();</span><br><span class="line">        TimeUnit.SECONDS.sleep(1);</span><br><span class="line">        thread.interrupt();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">before:true</span><br><span class="line">after:false</span><br></pre></td></tr></table></figure>
+
+<h5 id="其他线程的复位"><a href="#其他线程的复位" class="headerlink" title="其他线程的复位"></a>其他线程的复位</h5><p>除了可以通过Thread.interruped 方法对线程中断标识进行复位以外,还有一种被动复位的场景,就是抛出InterruptedException 异常,在InterruptedExeception 抛出之前,JVM会先把线程的中断标识进行清除,然后才会抛出InterruptedExeception 异常,这个时候如果调用isIntercepted 方法,将会返回false,分别通过下面两个Demo来演示复位的效果:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">private static int i;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    Thread thread &#x3D; new Thread(() -&gt; &#123;</span><br><span class="line">        while (!Thread.currentThread().isInterrupted())&#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;,&quot;InterruptedDemo&quot;);</span><br><span class="line">    thread.start();</span><br><span class="line">    System.out.println(thread.isInterrupted());</span><br><span class="line"></span><br><span class="line">    thread.interrupt();</span><br><span class="line"></span><br><span class="line">    System.out.println(thread.isInterrupted());</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">false</span><br><span class="line">true</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Thread thread &#x3D; new Thread(() -&gt; &#123;</span><br><span class="line"></span><br><span class="line">    while (!Thread.currentThread().isInterrupted()) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            TimeUnit.SECONDS.sleep(1);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, &quot;InterruptedDemo&quot;);</span><br><span class="line">thread.start();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">TimeUnit.SECONDS.sleep(1);</span><br><span class="line">thread.interrupt();</span><br><span class="line">System.out.println(thread.isInterrupted());</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">true</span><br></pre></td></tr></table></figure>
+
+
+<h5 id="为什么要复位"><a href="#为什么要复位" class="headerlink" title="为什么要复位"></a>为什么要复位</h5><p>Thread.interrupeed() 是属于当前线程的,是当前线程对外界中断信号的一个响应,表示自己已经得到了中断的信号,但不会立即中断,具体什么时候中断由自己决定,让外界知道在自身中断前,他的中断状态仍然是false,这就是复位的原因.</p>
+<h5 id="线程的终止原理"><a href="#线程的终止原理" class="headerlink" title="线程的终止原理"></a>线程的终止原理</h5><p>我们来看一下thread.interrupt() 方法做了什么事情</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public void interrupt() &#123;</span><br><span class="line">       if (this !&#x3D; Thread.currentThread())</span><br><span class="line">           checkAccess();</span><br><span class="line"></span><br><span class="line">       synchronized (blockerLock) &#123;</span><br><span class="line">           Interruptible b &#x3D; blocker;</span><br><span class="line">           if (b !&#x3D; null) &#123;</span><br><span class="line">               interrupt0();           &#x2F;&#x2F; Just to set the interrupt flag</span><br><span class="line">               b.interrupt(this);</span><br><span class="line">               return;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       interrupt0();</span><br><span class="line">   &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个方法里面,调用了interrupt0() 这个方法是一个native 方法,我们找到 jvm.cpp 里面,找到JVM_interrupt  的定义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">JVM_ENTRY(void, JVM_Interrupt(JNIEnv* env, jobject jthread))</span><br><span class="line">  JVMWrapper(&quot;JVM_Interrupt&quot;);</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; Ensure that the C++ Thread and OSThread structures aren&#39;t freed before we operate</span><br><span class="line">  oop java_thread &#x3D; JNIHandles::resolve_non_null(jthread);</span><br><span class="line">  MutexLockerEx ml(thread-&gt;threadObj() &#x3D;&#x3D; java_thread ? NULL : Threads_lock);</span><br><span class="line">  &#x2F;&#x2F; We need to re-resolve the java_thread, since a GC might have happened during the</span><br><span class="line">  &#x2F;&#x2F; acquire of the lock</span><br><span class="line">  JavaThread* thr &#x3D; java_lang_Thread::thread(JNIHandles::resolve_non_null(jthread));</span><br><span class="line">  if (thr !&#x3D; NULL) &#123;</span><br><span class="line">    Thread::interrupt(thr);</span><br><span class="line">  &#125;</span><br><span class="line">JVM_END</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这个方法比较简单,直接调用了 Thread::interrupt(thr) 方法,这个方法的定义在 Thread.cpp 文件中,代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">void Thread::interrupt(Thread* thread) &#123;</span><br><span class="line">  trace(&quot;interrupt&quot;, thread);</span><br><span class="line">  debug_only(check_for_dangling_thread_pointer(thread);)</span><br><span class="line">  os::interrupt(thread);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Thread::interrupt() 方法调用了os::interrupt(thread)方法,这个方法是调用平台的interrupt 方法,这个方法的实现是在 os_*.cpp文件中,其中* 代表不同的平台,因为JVM是跨平台的,所以对于不同的操作系统,线程的调度方式都是不一样的,我们以 os_linux.cpp为例</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; interrupt support</span><br><span class="line"></span><br><span class="line">void os::interrupt(Thread* thread) &#123;</span><br><span class="line">  assert(Thread::current() &#x3D;&#x3D; thread || Threads_lock-&gt;owned_by_self(),</span><br><span class="line">    &quot;possibility of dangling Thread pointer&quot;);</span><br><span class="line"></span><br><span class="line">  OSThread* osthread &#x3D; thread-&gt;osthread();</span><br><span class="line"></span><br><span class="line">  if (!osthread-&gt;interrupted()) &#123;</span><br><span class="line">    osthread-&gt;set_interrupted(true);</span><br><span class="line">    &#x2F;&#x2F; More than one thread can get here with the same value of osthread,</span><br><span class="line">    &#x2F;&#x2F; resulting in multiple notifications.  We do, however, want the store</span><br><span class="line">    &#x2F;&#x2F; to interrupted() to be visible to other threads before we execute unpark().</span><br><span class="line">    OrderAccess::fence();</span><br><span class="line">    ParkEvent * const slp &#x3D; thread-&gt;_SleepEvent ;</span><br><span class="line">    if (slp !&#x3D; NULL) slp-&gt;unpark() ;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; For JSR166. Unpark even if interrupt status already was set</span><br><span class="line">  if (thread-&gt;is_Java_thread())</span><br><span class="line">    ((JavaThread*)thread)-&gt;parker()-&gt;unpark();</span><br><span class="line"></span><br><span class="line">  ParkEvent * ev &#x3D; thread-&gt;_ParkEvent ;</span><br><span class="line">  if (ev !&#x3D; NULL) ev-&gt;unpark() ;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>set_interrupted(true) 实际上是调用了osThread.hpp中的set_interrupted() 方法,在os_Thread中定义了一个成员属性volatile jint _interrupted;</p>
+<p>通过上面的代码分析可以知道 thread.interrput() 方式实际上就是设置一个 interrupted 状态标识为true, 并且通过ParkEvent 的unpark()方法来唤醒线程.</p>
+<ol>
+<li>对于synchronized 阻塞的线程,被唤醒后会继续尝试获取锁，如果失败仍然可能被park</li>
+<li>在调用ParkEvent的park 之前,会先判断线程的中断状态,如果为true,会清除当前线程的中断标识.</li>
+<li>Object.wait,Thread.sleep,Thread.join 方法会抛出InterruptedExeception 异常.</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">在这里给大家普及一下为什么Object.wair,Thread.sleep,Thread.join 都会抛出InterrupredException ?你会发现这几个方法都个共同点,都是属于阻塞方法</span><br><span class="line">而阻塞方法的释放会取决于一些外部的事件,但是阻塞方法可能因为等不到外部的触发时间而导致无法终止,所以它允许一个线程请求自己来停止它正在做的事情. </span><br><span class="line">当一个方法抛出InterruptedException 的时候,它是在告诉调用者如果执行该方法的线程被中断,它会尝试正在做的事情,并且抛出InterruptedException 表示提前返回.</span><br><span class="line"></span><br><span class="line">所以这个异常的意思是表示一个阻塞被其他线程中断了,然后,由于线程调用了interrupt() 中断方法,那么 Object.wait(),Thread.sleep(),Thread.join() 等被阻塞的线程在被唤醒后会通过 isInterupted()  方法判断中断标识的状态变化,如果发现中断标识为true,则清除中断标识,</span><br><span class="line">然后抛出InterruptedException </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>需要注意的是,InterruptedException  异常的抛出并不意味着线程必须终止,而是提醒当前线程有中断的操作发生,至于接下来怎么处理,取决于线程本身,比如:</p>
+<ol>
+<li>直接捕获异常不做任何处理</li>
+<li>将异常往外抛出</li>
+<li>停止当前线程,并打印异常信息.</li>
+</ol>
+<p>为了让大家更好的理解上面的那段话,我们以Thread.sleep为例,直接从jdk中找到中断标识的清除和异常抛出的方法代码<br>找到is_interrupted() 方法,linux 平台的中的实现在 os_linux.cpp文件中M代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">bool os::is_interrupted(Thread* thread, bool clear_interrupted) &#123;</span><br><span class="line">  assert(Thread::current() &#x3D;&#x3D; thread || Threads_lock-&gt;owned_by_self(),</span><br><span class="line">    &quot;possibility of dangling Thread pointer&quot;);</span><br><span class="line"></span><br><span class="line">  OSThread* osthread &#x3D; thread-&gt;osthread();</span><br><span class="line"></span><br><span class="line">  bool interrupted &#x3D; osthread-&gt;interrupted();</span><br><span class="line"></span><br><span class="line">  if (interrupted &amp;&amp; clear_interrupted) &#123;</span><br><span class="line">    osthread-&gt;set_interrupted(false);</span><br><span class="line">    &#x2F;&#x2F; consider thread-&gt;_SleepEvent-&gt;reset() ... optional optimization</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return interrupted;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>找到Thread.sleep 这个操作在jdk中的源码体现怎么找?<br>代码在 jvm.cpp 文件中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">JVM_ENTRY(void, JVM_Sleep(JNIEnv* env, jclass threadClass, jlong millis))</span><br><span class="line">  JVMWrapper(&quot;JVM_Sleep&quot;);</span><br><span class="line"></span><br><span class="line">  if (millis &lt; 0) &#123;</span><br><span class="line">    THROW_MSG(vmSymbols::java_lang_IllegalArgumentException(), &quot;timeout value is negative&quot;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 判断并清除线程中断状态,如果中断状态为ture,则抛出InterruptedException 异常</span><br><span class="line">  if (Thread::is_interrupted (THREAD, true) &amp;&amp; !HAS_PENDING_EXCEPTION) &#123;</span><br><span class="line">    THROW_MSG(vmSymbols::java_lang_InterruptedException(), &quot;sleep interrupted&quot;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; Save current thread state and restore it at the end of this block.</span><br><span class="line">  &#x2F;&#x2F; And set new thread state to SLEEPING.</span><br><span class="line">  JavaThreadSleepState jtss(thread);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>注意上面加了中文注释的地方的代码,先判断 is_interrupted的状态,然后抛出一个InterruptedException 异常.到此为止,我们就已经分析清除了整个中断的流程.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E7%9A%84%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90(3)/" rel="prev" title="线程安全性的原理分析(3)">
+      <i class="fa fa-chevron-left"></i> 线程安全性的原理分析(3)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E5%B8%B8%E8%A7%81%E7%9A%84%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7%E7%9A%84%E4%BD%BF%E7%94%A8%E5%92%8C%E5%8E%9F%E7%90%86(5)/" rel="next" title="常见的并发工具的使用和原理(5)">
+      常见的并发工具的使用和原理(5) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">1. 并发编程的基本认识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%9A%84%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2"><span class="nav-number">1.1.</span> <span class="nav-text">并发的发展历史</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9C%9F%E7%A9%BA%E7%AE%A1%E5%92%8C%E7%A9%BF%E5%AD%94%E6%89%93%E5%8D%A1"><span class="nav-number">1.1.1.</span> <span class="nav-text">真空管和穿孔打卡</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%B6%E4%BD%93%E7%AE%A1%E5%92%8C%E6%89%B9%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.1.2.</span> <span class="nav-text">晶体管和批处理系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E6%88%90%E7%94%B5%E8%B7%AF%E5%92%8C%E5%A4%9A%E9%81%93%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.1.3.</span> <span class="nav-text">集成电路和多道程序设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%87%BA%E7%8E%B0"><span class="nav-number">1.1.4.</span> <span class="nav-text">线程的出现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">1.2.</span> <span class="nav-text">线程的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%BA%94%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.2.1.</span> <span class="nav-text">如何应用多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%A7%E6%89%BFThread-%E7%B1%BB%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">继承Thread 类创建线程.</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0Runnable-%E6%8E%A5%E5%8F%A3%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">实现Runnable 接口创建线程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0Callable%E6%8E%A5%E5%8F%A3-%E9%80%9A%E8%BF%87FutureTask%E5%8C%85%E8%A3%85%E5%99%A8%E6%9D%A5%E5%88%9B%E5%BB%BAThread%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">实现Callable接口 通过FutureTask包装器来创建Thread线程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.2.2.</span> <span class="nav-text">多线程的实际应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%9A%84%E5%9F%BA%E7%A1%80"><span class="nav-number">1.2.3.</span> <span class="nav-text">并发编程的基础</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">线程的生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#NEW"><span class="nav-number">1.2.3.1.1.</span> <span class="nav-text">NEW</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#RUNNABLE"><span class="nav-number">1.2.3.1.2.</span> <span class="nav-text">RUNNABLE</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#BLOCKED"><span class="nav-number">1.2.3.1.3.</span> <span class="nav-text">BLOCKED</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#TIME-WAITING"><span class="nav-number">1.2.3.1.4.</span> <span class="nav-text">TIME_WAITING</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#TERMINATED"><span class="nav-number">1.2.3.1.5.</span> <span class="nav-text">TERMINATED</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%90%AF%E5%8A%A8"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">线程的启动</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%90%AF%E5%8A%A8%E5%8E%9F%E7%90%86"><span class="nav-number">1.2.3.2.1.</span> <span class="nav-text">线程的启动原理</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%BB%88%E6%AD%A2"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">线程的终止</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#interrupt%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.3.3.1.</span> <span class="nav-text">interrupt方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Thread-interrupted"><span class="nav-number">1.2.3.3.2.</span> <span class="nav-text">Thread.interrupted</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%A4%8D%E4%BD%8D"><span class="nav-number">1.2.3.3.3.</span> <span class="nav-text">其他线程的复位</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%A4%8D%E4%BD%8D"><span class="nav-number">1.2.3.3.4.</span> <span class="nav-text">为什么要复位</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%BB%88%E6%AD%A2%E5%8E%9F%E7%90%86"><span class="nav-number">1.2.3.3.5.</span> <span class="nav-text">线程的终止原理</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">229</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20IOC%E7%9A%84%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(5)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">Nacos长轮询和集群分析</a>
+            <a href="/Spring%20IOC%E7%9A%84%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(5)/" class="post-title-link" itemprop="url">Spring IOC的 源码解析(5)</a>
         </h2>
 
         <div class="post-meta">
@@ -229,9 +229,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,11 +238,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/nacos/" itemprop="url" rel="index"><span itemprop="name">nacos</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -258,660 +253,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="长轮询的时间间隔"><a href="#长轮询的时间间隔" class="headerlink" title="长轮询的时间间隔"></a>长轮询的时间间隔</h1><p>我们知道客户端会有一个长训轮的任务去检查服务器端的配置是否发生了变化, 如果发生了变更, 那么客户端会拿到变更的<code>groupKey</code> 再根据 <code>groupKey</code> 去获取配置项的最新值 跟新到本地的缓存以及文件中,那么这种每次都靠客户端去请求, 那请求的时间间隔设置多少合适呢? </p>
-<p>如果间隔时间设置的太长的话有可能无法及时获取服务端的变更, 如果间隔时间设置的太短的话, 那么频繁的请求对于服务端来说无疑也是一种负担,所以最好的方式是客户端每隔一段长度适中的时间去服务端请求, 而在这期间如果配置发生了变更, 服务端能够主动将变更后的结果推送给客户端, 这样既能够保证客户端能够实时感知到配置的变化, 也降低了服务端的压力, 我们来看看nacos 设置的间隔时间是多久? </p>
-<h2 id="长轮询的概念"><a href="#长轮询的概念" class="headerlink" title="长轮询的概念"></a>长轮询的概念</h2><p>那么在讲解原理之前, 先给大家解释一下什么叫长轮询. </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">Nacos基本原理以及实战</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/nacos/" itemprop="url" rel="index"><span itemprop="name">nacos</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Nacos-原理分析以及实战"><a href="#Nacos-原理分析以及实战" class="headerlink" title="Nacos 原理分析以及实战"></a>Nacos 原理分析以及实战</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Nacos 致力于帮助您发现、配置和管理微服务。Nacos 提供了一组简单易用的特性集，帮助您快速实现动态服务发现、服务配置、服务元数据及流量管理。</p>
-<p>Nacos 帮助您更敏捷和容易地构建、交付和管理微服务平台。 Nacos 是构建以“服务”为中心的现代应用架构 (例如微服务范式、云原生范式) 的服务基础设施。                                                                </p>
-<p>​                                                                                                                                     –&gt; copy 自官网. </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">分布式消息通信值Kafka的实现原理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/" itemprop="url" rel="index"><span itemprop="name">kafka</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="分布式消息通信之Kafka-的实现原理"><a href="#分布式消息通信之Kafka-的实现原理" class="headerlink" title="分布式消息通信之Kafka 的实现原理"></a>分布式消息通信之Kafka 的实现原理</h1><h2 id="消息中间件能做什么"><a href="#消息中间件能做什么" class="headerlink" title="消息中间件能做什么?"></a>消息中间件能做什么?</h2><p>消息中间件主要解决的就是分布式系统之间消息的传递问题, 它能够屏蔽各种平台以及协议之间的特性,实现应用程序之间的协同. 举个简单的例子, 就拿一个电商平台的注册功能来简单分析一下,用户注册这一个服务,不仅仅只是insert 一条数据库里面就完事了, 还需要发送激活邮件、发送新人红包或者积分、发送营销短信等一些列操作. 假如说这里面的每一个操作都需要消耗1s , 那么整个注册过程就需要耗时4s 才能响应给用户.</p>
-<p><img src="http://files.luyanan.com//img/20191227142436.png"></p>
-<p>但是我们从注册这个服务可以看到, 每一个子操作都是相对独立的. 同时, 基于领域划分后, 发送激活邮件、发送营销短信、赠送积分以及红包都属于不同的子域. 所以我们可以读这些子操作进行实现异步化执行, 类似于多线程并行处理的概念. </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/" class="post-title-link" itemprop="url">分布式消息通信之Kafka的基本应用</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/" itemprop="url" rel="index"><span itemprop="name">kafka</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="分布式消息通信之Kafka的基本应用"><a href="#分布式消息通信之Kafka的基本应用" class="headerlink" title="分布式消息通信之Kafka的基本应用"></a>分布式消息通信之Kafka的基本应用</h1><h2 id="消息中间件的背景分析"><a href="#消息中间件的背景分析" class="headerlink" title="消息中间件的背景分析"></a>消息中间件的背景分析</h2><h3 id="场景分析"><a href="#场景分析" class="headerlink" title="场景分析"></a>场景分析</h3><p>我们可以使用阻塞队列+线程池的方式来实现生产者和消费者的模式 . 比如在一个应用中, A 方法调用B方法去执行一些任务处理, 我们可以同步调用, 但是如果这个时候请求比较多的情况下, 同步调用会比较耗时会导致请求阻塞. 我们会使用阻塞队列+线程池的方式来实现异步任务的处理. </p>
-<p><img src="http://files.luyanan.com//img/20191224155658.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/" class="post-title-link" itemprop="url">分布式消息通信之Kafka 的实现原理2</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/" itemprop="url" rel="index"><span itemprop="name">kafka</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="分布式消息通信之Kafka-的实现原理2"><a href="#分布式消息通信之Kafka-的实现原理2" class="headerlink" title="分布式消息通信之Kafka 的实现原理2"></a>分布式消息通信之Kafka 的实现原理2</h1><h2 id="分区的副本机制"><a href="#分区的副本机制" class="headerlink" title="分区的副本机制"></a>分区的副本机制</h2><p>我们已经知道kafka的每个topic 都可以分为多个partition, 并且多个partition 会均匀分布在集群中的各个节点下.虽然这种方式能够有效的对数据进行分片, 但是对于每个partition而言, 都是单点的. 当其中某个partition不可用的时候, 那么这部分消息就没办法消费. 所以kafka为了提高partition 的可靠性而提供了副本的概念(Replica),通过副本机制来实现冗余备份. </p>
-<p>每个分区可以有多个副本, 并且在副本集合中会存在一个leader 的副本, 所有的读写请求都是由leader 副本来进行处理. 剩余的其他副本都作为follower 副本. follower 副本会从leader 副本同步消息日志. 这个有点类似于zookeeper 中的leader 和follower 的概念. 但是具体的实现方式还是有比较大的差异的. 所以我们可以认为，副本集会存在一主多从的关系. </p>
-<p>一般情况下,同一个分区的多个副本会被均匀的分配到集群中的不同broker 上. 当leader 副本所在的broker 出现故障后, 可以重新选举新的leader 副本继续对外提供服务. 通过这样的副本机制来提高kafka 集群的可用性. </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E4%B9%8BApache%20Dubbo%20%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E4%B9%8BApache%20Dubbo%20%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86/" class="post-title-link" itemprop="url">微服务治理之Apache Dubbo 的基本认识</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/" itemprop="url" rel="index"><span itemprop="name">dubbo</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="微服务治理之Apache-Dubbo-的基本认识"><a href="#微服务治理之Apache-Dubbo-的基本认识" class="headerlink" title="微服务治理之Apache Dubbo 的基本认识"></a>微服务治理之Apache Dubbo 的基本认识</h1><h2 id="为什么要使用dubbo"><a href="#为什么要使用dubbo" class="headerlink" title="为什么要使用dubbo"></a>为什么要使用dubbo</h2><h3 id="远程通信背景"><a href="#远程通信背景" class="headerlink" title="远程通信背景"></a>远程通信背景</h3><p>技术架构的发展从单体到分布式，是一种顺势而为的架构演进,也是一种被逼无奈的技术变革. 架构的复杂度能够体现公司的业务的复杂度,也能从侧面体现公司的产品的发展势头是向上的. </p>
-<p>和传统的单体架构相比,分布式多了一个远程服务之间的通信,不管是soa还是微服务,他们本质上都是对于业务服务的提炼和复用. 那么远程服务之间的调用才是实现分布式的关键因素. </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E4%B9%8BApache%20Dubbo%20%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/SpringBoot%E4%B8%8EDubbo%E7%9A%84%E6%95%B4%E5%90%88/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/SpringBoot%E4%B8%8EDubbo%E7%9A%84%E6%95%B4%E5%90%88/" class="post-title-link" itemprop="url">SpringBoot与Dubbo的整合</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/" itemprop="url" rel="index"><span itemprop="name">dubbo</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="SpringBoot-与Dubbo-的整合"><a href="#SpringBoot-与Dubbo-的整合" class="headerlink" title="SpringBoot 与Dubbo 的整合"></a>SpringBoot 与Dubbo 的整合</h1><h2 id="新建项目"><a href="#新建项目" class="headerlink" title="新建项目"></a>新建项目</h2><p>我们先新建一个基于Springboot 的项目</p>
-<h2 id="jar包"><a href="#jar包" class="headerlink" title="jar包"></a>jar包</h2><p>添加dubbo 和zookeeper 的jar</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/SpringBoot%E4%B8%8EDubbo%E7%9A%84%E6%95%B4%E5%90%88/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Dubbo%E6%BA%90%E7%A0%81%E4%B9%8B%E6%9C%8D%E5%8A%A1%E9%80%9A%E4%BF%A1%E4%BB%A5%E5%8F%8A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Dubbo%E6%BA%90%E7%A0%81%E4%B9%8B%E6%9C%8D%E5%8A%A1%E9%80%9A%E4%BF%A1%E4%BB%A5%E5%8F%8A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" class="post-title-link" itemprop="url">Dubbo源码之服务通信以及负载均衡</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/" itemprop="url" rel="index"><span itemprop="name">dubbo</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Dubbo源码之服务通信和负载均衡"><a href="#Dubbo源码之服务通信和负载均衡" class="headerlink" title="Dubbo源码之服务通信和负载均衡"></a>Dubbo源码之服务通信和负载均衡</h1><h2 id="客户端生成的proxy"><a href="#客户端生成的proxy" class="headerlink" title="客户端生成的proxy"></a>客户端生成的proxy</h2><p>消费者初始化完成后, 会生成一个proxy, 而这个proxy 本质上是一个动态代理类. </p>
-<h3 id="JavassistProxyFactory-getProxy"><a href="#JavassistProxyFactory-getProxy" class="headerlink" title="JavassistProxyFactory.getProxy"></a>JavassistProxyFactory.getProxy</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public &lt;T&gt; T getProxy(Invoker&lt;T&gt; invoker, Class&lt;?&gt;[] interfaces) &#123;</span><br><span class="line">       return (T) Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker));</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Dubbo%E6%BA%90%E7%A0%81%E4%B9%8B%E6%9C%8D%E5%8A%A1%E9%80%9A%E4%BF%A1%E4%BB%A5%E5%8F%8A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Dubbo%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%BB%A5%E5%8F%8A%E6%9C%8D%E5%8A%A1%E6%B6%88%E8%B4%B9%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Dubbo%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%BB%A5%E5%8F%8A%E6%9C%8D%E5%8A%A1%E6%B6%88%E8%B4%B9%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">Dubbo服务注册以及服务消费源码分析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/" itemprop="url" rel="index"><span itemprop="name">dubbo</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Dubbo-服务注册以及服务消费源码分析"><a href="#Dubbo-服务注册以及服务消费源码分析" class="headerlink" title="Dubbo 服务注册以及服务消费源码分析"></a>Dubbo 服务注册以及服务消费源码分析</h1><h2 id="Invoker-是什么"><a href="#Invoker-是什么" class="headerlink" title="Invoker 是什么?"></a>Invoker 是什么?</h2><p>服务的发布分为三个阶段: </p>
+          <h1 id="5-Spring核心之IOC源码解析"><a href="#5-Spring核心之IOC源码解析" class="headerlink" title="5. Spring核心之IOC源码解析"></a>5. Spring核心之IOC源码解析</h1><h3 id="再谈IOC与DI"><a href="#再谈IOC与DI" class="headerlink" title="再谈IOC与DI"></a>再谈IOC与DI</h3><p>&emsp;&emsp;  IOC(Inversion of Control)控制反转：所谓控制反转，就是把原先我们代码里面需要实现的对象创<br>建、依赖的代码，反转给容器来帮忙实现。那么必然的我们需要创建一个容器，同时需要一种描述来让<br>容器知道需要创建的对象与对象的关系。这个描述最具体表现就是我们所看到的配置文件。<br>DI(DependencyInjection)依赖注入：就是指对象是被动接受依赖类而不是自己主动去找，换句话说就<br>是指对象不是从容器中查找它依赖的类，而是在容器实例化对象的时候主动将它依赖的类注入给它。<br>先从我们自己设计这样一个视角来考虑：</p>
 <ol>
-<li>第一个阶段会创造一个 invoker</li>
-<li>第二个阶段会把经历过一系列处理的 invoker(各种包装), 在 在DubboProtocol 中保存到 <code>exporterMap</code> 中.</li>
-<li> 第三个阶段把dubbo协议的url 注册到注册中心上去. </li>
+<li>对象和对象的关系怎么表示？</li>
 </ol>
-<p>我们来简单看看invoker 到底是一个啥东西? </p>
+<p>可以用xml，properties文件等语义化配置文件表示。<br>2. 描述对象关系的文件存放在哪里？</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Dubbo%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%BB%A5%E5%8F%8A%E6%9C%8D%E5%8A%A1%E6%B6%88%E8%B4%B9%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/Spring%20IOC%E7%9A%84%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(5)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -935,7 +284,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Dubbo%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E5%8A%9F%E8%83%BD%E4%BB%A5%E5%8F%8A%E6%96%B0%E7%89%B9%E6%80%A7%E8%AE%B2%E8%A7%A3/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20MVC%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90(8)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -949,7 +298,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Dubbo%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E5%8A%9F%E8%83%BD%E4%BB%A5%E5%8F%8A%E6%96%B0%E7%89%B9%E6%80%A7%E8%AE%B2%E8%A7%A3/" class="post-title-link" itemprop="url">Dubbo服务治理功能以及新特性讲解</a>
+            <a href="/Spring%20MVC%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90(8)/" class="post-title-link" itemprop="url">Spring MVC 源码分析(8)</a>
         </h2>
 
         <div class="post-meta">
@@ -958,9 +307,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -968,11 +316,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/" itemprop="url" rel="index"><span itemprop="name">dubbo</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -987,11 +331,768 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Dubbo-服务治理以及新功能讲解"><a href="#Dubbo-服务治理以及新功能讲解" class="headerlink" title="Dubbo 服务治理以及新功能讲解"></a>Dubbo 服务治理以及新功能讲解</h1><h2 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h2><h3 id="负载均衡的背景"><a href="#负载均衡的背景" class="headerlink" title="负载均衡的背景"></a>负载均衡的背景</h3><p>到目前为止,Dubbo 集成zookeeper 解决了服务注册以及服务动态感知的问题, 那么当服务端存在多个节点的集群的时候, zookeeper 上会维护不同集群节点, 对于客户端而言,它需要一种负载均衡来实现目标服务的请求负载. 通过负载均衡, 可以让每个服务器节点获得适合自己处理能力的负载. </p>
-<p>负载均衡可以分为软负载和硬件负载, 在实际开发中, 我们基础软件负载比较多, 比如nginx, 硬件负载现在用的比较少,而且需要有专门的人维护. </p>
+          <h1 id="8-Spring-MVC-源码分析"><a href="#8-Spring-MVC-源码分析" class="headerlink" title="8. Spring MVC 源码分析"></a>8. Spring MVC 源码分析</h1><h2 id="Spring-MVC初体验"><a href="#Spring-MVC初体验" class="headerlink" title="Spring MVC初体验"></a>Spring MVC初体验</h2><hr>
+<hr>
+<h3 id="初探Spring-MVC请求处理流程"><a href="#初探Spring-MVC请求处理流程" class="headerlink" title="初探Spring MVC请求处理流程"></a>初探Spring MVC请求处理流程</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Dubbo%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E5%8A%9F%E8%83%BD%E4%BB%A5%E5%8F%8A%E6%96%B0%E7%89%B9%E6%80%A7%E8%AE%B2%E8%A7%A3/#more" rel="contents">
+              <a class="btn" href="/Spring%20MVC%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90(8)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20%E4%B8%AD%E7%BB%8F%E5%85%B8%E7%9A%84%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98(11)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Spring%20%E4%B8%AD%E7%BB%8F%E5%85%B8%E7%9A%84%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98(11)/" class="post-title-link" itemprop="url">Spring 中经典的高频面试题(11)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="11-Spring-中经典的高频面试题"><a href="#11-Spring-中经典的高频面试题" class="headerlink" title="11 . Spring 中经典的高频面试题"></a>11 . Spring 中经典的高频面试题</h1><h3 id="1、什么是-Spring-框架？Spring-框架有哪些主要模块？"><a href="#1、什么是-Spring-框架？Spring-框架有哪些主要模块？" class="headerlink" title="1、什么是 Spring 框架？Spring 框架有哪些主要模块？"></a>1、什么是 Spring 框架？Spring 框架有哪些主要模块？</h3><p>Spring 框架是一个为 Java 应用程序的开发提供了综合、广泛的基础性支持的 Java 平台。Spring 帮助<br>开发者解决了开发中基础性的问题，使得开发人员可以专注于应用程序的开发。Spring 框架本身亦是按<br>照设计模式精心打造，这使得我们可以在开发环境中安心的集成 Spring 框架，不必担心 Spring 是如何<br>在后台进行工作的。</p>
+<p>Spring 框架至今已集成了 20 多个模块。这些模块主要被分如下图所示的核心容器、数据访问/集成,、 Web、AOP（面向切面编程）、工具、消息和测试模块。</p>
+<h3 id="2、使用-Spring-框架能带来哪些好处？"><a href="#2、使用-Spring-框架能带来哪些好处？" class="headerlink" title="2、使用 Spring 框架能带来哪些好处？"></a>2、使用 Spring 框架能带来哪些好处？</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Spring%20%E4%B8%AD%E7%BB%8F%E5%85%B8%E7%9A%84%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98(11)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88(9)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Spring%20%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88(9)/" class="post-title-link" itemprop="url">Spring 事务详谈(9)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="9-Spring-事务详谈"><a href="#9-Spring-事务详谈" class="headerlink" title="9. Spring 事务详谈"></a>9. Spring 事务详谈</h1><hr>
+<hr>
+<h3 id="从Spring事务配置说起"><a href="#从Spring事务配置说起" class="headerlink" title="从Spring事务配置说起"></a>从Spring事务配置说起</h3><p>先看看Spring事务的基础配置</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Spring%20%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88(9)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85(1)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Spring%20%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85(1)/" class="post-title-link" itemprop="url">Spring 源码编译和安装(1)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="1-Spring-源码编译和安装"><a href="#1-Spring-源码编译和安装" class="headerlink" title="1. Spring 源码编译和安装"></a>1. Spring 源码编译和安装</h1><hr>
+<h3 id="Spring5源码下载注意事项"><a href="#Spring5源码下载注意事项" class="headerlink" title="Spring5源码下载注意事项"></a>Spring5源码下载注意事项</h3><p>首先你的JDK需要升级到1.8以上。Spring3.0开始,Spring源码采用github托管，不再提供官网下载<br>链接。这里不做过多赘述，大家可自行去github网站下载，我们使用的版本下载链接为：<br><a target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-framework/archive/v5.0.2.RELEASE.zip%EF%BC%8C%E4%B8%8B%E8%BD%BD%E5%AE%8C%E6%88%90%E5%90%8E%EF%BC%8C">https://github.com/spring-projects/spring-framework/archive/v5.0.2.RELEASE.zip，下载完成后，</a><br>解压源码包会看到以下文件目录：</p>
+<h3 id="基于Gradle的源码构建技巧"><a href="#基于Gradle的源码构建技巧" class="headerlink" title="基于Gradle的源码构建技巧"></a>基于Gradle的源码构建技巧</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Spring%20%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85(1)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring5%20%E6%96%B0%E7%89%B9%E6%80%A7%E7%AE%80%E8%BF%B0(3)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Spring5%20%E6%96%B0%E7%89%B9%E6%80%A7%E7%AE%80%E8%BF%B0(3)/" class="post-title-link" itemprop="url">Spring5 新特性简述(3)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="3-Spring5-新特性简述"><a href="#3-Spring5-新特性简述" class="headerlink" title="3. Spring5 新特性简述"></a>3. Spring5 新特性简述</h1><hr>
+<p>Spring 5 于 2017 年 9 月发布了通用版本 (GA)，它标志着自 2013 年 12 月以来第一个主要<br>Spring Framework 版本。它提供了一些人们期待已久的改进，还采用了一种全新的编程范例，以反应<br>式描述中陈述的反应式原则为基础。</p>
+<p>这个版本是很长时间以来最令人激动的 Spring Framework 版本。Spring 5 兼容 Java™8 和 JDK 9，<br>它集成了反应式流，以方便后续提供一种颠覆性方法来实现端点和 Web 应用程序开发。<br>当然，反应式编程不仅是此版本的主题，还是令许多程序员激动不已的重大特性。人们对能够针对负载<br>波动进行无缝扩展的容灾和响应式服务的需求在不断增加，Spring 5 很好地满足了这一需求。<br>我们将介绍 Java SE 8 和 Java EE 7 API 升级的基本内容、Spring 5 的新反应式编程模型、对 HTTP/2<br>支持，以及 Spring 通过 Kotlin 对函数式编程的全面支持。我还会简要介绍测试和性能增强，最后介<br>绍对 Spring 核心和容器的一般性修订。</p>
+<h4 id="升级到-Java-SE-8-和-Java-EE-7"><a href="#升级到-Java-SE-8-和-Java-EE-7" class="headerlink" title="升级到 Java SE 8 和 Java EE 7"></a>升级到 Java SE 8 和 Java EE 7</h4>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Spring5%20%E6%96%B0%E7%89%B9%E6%80%A7%E7%AE%80%E8%BF%B0(3)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96(2)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96(2)/" class="post-title-link" itemprop="url">Spring框架的前生今世(2)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="2-Spring的前世今生"><a href="#2-Spring的前世今生" class="headerlink" title="2 . Spring的前世今生"></a>2 . Spring的前世今生</h1><p>&emsp;&emsp;相信经历过不使用框架开发Web项目的70后、80后都会有如此感触，如今的程序员开发项目太轻松<br>了，基本只需要关心业务如何实现，通用技术问题只需要集成框架便可。早在2007年，一个基于Java<br>语言的开源框架正式发布，取了一个非常有活力且美好的名字，叫做 Spring。它是一个开源的轻量级<br>Java SE（Java标准版本）/Java EE（Java企业版本）开发应用框架，其目的是用于简化企业级应用程<br>序开发。应用程序是由一组相互协作的对象组成。而在传统应用程序开发中，一个完整的应用是由一组<br>相互协作的对象组成。所以开发一个应用除了要开发业务逻辑之外，最多的是关注如何使这些对象协作<br>来完成所需功能，而且要低耦合、高聚合。业务逻辑开发是不可避免的，那如果有个框架出来帮我们来<br>创建对象及管理这些对象之间的依赖关系。可能有人说了，比如“抽象工厂、工厂方法模式”不也可以</p>
+<p>帮我们创建对象，“生成器模式”帮我们处理对象间的依赖关系，不也能完成这些功能吗？可是这些又<br>需要我们创建另一些工厂类、生成器类，我们又要而外管理这些类，增加了我们的负担，如果能有种通<br>过配置方式来创建对象，管理对象之间依赖关系，我们不需要通过工厂和生成器来创建及管理对象之间<br>的依赖关系，这样我们是不是减少了许多工作，加速了开发，能节省出很多时间来干其他事。Spring<br>框架刚出来时主要就是来完成这个功能。</p>
+<p>&emsp;&emsp;Spring框架除了帮我们管理对象及其依赖关系，还提供像通用日志记录、性能统计、安全控制、异常处<br>理等面向切面的能力，还能帮我管理最头疼的数据库事务，本身提供了一套简单的JDBC访问实现，提<br>供与第三方数据访问框架集成（如Hibernate、JPA），与各种 JavaEE技术整合（如JavaMail、任务<br>调度等等），提供一套自己的Web层框架SpringMVC、而且还能非常简单的与第三方Web框架集成。<br>从这里我们可以认为 Spring 是一个超级粘合大平台，除了自己提供功能外，还提供粘合其他技术和框<br>架的能力，从而使我们可以更自由的选择到底使用什么技术进行开发。而且不管是JAVASE（C/S架构）<br>应用程序还是 JAVA EE（B/S架构）应用程序都可以使用这个平台进行开发。如今的 Spring 已经不再<br>是一个框架，早已成为了一种生态。SpringBoot的便捷式开发实现了零配置，SpringCloud全家桶，<br>提供了非常方便的解决方案。接下来，让我们来深入探讨Spring到底能给我们带来什么？</p>
+<h2 id="一切从Bean开始"><a href="#一切从Bean开始" class="headerlink" title="一切从Bean开始"></a>一切从Bean开始</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96(2)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%E7%89%88%E6%9C%AC%20%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83(4)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Spring%E7%89%88%E6%9C%AC%20%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83(4)/" class="post-title-link" itemprop="url">Spring版本 命名规范(4)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="4-Spring-版本命名规范"><a href="#4-Spring-版本命名规范" class="headerlink" title="4. Spring 版本命名规范"></a>4. Spring 版本命名规范</h1><h3 id="常见软件的版本号命名"><a href="#常见软件的版本号命名" class="headerlink" title="常见软件的版本号命名"></a>常见软件的版本号命名</h3><table>
+<thead>
+<tr>
+<th>软件</th>
+<th>升级过程</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>linux Kernel</td>
+<td>0.0.1 ,1.0.0,2.6.32</td>
+<td>若用X.Y.Z表示,则偶数Y 表示稳定版本,奇书Y 表示开发版本</td>
+</tr>
+<tr>
+<td>Window</td>
+<td>Windows 98,windows 2000,windows XP</td>
+<td>最大的特点就是杂乱无章,毫无规律</td>
+</tr>
+<tr>
+<td>SSH  Cleint</td>
+<td>0.9.8</td>
+<td></td>
+</tr>
+<tr>
+<td>OpenStack</td>
+<td>2014.1.3 2015.1.1.dev8</td>
+<td>日期命令</td>
+</tr>
+</tbody></table>
+<p>从上可以看出,不同的软件版本号风格各异,随着系统的规模越大,依赖的软件越多,如果这些软件没有遵循一套规范的命名风格,容易造成 Dependency Hell.所以 当我们发布版本的时候,版本号的命名需要遵循某种规则,其中Semantic Versionong2.0.0 定义了一套简单的规则以及条件来约束版本号的配置和增长.本文根据Semantic Versioning2.0.0 和Semantic Versioning3.0.0 选择性的整理出版本号命名规则指南.</p>
+<h3 id="语义化版本命名通行规则"><a href="#语义化版本命名通行规则" class="headerlink" title="语义化版本命名通行规则"></a>语义化版本命名通行规则</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Spring%E7%89%88%E6%9C%AC%20%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83(4)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E6%80%BB%E7%BB%93(10)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Spring%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E6%80%BB%E7%BB%93(10)/" class="post-title-link" itemprop="url">Spring编程思想总结(10)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="10-Spring-编程思想总结"><a href="#10-Spring-编程思想总结" class="headerlink" title="10 . Spring 编程思想总结"></a>10 . Spring 编程思想总结</h1><table>
+<thead>
+<tr>
+<th>Spring思想</th>
+<th>应用场景(特点)</th>
+<th>一句话归纳</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OOP</td>
+<td>Object Oriented Programming(面向对象编程)用程序归纳总结生活中的一切事物</td>
+<td>封装,继承,多态</td>
+</tr>
+<tr>
+<td>BOP</td>
+<td>Bean Oriented Programming(面向Bean 编程) 面向Bean(普通的java类)设计程序</td>
+<td>一切从Bean开始</td>
+</tr>
+<tr>
+<td>AOP</td>
+<td>Aspect Origented Programming(面向切面编程) 找出多个类中有一定规律的代码,开发时拆开,运行时再合并,面向切面编程,既面向规则编程</td>
+<td>解耦,专人做专事</td>
+</tr>
+<tr>
+<td>IOC</td>
+<td>Inversion of Control(控制反转) 将new对象的动作交给Spring管理,并由Spring保存已经创建的对象(IOC容器)</td>
+<td>转交控制权(既控制权反转)</td>
+</tr>
+<tr>
+<td>DL/DI</td>
+<td>Dependency Injection (依赖注入)或者Dependency Lookup(依赖查找) 依赖注入,依赖查找,Spring不仅保存自己创建的对象,而且保存对象和对象之间的关系.注入既赋值,主要三种方式:构造方法,set方法,直接赋值</td>
+<td>赋值</td>
+</tr>
+</tbody></table>
+<h3 id="AOP在Spring中的应用"><a href="#AOP在Spring中的应用" class="headerlink" title="AOP在Spring中的应用"></a>AOP在Spring中的应用</h3><p>SpingAOP是一种编程范式,主要目的是将非功能性需求从功能性需求中分离出来,达到解耦的目的.主要应用场景由:Authentication(权限认证),Auto Caching(自动缓存处理),Error Handling(统一错误处理),Debugging(调式信息输出),Logging(日志记录),transactions(事务处理).现实生活中也常常用AOP思维来解决问题,如飞机组装,汽车组装等.<br><br>飞机各部件的零件会交给不同的厂家区生产,最终由组装工厂将各个部件组装成一个整理.将零件的生产交出去的主要目的是解耦,但是解耦之前必须由统一的标准.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8(12)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8(12)/" class="post-title-link" itemprop="url">spring 注解大全(12)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Spring-注解大全"><a href="#Spring-注解大全" class="headerlink" title="Spring 注解大全"></a>Spring 注解大全</h1><h3 id="核心注解"><a href="#核心注解" class="headerlink" title="核心注解"></a>核心注解</h3><table>
+<thead>
+<tr>
+<th>注解</th>
+<th>介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@Documented</td>
+<td>将会在被此注解注解的元素的javadoc文档中列出注解，一般都打上这个注解没坏处</td>
+</tr>
+<tr>
+<td>@Target</td>
+<td>注解能被应用的目标元素，比如类、方法、属性、参数等等</td>
+</tr>
+<tr>
+<td></td>
+<td>@Retention</td>
+</tr>
+<tr>
+<td>@Inherited</td>
+<td>如果子类没有定义注解的话，能自动从父类获取定义了继承属性的注解，比如Spring的@Service是没有继承特性的，但是@Transactional是有继承特性的，在OO继承体系中使用Spring注解的时候请特别注意这点，理所当然认为注解是能被子类继承的话可能会引起不必要的Bug，需要仔细斟酌是否开启继承</td>
+</tr>
+<tr>
+<td>@Repeatable</td>
+<td>Java 8 引入的特性，通过关联注解容器定义可重复注解，小小语法糖提高了代码可读性，对于元素有多个重复注解其实是很常见的事情，比如某方法可以是A角色可以访问也可以是B角色可以访问，某方法需要定时任务执行，要在A条件执行也需要在B条件执行</td>
+</tr>
+<tr>
+<td>@Native</td>
+<td>是否在.h头文件中生成被标记的字段，除非原生程序需要和Java程序交互，否则很少会用到这个元注解</td>
+</tr>
+</tbody></table>
+<h3 id="spring-核心注解"><a href="#spring-核心注解" class="headerlink" title="spring 核心注解"></a>spring 核心注解</h3><table>
+<thead>
+<tr>
+<th>注解</th>
+<th>介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@Controller</td>
+<td>定义表现层组件</td>
+</tr>
+<tr>
+<td>@Service</td>
+<td>定义业务逻辑层组件</td>
+</tr>
+<tr>
+<td>@Repository</td>
+<td>定义数据访问层组件</td>
+</tr>
+<tr>
+<td>@Component</td>
+<td>定义其他组件</td>
+</tr>
+<tr>
+<td>@Autowired</td>
+<td>自动装配</td>
+</tr>
+<tr>
+<td>@Required</td>
+<td>用于在setter方法标记属性值需要由Spring 进行装配,目前这个方法已经被spring 废弃,推荐使用构造方法注入</td>
+</tr>
+<tr>
+<td>@Qualifier</td>
+<td>用于给Bean定义修饰语来注入相应的bean</td>
+</tr>
+<tr>
+<td>@Value</td>
+<td>用于注入属性配置或者Spel表达式</td>
+</tr>
+<tr>
+<td>@Lookup</td>
+<td>可以实现方法的注入,如果我们的类是单例的,但是又希望Spring注入的依赖的对象是Prototype生命周期（每次new一个出来）的，这个时候可以通过此注解进行方法注入</td>
+</tr>
+<tr>
+<td>@EnableTransactionManagement</td>
+<td>用于开启事务管理，使用Spring Boot如果引入Spring Data的话不需要手动开启（不过建议大家在使用事务的时候还是通过日志来验证事务管理是否生效）</td>
+</tr>
+<tr>
+<td>@Transactional</td>
+<td>用于开启事务以及设置传播性、隔离性、回滚条件等；</td>
+</tr>
+<tr>
+<td>@TransactionalEventListener</td>
+<td>用于配置事务的回调方法，可以在事务提交前、提交后、完成后以及回滚后几个阶段接受回调事件。</td>
+</tr>
+<tr>
+<td>@Order</td>
+<td>可以设置Spring管理对象的加载顺序，在之前介绍AOP的文章中我们看到有的时候我们必须通过设置合理的@Order来合理安排切面的切入顺序避免一些问题，还有在一些业务场景中，我们往往会去定义一组类似于Filter的@Component，然后会从容器获得一组Bean，这个时候业务组件的运行顺序往往会比较重要，也可以通过这个方式进行排序</td>
+</tr>
+<tr>
+<td>@AliasFor</td>
+<td>注解可以设置一组注解属性相互作为别名，对于有歧义的时候会使代码更清晰，此外还有一个用途是创建复合注解，Spring MVC的@GetMapping注解就是基于@RequestMapping这个注解创建的复合注解，我们可以很方便得通过这种方式来实现注解的继承</td>
+</tr>
+</tbody></table>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8(12)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1082,7 +1183,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">227</span>
+          <span class="site-state-item-count">229</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

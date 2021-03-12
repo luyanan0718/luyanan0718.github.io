@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/mysql%E4%B8%BB%E4%BB%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf(12.2)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/mysql%E4%B8%BB%E4%BB%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">mysql主从实现原理</a>
+            <a href="/Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf(12.2)/" class="post-title-link" itemprop="url">Netty内存分配ByteBuf(12</a>
         </h2>
 
         <div class="post-meta">
@@ -229,9 +229,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,7 +238,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
                 </span>
             </span>
 
@@ -254,12 +253,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="mysql主从实现原理"><a href="#mysql主从实现原理" class="headerlink" title="mysql主从实现原理"></a>mysql主从实现原理</h1><h2 id="1、什么是mysql主从同步？"><a href="#1、什么是mysql主从同步？" class="headerlink" title="1、什么是mysql主从同步？"></a>1、什么是mysql主从同步？</h2><p>当master(主)库的数据发生变化的时候，变化会实时的同步到slave(从)库。</p>
-<hr>
-<h2 id="2、主从同步有什么好处？"><a href="#2、主从同步有什么好处？" class="headerlink" title="2、主从同步有什么好处？"></a>2、主从同步有什么好处？</h2>
+          <h2 id="4-Pooled-池化内存分配"><a href="#4-Pooled-池化内存分配" class="headerlink" title="4. Pooled 池化内存分配"></a>4. Pooled 池化内存分配</h2><h3 id="1-PooledByteBufAllocator-简述"><a href="#1-PooledByteBufAllocator-简述" class="headerlink" title="1. PooledByteBufAllocator 简述"></a>1. PooledByteBufAllocator 简述</h3><p>现在开始, 我们来分析Pooled 池化内存的分配原理, 我们首先还是先找到 AbstractByteBufAllocator 的子类 PooledByteBufAllocator  实现的分配内存的两个方法. newDirectBuffer()方法和 newHeapBuffer()方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> ByteBuf <span class="title">newHeapBuffer</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">int</span> maxCapacity)</span> </span>&#123;</span><br><span class="line">        PoolThreadCache cache = threadCache.get();</span><br><span class="line">        PoolArena&lt;<span class="keyword">byte</span>[]&gt; heapArena = cache.heapArena;</span><br><span class="line"></span><br><span class="line">        ByteBuf buf;</span><br><span class="line">        <span class="keyword">if</span> (heapArena != <span class="keyword">null</span>) &#123;</span><br><span class="line">            buf = heapArena.allocate(cache, initialCapacity, maxCapacity);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            buf = <span class="keyword">new</span> UnpooledHeapByteBuf(<span class="keyword">this</span>, initialCapacity, maxCapacity);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> toLeakAwareBuffer(buf);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> ByteBuf <span class="title">newDirectBuffer</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">int</span> maxCapacity)</span> </span>&#123;</span><br><span class="line">        PoolThreadCache cache = threadCache.get();</span><br><span class="line">        PoolArena&lt;ByteBuffer&gt; directArena = cache.directArena;</span><br><span class="line"></span><br><span class="line">        ByteBuf buf;</span><br><span class="line">        <span class="keyword">if</span> (directArena != <span class="keyword">null</span>) &#123;</span><br><span class="line">            buf = directArena.allocate(cache, initialCapacity, maxCapacity);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (PlatformDependent.hasUnsafe()) &#123;</span><br><span class="line">                buf = UnsafeByteBufUtil.newUnsafeDirectByteBuf(<span class="keyword">this</span>, initialCapacity, maxCapacity);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                buf = <span class="keyword">new</span> UnpooledDirectByteBuf(<span class="keyword">this</span>, initialCapacity, maxCapacity);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> toLeakAwareBuffer(buf);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们发现这两个方法大体结构上是一样的. 我们以newDirectBuffer 为例简单的分析一下：</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/mysql%E4%B8%BB%E4%BB%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/#more" rel="contents">
+              <a class="btn" href="/Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf(12.2)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -283,7 +283,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Java%E4%B9%8Bsynchronized%E5%92%8CLock%E7%9A%84%E5%8C%BA%E5%88%AB/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Netty%E5%A4%A7%E5%8A%A8%E8%84%89Pipeline(10)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -297,7 +297,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Java%E4%B9%8Bsynchronized%E5%92%8CLock%E7%9A%84%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">Java之synchronized和Lock的区别</a>
+            <a href="/Netty%E5%A4%A7%E5%8A%A8%E8%84%89Pipeline(10)/" class="post-title-link" itemprop="url">Netty大动脉Pipeline(10)</a>
         </h2>
 
         <div class="post-meta">
@@ -306,9 +306,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -316,7 +315,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
                 </span>
             </span>
 
@@ -331,18 +330,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Java之synchronized和Lock的区别"><a href="#Java之synchronized和Lock的区别" class="headerlink" title="Java之synchronized和Lock的区别"></a>Java之synchronized和Lock的区别</h1><ol>
-<li>Lock是java的一个interface接口，而synchronized是Java中的关键字，synchronized是由JDK实现的，不需要程序员编写代码去控制加锁和释放；Lock的接口如下：</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Lock</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">lockInterruptibly</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">(<span class="keyword">long</span> time, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">unlock</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">Condition <span class="title">newCondition</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>synchronized修饰的代码在执行异常时，jdk会自动释放线程占有的锁，不需要程序员去控制释放锁，因此不会导致死锁现象发生；但是，当Lock发生异常时，如果程序没有通过unLock()去释放锁，则很可能造成死锁现象，因此Lock一般都是在finally块中释放锁；格式如下：</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Lock <span class="keyword">lock</span> = <span class="keyword">new</span> LockImpl; <span class="comment">// new 一个Lock的实现类</span></span><br><span class="line"><span class="keyword">lock</span>.<span class="keyword">lock</span>();  <span class="comment">// 加锁</span></span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    <span class="comment">//todo</span></span><br><span class="line">&#125;catch(Exception ex)&#123;</span><br><span class="line">     <span class="comment">// todo</span></span><br><span class="line">&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">    <span class="keyword">lock</span>.unlock();   <span class="comment">//释放锁</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <h1 id="Netty-大动脉Pileline"><a href="#Netty-大动脉Pileline" class="headerlink" title="Netty 大动脉Pileline"></a>Netty 大动脉Pileline</h1><h2 id="1-Pepeline-设计原理"><a href="#1-Pepeline-设计原理" class="headerlink" title="1. Pepeline 设计原理"></a>1. Pepeline 设计原理</h2><h3 id="1-1-Channel-与-ChannelPipeline"><a href="#1-1-Channel-与-ChannelPipeline" class="headerlink" title="1.1 Channel 与 ChannelPipeline"></a>1.1 Channel 与 ChannelPipeline</h3><p>相信大家已经知道了, 在Netty中每个Channel 都有且仅有一个ChannelPipeline 与之对应, 他们的组成关系如下:</p>
+<p><img src="http://files.luyanan.com//img/20190929092313.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Java%E4%B9%8Bsynchronized%E5%92%8CLock%E7%9A%84%E5%8C%BA%E5%88%AB/#more" rel="contents">
+              <a class="btn" href="/Netty%E5%A4%A7%E5%8A%A8%E8%84%89Pipeline(10)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -366,7 +358,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/HashMap%E8%B7%9FHashtable%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Netty%E7%BC%96%E8%A7%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF(13)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -380,7 +372,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/HashMap%E8%B7%9FHashtable%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">HashMap跟Hashtable有什么区别</a>
+            <a href="/Netty%E7%BC%96%E8%A7%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF(13)/" class="post-title-link" itemprop="url">Netty编解码的艺术(13)</a>
         </h2>
 
         <div class="post-meta">
@@ -389,9 +381,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -399,7 +390,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
                 </span>
             </span>
 
@@ -414,32 +405,243 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="HashMap跟Hashtable有什么区别"><a href="#HashMap跟Hashtable有什么区别" class="headerlink" title="HashMap跟Hashtable有什么区别?"></a>HashMap跟Hashtable有什么区别?</h1><p>HashMap和HashTable都是基于哈希表来实现键值映射的工具类,从公开的方法上来看，这两个类提供的，是一样的功能。都提供键值映射的服务，可以增、删、查、改键值对，可以对键、值、键值对提供遍历视图。支持浅拷贝，支持序列化。</p>
-<ul>
-<li>从数据结构上看 :<br> HashMap和HashTable都使用哈希表来存储键值对。在数据结构上是基本相同的，都创建了一个继承自Map.Entry的私有的内部类Entry，每一个Entry对象表示存储在哈希表中的一个键值对。可以说，有多少个键值对，就有多少个Entry对象.<br> 得出结论，HashMap/HashTable内部用Entry数组实现哈希表，而对于映射到同一个哈希桶（数组的同一个位置）的键值对，使用Entry链表来存储(解决hash冲突)。</li>
+          <h1 id="Netty-编解码的艺术"><a href="#Netty-编解码的艺术" class="headerlink" title="Netty 编解码的艺术"></a>Netty 编解码的艺术</h1><h2 id="1-什么是拆包-粘包"><a href="#1-什么是拆包-粘包" class="headerlink" title="1. 什么是拆包/粘包"></a>1. 什么是拆包/粘包</h2><h3 id="1-TCP-粘包-拆包"><a href="#1-TCP-粘包-拆包" class="headerlink" title="1. TCP 粘包/拆包"></a>1. TCP 粘包/拆包</h3><p>TCP 是一个”流”协议, 所谓流, 就是没有界限的一长串二进制数据, TCP 作为传输协议并不了解业务数据的具体含义, 它会根据TCP缓冲区的实际情况进行数据包的划分, 所以在业务上认为是一个完整的包, 可能会被TCP 拆分成多个包进行发送, 也有可能把多个小的包封装成一个大的数据包发送, 这就是所谓的TCP 粘包和拆包问题.</p>
+<p>同样, 在Netty 的编码器中, 也会对半包和粘包问题做相应的处理. 什么是半包? 顾名思义就是不完整的数据包, 因为Netty 在轮询读事件的时候, 每次将channel 中读取的数据, 不一定是一个完整的数据包, 这种情况下, 就叫半包。 粘包同样也不难理解, 如果Client 往Server 发送数据包, 如果发送频繁很有可能会将多个数据都发送到通道中, 如果在server 在读取的时候可能会读取到超过一个完整数据包的长度, 这种情况叫粘包. 有关半包和粘包, 如下图所示：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Netty%E7%BC%96%E8%A7%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF(13)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Netty%E9%AB%98%E6%80%A7%E8%83%BD%E4%B9%8B%E9%81%93(6)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Netty%E9%AB%98%E6%80%A7%E8%83%BD%E4%B9%8B%E9%81%93(6)/" class="post-title-link" itemprop="url">Netty高性能之道(6)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Netty高性能之道"><a href="#Netty高性能之道" class="headerlink" title="Netty高性能之道"></a>Netty高性能之道</h1><h2 id="1-背景介绍"><a href="#1-背景介绍" class="headerlink" title="1. 背景介绍"></a>1. 背景介绍</h2><h3 id="1-Netty惊人的性能数据"><a href="#1-Netty惊人的性能数据" class="headerlink" title="1. Netty惊人的性能数据"></a>1. Netty惊人的性能数据</h3><p>通过使用Netty(NIO框架) 相比于传统基于Java 序列化+ BIO(同步阻塞IO)的通信框架， 性能提升了8倍多.</p>
+<h3 id="2-传统RPC-调用性能差的三宗罪"><a href="#2-传统RPC-调用性能差的三宗罪" class="headerlink" title="2. 传统RPC 调用性能差的三宗罪"></a>2. 传统RPC 调用性能差的三宗罪</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Netty%E9%AB%98%E6%80%A7%E8%83%BD%E4%B9%8B%E9%81%93(6)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Promise%20%E4%B8%8E%20Future%20%E5%8F%8C%E5%AD%90%E6%98%9F%E7%9A%84%E7%A7%98%E5%AF%86(11)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Promise%20%E4%B8%8E%20Future%20%E5%8F%8C%E5%AD%90%E6%98%9F%E7%9A%84%E7%A7%98%E5%AF%86(11)/" class="post-title-link" itemprop="url">Promise 与 Future 双子星的秘密(11)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Promise-与-Future-双子星的秘密"><a href="#Promise-与-Future-双子星的秘密" class="headerlink" title="Promise 与 Future 双子星的秘密"></a>Promise 与 Future 双子星的秘密</h1><h2 id="1-异步结果Future"><a href="#1-异步结果Future" class="headerlink" title="1. 异步结果Future"></a>1. 异步结果Future</h2><p>java.util.concurrent.Future 是java 提供的接口, 表示异步执行的状态, Future  的get()  方法会判断任务是否执行完成,如果完成就返回结果, 否则阻塞线程, 直到任务完成.</p>
+<p>Netty  扩展了Java 的Future , 最主要的改进就是增加了监听器Listener 接口, 通过监听可以让异步执行的更加有效率, 不需要通过get 来等待异步执行结束, 而是通过监听器回调来精确的控制异步执行结束的时间点.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Future</span>&lt;<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">java</span>.<span class="title">util</span>.<span class="title">concurrent</span>.<span class="title">Future</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns &#123;<span class="doctag">@code</span> true&#125; if and only if the I/O operation was completed</span></span><br><span class="line"><span class="comment">     * successfully.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isSuccess</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * returns &#123;<span class="doctag">@code</span> true&#125; if and only if the operation can be cancelled via &#123;<span class="doctag">@link</span> #cancel(boolean)&#125;.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isCancellable</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the cause of the failed I/O operation if the I/O operation has</span></span><br><span class="line"><span class="comment">     * failed.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the cause of the failure.</span></span><br><span class="line"><span class="comment">     *         &#123;<span class="doctag">@code</span> null&#125; if succeeded or this future is not</span></span><br><span class="line"><span class="comment">     *         completed yet.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Throwable <span class="title">cause</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Adds the specified listener to this future.  The</span></span><br><span class="line"><span class="comment">     * specified listener is notified when this future is</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@linkplain</span> #isDone() done&#125;.  If this future is already</span></span><br><span class="line"><span class="comment">     * completed, the specified listener is notified immediately.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">addListener</span><span class="params">(GenericFutureListener&lt;? extends Future&lt;? <span class="keyword">super</span> V&gt;&gt; listener)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Adds the specified listeners to this future.  The</span></span><br><span class="line"><span class="comment">     * specified listeners are notified when this future is</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@linkplain</span> #isDone() done&#125;.  If this future is already</span></span><br><span class="line"><span class="comment">     * completed, the specified listeners are notified immediately.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">addListeners</span><span class="params">(GenericFutureListener&lt;? extends Future&lt;? <span class="keyword">super</span> V&gt;&gt;... listeners)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Removes the first occurrence of the specified listener from this future.</span></span><br><span class="line"><span class="comment">     * The specified listener is no longer notified when this</span></span><br><span class="line"><span class="comment">     * future is &#123;<span class="doctag">@linkplain</span> #isDone() done&#125;.  If the specified</span></span><br><span class="line"><span class="comment">     * listener is not associated with this future, this method</span></span><br><span class="line"><span class="comment">     * does nothing and returns silently.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">removeListener</span><span class="params">(GenericFutureListener&lt;? extends Future&lt;? <span class="keyword">super</span> V&gt;&gt; listener)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Removes the first occurrence for each of the listeners from this future.</span></span><br><span class="line"><span class="comment">     * The specified listeners are no longer notified when this</span></span><br><span class="line"><span class="comment">     * future is &#123;<span class="doctag">@linkplain</span> #isDone() done&#125;.  If the specified</span></span><br><span class="line"><span class="comment">     * listeners are not associated with this future, this method</span></span><br><span class="line"><span class="comment">     * does nothing and returns silently.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">removeListeners</span><span class="params">(GenericFutureListener&lt;? extends Future&lt;? <span class="keyword">super</span> V&gt;&gt;... listeners)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future until it is done, and rethrows the cause of the failure if this future</span></span><br><span class="line"><span class="comment">     * failed.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">sync</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future until it is done, and rethrows the cause of the failure if this future</span></span><br><span class="line"><span class="comment">     * failed.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">syncUninterruptibly</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future to be completed.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> InterruptedException</span></span><br><span class="line"><span class="comment">     *         if the current thread was interrupted</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">await</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future to be completed without</span></span><br><span class="line"><span class="comment">     * interruption.  This method catches an &#123;<span class="doctag">@link</span> InterruptedException&#125; and</span></span><br><span class="line"><span class="comment">     * discards it silently.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">awaitUninterruptibly</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future to be completed within the</span></span><br><span class="line"><span class="comment">     * specified time limit.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if and only if the future was completed within</span></span><br><span class="line"><span class="comment">     *         the specified time limit</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> InterruptedException</span></span><br><span class="line"><span class="comment">     *         if the current thread was interrupted</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">await</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future to be completed within the</span></span><br><span class="line"><span class="comment">     * specified time limit.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if and only if the future was completed within</span></span><br><span class="line"><span class="comment">     *         the specified time limit</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> InterruptedException</span></span><br><span class="line"><span class="comment">     *         if the current thread was interrupted</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">await</span><span class="params">(<span class="keyword">long</span> timeoutMillis)</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future to be completed within the</span></span><br><span class="line"><span class="comment">     * specified time limit without interruption.  This method catches an</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> InterruptedException&#125; and discards it silently.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if and only if the future was completed within</span></span><br><span class="line"><span class="comment">     *         the specified time limit</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">awaitUninterruptibly</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future to be completed within the</span></span><br><span class="line"><span class="comment">     * specified time limit without interruption.  This method catches an</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> InterruptedException&#125; and discards it silently.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if and only if the future was completed within</span></span><br><span class="line"><span class="comment">     *         the specified time limit</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">awaitUninterruptibly</span><span class="params">(<span class="keyword">long</span> timeoutMillis)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Return the result without blocking. If the future is not done yet this will return &#123;<span class="doctag">@code</span> null&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * As it is possible that a &#123;<span class="doctag">@code</span> null&#125; value is used to mark the future as successful you also need to check</span></span><br><span class="line"><span class="comment">     * if the future is really done with &#123;<span class="doctag">@link</span> #isDone()&#125; and not relay on the returned &#123;<span class="doctag">@code</span> null&#125; value.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">V <span class="title">getNow</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@inheritDoc</span>&#125;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * If the cancellation was successful it will fail the future with an &#123;<span class="doctag">@link</span> CancellationException&#125;.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">cancel</span><span class="params">(<span class="keyword">boolean</span> mayInterruptIfRunning)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Promise%20%E4%B8%8E%20Future%20%E5%8F%8C%E5%AD%90%E6%98%9F%E7%9A%84%E7%A7%98%E5%AF%86(11)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BD%BF%E7%94%A8NIO%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%8A%9F%E8%83%BD(5)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E4%BD%BF%E7%94%A8NIO%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%8A%9F%E8%83%BD(5)/" class="post-title-link" itemprop="url">使用NIO实现一个聊天室功能(5)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="使用NIO实现一个聊天室公共功能"><a href="#使用NIO实现一个聊天室公共功能" class="headerlink" title="使用NIO实现一个聊天室公共功能"></a>使用NIO实现一个聊天室公共功能</h1><h2 id="主要实现功能"><a href="#主要实现功能" class="headerlink" title="主要实现功能:"></a>主要实现功能:</h2><ul>
+<li>功能1:  客户端通过Java NIO 连接到服务端, 支持多客户端的连接</li>
+<li>功能2:  客户端初次连接的时候, 服务端提示输入昵称, 如果昵称已经有人使用, 则提示重新输入, 如果昵称唯一, 则登录成功,</li>
+<li>之后发送消息都需要按照规定格式带着昵称发送消息</li>
+<li>功能3: 客户端登录后, 发送已经设置好的欢迎信息和在线人数给客户端, 并且通知其他客户端该客户端已经上线</li>
+<li>功能4: 服务端收到已登录客户端输入内容, 转发至其他客户端</li>
 </ul>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Entry对象唯一表示一个键值对，有四个属性：</span><br><span class="line">-K key 键对象</span><br><span class="line">-V <span class="keyword">value</span> 值对象</span><br><span class="line">-<span class="built_in">int</span> hash 键对象的hash值</span><br><span class="line">-Entry entry 指向链表中下一个Entry对象，可为<span class="literal">null</span>，表示当前Entry对象在链表尾部</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>从继承体系上看 :<br> 虽然都实现了Map、Cloneable、Serializable三个接口。但是HashMap继承自抽象类AbstractMap，而HashTable继承自抽象类Dictionary。其中Dictionary类是一个已经被废弃的类.</p>
-</li>
-<li><p>从公共方法上看 :<br> HashMap是支持null键和null值的，而HashTable在遇到null时，会抛出NullPointerException异常。这并不是因为HashTable有什么特殊的实现层面的原因导致不能支持null键和null值，这仅仅是因为HashMap在实现时对null做了特殊处理，将null的hashCode值定为了0，从而将其存放在哈希表的第0个bucket中。在HashMap中不能由get()方法来判断HashMap中是否存在某个键， 而应该用containsKey()方法来判断。</p>
-</li>
-<li><p>从算法上看 :<br> HashTable默认的初始大小为11，之后每次扩充为原来的2n+1。HashMap默认的初始化大小为16，之后每次扩充为原来的2倍。如果在创建时给定了初始化大小，那么HashTable会直接使用你给定的大小，而HashMap会将其扩充为2的幂次方大小。<br> 因为哈希表的大小为素数时，简单的取模哈希的结果会更加均匀.这样设计可以减少哈希值冲突.<br> 但是在取模计算时，如果模数是2的幂，那么我们可以直接使用位运算来得到结果，效率要大大高于做除法。hash计算的效率HashMap更胜一筹.HashMap由于使用了2的幂次方，所以在取模运算时不需要做除法，只需要位的与运算就可以了。但是由于引入的hash冲突加剧问题，HashMap在调用了对象的hashCode方法之后，又做了一些位运算在打散数据。</p>
-</li>
-<li><p>从线程安全上看 :<br> Hashtable是线程安全的，它的每个方法中都加入了Synchronize方法。在多线程并发的环境下，可以直接使用Hashtable，不需要自己为它的方法实现同步.<br> HashMap不是线程安全的，在多线程并发的环境下，可能会产生死锁等问题。使用HashMap时就必须要自己增加同步处理.HashMap进行同步： <code>Map m = Collections.synchronizeMap(hashMap);</code><br> 虽然HashMap不是线程安全的，但是它的效率会比Hashtable要好很多。这样设计是合理的。在我们的日常使用当中，大部分时间是单线程操作的。HashMap把这部分操作解放出来了。当需要多线程操作的时候可以使用线程安全的ConcurrentHashMap。ConcurrentHashMap虽然也是线程安全的，但是它的效率比Hashtable要高好多倍。因为ConcurrentHashMap使用了分段锁，并不对整个数据进行锁定。</p>
-</li>
-<li><p>从遍历方式上看 :<br> Hashtable、HashMap都使用了 Iterator。而由于历史原因，Hashtable还使用了Enumeration的方式 .</p>
-<p>HashMap和jdk1.8以后的HashTable迭代器使用fast-fail机制 , 当有其它线程改变了HashMap的结构（增加，删除，修改元素），将会抛出ConcurrentModificationException。不过，通过Iterator的remove()方法移除元素则不会抛出ConcurrentModificationException异常。</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/8884551-9c116a6102a410b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/688/format/webp" alt="img"></p>
-<p>每次在发生增删改的时候都会出现modCount++的动作。而modcount可以理解为是当前hashtable的状态。每发生一次操作，状态就向前走一步。设置这个状态，主要是由于hashtable等容器类在迭代时，判断数据是否过时时使用的。尽管hashtable采用了原生的同步锁来保护数据安全。但是在出现迭代数据的时候，则无法保证边迭代，边正确操作。于是使用这个值来标记状态。一旦在迭代的过程中状态发生了改变，则会快速抛出一个异常，终止迭代行为。</p>
-</li>
-<li><p>从使用角度上看 :<br> 如果不需要线程安全，那么使用HashMap，如果需要线程安全，那么使用ConcurrentHashMap。HashTable已经被淘汰了，不要在新的代码中再使用它。<br> 每一版本的JDK，都会对HashMap和HashTable的内部实现做优化，比如JDK 1.8的红黑树优化。所以尽可能的使用新版本的JDK，会有性能上有提升。<br> 为什么HashTable已经淘汰了，还要优化它？因为有老的代码还在使用它，所以优化了它之后，这些老的代码也能获得性能提升。</p>
-</li>
-</ul>
+<h2 id="服务端代码"><a href="#服务端代码" class="headerlink" title="服务端代码"></a>服务端代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.formula.netty.chat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.net.InetSocketAddress;</span><br><span class="line"><span class="keyword">import</span> java.nio.ByteBuffer;</span><br><span class="line"><span class="keyword">import</span> java.nio.channels.*;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.Charset;</span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2019/9/21</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;网络多客户端聊天室</span></span><br><span class="line"><span class="comment"> * 功能1:  客户端通过Java NIO 连接到服务端, 支持多客户端的连接</span></span><br><span class="line"><span class="comment"> * 功能2:  客户端初次连接的时候, 服务端提示输入昵称, 如果昵称已经有人使用, 则提示重新输入, 如果昵称唯一, 则登录成功,</span></span><br><span class="line"><span class="comment"> * 之后发送消息都需要按照规定格式带着昵称发送消息</span></span><br><span class="line"><span class="comment"> * 功能3: 客户端登录后, 发送已经设置好的欢迎信息和在线人数给客户端, 并且通知其他客户端该客户端已经上线</span></span><br><span class="line"><span class="comment"> * 功能4: 服务端收到已登录客户端输入内容, 转发至其他客户端</span></span><br><span class="line"><span class="comment"> * &lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NIOChatServer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> port = <span class="number">8080</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//相当于自定义协议格式，与客户端协商好</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String USER_CONTENT_SPILIT = <span class="string">&quot;#@#&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Charset charset = Charset.forName(<span class="string">&quot;utf-8&quot;</span>);</span><br><span class="line">    <span class="keyword">private</span> Selector selector;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String USER_EXIST = <span class="string">&quot;系统提示：该昵称已经存在，请换一个昵称&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;用来记录在线人数, 以及昵称&lt;/p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 2019/9/21</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> HashSet&lt;String&gt; users = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">NIOChatServer</span><span class="params">(<span class="keyword">int</span> port)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.port = port;</span><br><span class="line"></span><br><span class="line">        ServerSocketChannel server = ServerSocketChannel.open();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 绑定端口号</span></span><br><span class="line">        server.bind(<span class="keyword">new</span> InetSocketAddress(<span class="keyword">this</span>.port));</span><br><span class="line">        <span class="comment">// 设置为非阻塞</span></span><br><span class="line">        server.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line">        <span class="comment">// 初始化轮询器</span></span><br><span class="line">        <span class="keyword">this</span>.selector = Selector.open();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 注册事件</span></span><br><span class="line">        server.register(selector, SelectionKey.OP_ACCEPT);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;服务已经启动, 端口号为: &quot;</span> + <span class="keyword">this</span>.port);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;开始监听&lt;/p&gt;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@link</span>&#125;</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 2019/9/21</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">listen</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> wait = selector.select();</span><br><span class="line">            <span class="keyword">if</span> (wait == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            Set&lt;SelectionKey&gt; selectionKeys = selector.selectedKeys();</span><br><span class="line">            Iterator&lt;SelectionKey&gt; iterator = selectionKeys.iterator();</span><br><span class="line">            <span class="keyword">while</span> (iterator.hasNext()) &#123;</span><br><span class="line"></span><br><span class="line">                SelectionKey selectionKey = iterator.next();</span><br><span class="line">                iterator.remove();</span><br><span class="line">                process(selectionKey);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(SelectionKey selectionKey)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (selectionKey.isAcceptable()) &#123;</span><br><span class="line">            ServerSocketChannel server = (ServerSocketChannel) selectionKey.channel();</span><br><span class="line">            SocketChannel client = server.accept();</span><br><span class="line">            <span class="comment">// 设置为非阻塞模式</span></span><br><span class="line">            client.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line">            <span class="comment">//注册选择器, 并设置为读取模式, 收到一个连接请求, 然后起一个 socketChannel , 并注册到selector 上, 之后这个连接的数据, 就由这个 socketCHannel 处理</span></span><br><span class="line">            client.register(selector, SelectionKey.OP_READ);</span><br><span class="line">            <span class="comment">// 将此对应的 channel 设置为准备接受其他客户端请求</span></span><br><span class="line">            selectionKey.interestOps(SelectionKey.OP_ACCEPT);</span><br><span class="line">            System.out.println(<span class="string">&quot;有客户端连接: IP地址为: &quot;</span> + client.getRemoteAddress());</span><br><span class="line">            client.write(charset.encode(<span class="string">&quot;请输入您的昵称&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 处理来自客户端的数据读取请求</span></span><br><span class="line">        <span class="keyword">if</span> (selectionKey.isReadable()) &#123;</span><br><span class="line">            <span class="comment">// 返回该 selectionKey 对应的channel, 其中有数据需要读取</span></span><br><span class="line">            SocketChannel client = (SocketChannel) selectionKey.channel();</span><br><span class="line">            ByteBuffer buffer = ByteBuffer.allocate(<span class="number">1024</span>);</span><br><span class="line">            StringBuffer content = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">while</span> (client.read(buffer) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    buffer.flip();</span><br><span class="line">                    content.append(charset.decode(buffer));</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 将此对应的channel  设置为准备下一次接受数据</span></span><br><span class="line">                selectionKey.interestOps(SelectionKey.OP_READ);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                selectionKey.cancel();</span><br><span class="line">                <span class="keyword">if</span> (selectionKey.channel() != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    selectionKey.channel().close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (content.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                String[] arrayContent = content.toString().split(USER_CONTENT_SPILIT);</span><br><span class="line">                <span class="comment">//  注册用户</span></span><br><span class="line">                <span class="keyword">if</span> (arrayContent != <span class="keyword">null</span> &amp;&amp; arrayContent.length == <span class="number">1</span>) &#123;</span><br><span class="line">                    String nickName = arrayContent[<span class="number">0</span>];</span><br><span class="line">                    <span class="keyword">if</span> (users.contains(nickName)) &#123;</span><br><span class="line">                        client.write(charset.encode(USER_EXIST));</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        users.add(nickName);</span><br><span class="line">                        <span class="keyword">int</span> onlineCount = onlineCount();</span><br><span class="line">                        String message = <span class="string">&quot;欢迎: &quot;</span> + nickName + <span class="string">&quot;进入聊天室！当前在线人数: &quot;</span> + onlineCount;</span><br><span class="line">                        message = nickName + <span class="string">&quot; 说&quot;</span> + message;</span><br><span class="line">                        <span class="keyword">if</span> (users.contains(nickName)) &#123;</span><br><span class="line">                            <span class="comment">// 不会发送给此内容的客户端</span></span><br><span class="line">                            broadCase(client, message);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">broadCase</span><span class="params">(SocketChannel client, String message)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//  广播数据到所有的 SocketChannel</span></span><br><span class="line">        <span class="keyword">for</span> (SelectionKey key : selector.keys()) &#123;</span><br><span class="line">            Channel channel = key.channel();</span><br><span class="line">            <span class="comment">//  如果client 不为空, 不会发给此内容的客户端</span></span><br><span class="line">            <span class="keyword">if</span> (channel <span class="keyword">instanceof</span> SocketChannel &amp;&amp; channel != client) &#123;</span><br><span class="line">                SocketChannel socketChannel = (SocketChannel) channel;</span><br><span class="line">                socketChannel.write(charset.encode(message));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">onlineCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> res = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (SelectionKey key : selector.keys()) &#123;</span><br><span class="line">            Channel channel = key.channel();</span><br><span class="line">            <span class="comment">// 如果client 不为空, 不会发给此内容的客户端</span></span><br><span class="line">            <span class="keyword">if</span> (channel <span class="keyword">instanceof</span> SocketChannel) &#123;</span><br><span class="line">                res++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> NIOChatServer(<span class="number">8080</span>).listen();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/HashMap%E8%B7%9FHashtable%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/#more" rel="contents">
+              <a class="btn" href="/%E4%BD%BF%E7%94%A8NIO%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%8A%9F%E8%83%BD(5)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -463,7 +665,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%AE%80%E4%BB%8B/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BD%BF%E7%94%A8Netty%E6%89%8B%E5%86%99tomcat(3)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -477,7 +679,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%AE%80%E4%BB%8B/" class="post-title-link" itemprop="url">设计模式简介</a>
+            <a href="/%E4%BD%BF%E7%94%A8Netty%E6%89%8B%E5%86%99tomcat(3)/" class="post-title-link" itemprop="url">使用Netty手写tomcat(3)</a>
         </h2>
 
         <div class="post-meta">
@@ -486,9 +688,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -496,7 +697,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
                 </span>
             </span>
 
@@ -511,14 +712,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="设计模式简介"><a href="#设计模式简介" class="headerlink" title="设计模式简介"></a>设计模式简介</h1><h2 id="1-设计模式简介"><a href="#1-设计模式简介" class="headerlink" title="1. 设计模式简介"></a>1. 设计模式简介</h2><p> 设计模式是一套被反复使用的,多数人只晓得,经过分类编写的,代码设计经验的总结.使用设计模式是为了重用代码,让代码更容易被他们理解,保证代码的可靠性.</p>
-<h2 id="2-设计模式的设计原则"><a href="#2-设计模式的设计原则" class="headerlink" title="2. 设计模式的设计原则"></a>2. 设计模式的设计原则</h2><ul>
-<li> 对接口编程而不是对实现编程</li>
-<li> 优先使用对象组合而不是继承<h2 id="3-设计模式的类型"><a href="#3-设计模式的类型" class="headerlink" title="3.设计模式的类型"></a>3.设计模式的类型</h2><h3 id="1-创建型模式"><a href="#1-创建型模式" class="headerlink" title="1. 创建型模式 "></a>1. 创建型模式 <br></h3></li>
-</ul>
+          <h1 id="使用Netty手写Tomcat容器"><a href="#使用Netty手写Tomcat容器" class="headerlink" title="使用Netty手写Tomcat容器"></a>使用Netty手写Tomcat容器</h1><p>前面学了一下netty的使用，我们知道Tomcat的底层也是使用的Netty, 这里使用Netty手写一个麻雀虽小五脏俱全的Tomcat容器</p>
+<h2 id="请求类封装-Request"><a href="#请求类封装-Request" class="headerlink" title="请求类封装     Request"></a>请求类封装     Request</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.formula.netty.tomcat.http;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.netty.channel.ChannelHandlerContext;</span><br><span class="line"><span class="keyword">import</span> io.netty.handler.codec.http.HttpRequest;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2019/9/19</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;请求封装&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Request</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ChannelHandlerContext chc;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> HttpRequest httpRequest;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Request</span><span class="params">(ChannelHandlerContext chc, HttpRequest httpRequest)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.chc = chc;</span><br><span class="line">        <span class="keyword">this</span>.httpRequest = httpRequest;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getUrl</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.httpRequest.uri();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> httpRequest.method().name();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="返回封装"><a href="#返回封装" class="headerlink" title="返回封装"></a>返回封装</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%AE%80%E4%BB%8B/#more" rel="contents">
+              <a class="btn" href="/%E4%BD%BF%E7%94%A8Netty%E6%89%8B%E5%86%99tomcat(3)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -542,7 +742,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%AF%B9%E6%AF%94/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%9F%BA%E4%BA%8ENetty%E9%87%8D%E6%9E%84RPC%E6%A1%86%E6%9E%B6(4)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -556,7 +756,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Spring%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%AF%B9%E6%AF%94/" class="post-title-link" itemprop="url">Spring中常用的设计对比</a>
+            <a href="/%E5%9F%BA%E4%BA%8ENetty%E9%87%8D%E6%9E%84RPC%E6%A1%86%E6%9E%B6(4)/" class="post-title-link" itemprop="url">基于Netty重构RPC框架(4)</a>
         </h2>
 
         <div class="post-meta">
@@ -565,9 +765,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -575,7 +774,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
                 </span>
             </span>
 
@@ -590,138 +789,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="spring-中常用的设计模式对比"><a href="#spring-中常用的设计模式对比" class="headerlink" title="spring 中常用的设计模式对比"></a>spring 中常用的设计模式对比</h1><table>
-<thead>
-<tr>
-<th>设计模式</th>
-<th>一句话归纳</th>
-<th>举例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>工厂模式(Factory)</td>
-<td>只对结果负责,封装创建过程</td>
-<td>BeanFactory,Calender</td>
-</tr>
-<tr>
-<td>单例模式(Singleton)</td>
-<td>保证独一无二</td>
-<td>ApplicationContext,Calender</td>
-</tr>
-<tr>
-<td>原型模式(Prototype)</td>
-<td>克隆</td>
-<td>ArrayList,PrototypeBean</td>
-</tr>
-<tr>
-<td>代理模式(Proxy)</td>
-<td>增强职责</td>
-<td>ProxyFactoryBean,JDKDynamicAopFactory,CglibAopFactory</td>
-</tr>
-<tr>
-<td>委派模式(Delegate)</td>
-<td>干活算员工的,功劳算项目经理的</td>
-<td>DispatcherServlet,BeanDefinitionParserDelegate</td>
-</tr>
-<tr>
-<td>策略模式(Strategy)</td>
-<td>用户选择,结果统一</td>
-<td>InstantiationStrategy</td>
-</tr>
-<tr>
-<td>模板模式(Template)</td>
-<td>流程标准化,自己实现定制</td>
-<td>jdbcTemplate,HttpServlet</td>
-</tr>
-<tr>
-<td>适配器模式(Adapter)</td>
-<td>兼容转换头</td>
-<td>AdvisorAdapter,HandlerAdapter</td>
-</tr>
-<tr>
-<td>装饰器模式(Decorator)</td>
-<td>包装,同宗同源</td>
-<td>BufferedReader,InputStream,OutputStream,HttpHeadResponseDecorator</td>
-</tr>
-<tr>
-<td>观察者模式(Observer)</td>
-<td>任务完成时通知</td>
-<td>ContextLoaderListener</td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/9.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%87%E6%BB%A4%E5%99%A8%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/9.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%87%E6%BB%A4%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">9</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="9-设计模式之过滤器模式-Filter-Pattren"><a href="#9-设计模式之过滤器模式-Filter-Pattren" class="headerlink" title="9. 设计模式之过滤器模式(Filter Pattren)"></a>9. 设计模式之过滤器模式(Filter Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1.概念"></a>1.概念</h3><p>过滤器模式或标准模式是一种设计模式,这种模式允许开发人员使用不同的标准来过滤一组对象,通过逻辑运算以解耦的方式把他们链接起来.这种类型的设计模式属于结构性模式.它组合多个标准来获得单一标准.</p>
-<h3 id="2-代码"><a href="#2-代码" class="headerlink" title="2. 代码"></a>2. 代码</h3>
+          <h1 id="基于Netty-重构RPC框架"><a href="#基于Netty-重构RPC框架" class="headerlink" title="基于Netty 重构RPC框架"></a>基于Netty 重构RPC框架</h1><h2 id="1-RPC-概述"><a href="#1-RPC-概述" class="headerlink" title="1. RPC 概述"></a>1. RPC 概述</h2><p>下面的这张图, 大概很多人都见到过, 这是Dubbo 官网中的一张图描述了项目架构的演进过程:</p>
+<p><img src="http://files.luyanan.com//img/20190920102437.png"></p>
+<p>他描述了每一种架构需要的具体配置和组织形态. 当网站流量很小时， 只需一个应用, 将所有的功能都部署到一起, 以减少部署节点和成本，我们通常会采用单一应用架构,之后出现了ORM框架，主要用于简化增删改查工作流的,数据访问框架ORM是关键.</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/9.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%87%E6%BB%A4%E5%99%A8%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/%E5%9F%BA%E4%BA%8ENetty%E9%87%8D%E6%9E%84RPC%E6%A1%86%E6%9E%B6(4)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -745,7 +818,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/8.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%A4%A7%E5%90%8D%E9%BC%8E%E9%BC%8E%E7%9A%84EventLoop(9)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -759,7 +832,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/8.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">8</a>
+            <a href="/%E5%A4%A7%E5%90%8D%E9%BC%8E%E9%BC%8E%E7%9A%84EventLoop(9)/" class="post-title-link" itemprop="url">大名鼎鼎的EventLoop(9)</a>
         </h2>
 
         <div class="post-meta">
@@ -768,9 +841,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -778,7 +850,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
                 </span>
             </span>
 
@@ -793,12 +865,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="8-设计模式之桥接模式-Bridge-Pattren"><a href="#8-设计模式之桥接模式-Bridge-Pattren" class="headerlink" title="8. 设计模式之桥接模式(Bridge Pattren)"></a>8. 设计模式之桥接模式(Bridge Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Bridge  模式又叫桥接模式,是构造型的设计模式之一.Bridge 模式是基于类的最小设计原型,使用封装,聚合以及继承等行为来让不同的类承担不同的责任.它的主要特点是把抽象与行为实现分离开来,从而可以保证和部分的独立性以及应对他们的功能扩展</p>
-<h3 id="2-角色和职责"><a href="#2-角色和职责" class="headerlink" title="2. 角色和职责"></a>2. 角色和职责</h3>
+          <h1 id="大名鼎鼎的EventLoop"><a href="#大名鼎鼎的EventLoop" class="headerlink" title="大名鼎鼎的EventLoop"></a>大名鼎鼎的EventLoop</h1><h2 id="1-EventLoopGroup-和Reactor"><a href="#1-EventLoopGroup-和Reactor" class="headerlink" title="1. EventLoopGroup 和Reactor"></a>1. EventLoopGroup 和Reactor</h2><p>一个Netty 在启动的时候, 至少要指定一个EventLoopGroup(如果使用的是Nio, 一般指定的是NioEventLoopGroup),那么, 这回NioEventLoopGroup 在Netty中 到底扮演着什么样的角色呢? 我们知道, Netty 是Reactor 模型的一个实现, 我们就从Reactor 的线程模型开始</p>
+<h3 id="1-浅谈Reactor-线程模型"><a href="#1-浅谈Reactor-线程模型" class="headerlink" title="1. 浅谈Reactor 线程模型"></a>1. 浅谈Reactor 线程模型</h3><p>Reactor 线程模型有三种: 单线程模型、多线程模型、主从线程模型. 首先来看一下单线程模型, 如下图所示:<br><img src="http://files.luyanan.com//img/20190928171643.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/8.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/%E5%A4%A7%E5%90%8D%E9%BC%8E%E9%BC%8E%E7%9A%84EventLoop(9)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -822,7 +893,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/7.%20%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E6%8F%AD%E5%BC%80Bootstrap%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1(7)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -836,7 +907,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/7.%20%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">7</a>
+            <a href="/%E6%8F%AD%E5%BC%80Bootstrap%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1(7)/" class="post-title-link" itemprop="url">揭开Bootstrap的神秘面纱(7)</a>
         </h2>
 
         <div class="post-meta">
@@ -845,9 +916,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -855,7 +925,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
                 </span>
             </span>
 
@@ -870,166 +940,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="7-设计模式之适配器模式-Adapter-Pattren"><a href="#7-设计模式之适配器模式-Adapter-Pattren" class="headerlink" title="7. 设计模式之适配器模式(Adapter Pattren)"></a>7. 设计模式之适配器模式(Adapter Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Adapter 模式也叫适配器模式,是构造性模式的一种,通过Adapter模式可以改变已有类(或外部类)的接口形式.将一个类的接口转换成客户希望的另外一个接口.Apadter 模式使得原本由于接口不兼容而不能一起工作的哪些类可以一起工作.</p>
-<h3 id="2-角色及其职责"><a href="#2-角色及其职责" class="headerlink" title="2. 角色及其职责"></a>2. 角色及其职责</h3>
+          <h1 id="揭开Bootstrap-的神秘面纱"><a href="#揭开Bootstrap-的神秘面纱" class="headerlink" title="揭开Bootstrap 的神秘面纱"></a>揭开Bootstrap 的神秘面纱</h1><h2 id="1-客户端Bootstrap"><a href="#1-客户端Bootstrap" class="headerlink" title="1. 客户端Bootstrap"></a>1. 客户端Bootstrap</h2><h3 id="1-Channel简介"><a href="#1-Channel简介" class="headerlink" title="1. Channel简介"></a>1. Channel简介</h3><p>在Netty中,Channel是一个Socket的抽象, 它为用户提升了关于Socket状态(是否是连接还是断开) 以及对Socket的读写等操作, 每当Netty 建立一个连接后， 都创建一个对应的Channel 实例.</p>
+<p>除了TCP协议外, Netty 还支持很多的其他的连接协议, 并且每种协议还有NIO(非阻塞IO) 和OLO( Old - io,即传统的IO ）版本的区别. 不同 协议不同的阻塞类型的连接都有不同的Channel 类型与之对应. 下面是一些常见的Channel 类型</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/7.%20%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/6.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/6.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">6</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="6-设计模式之原型模式-Prototype-Pattren"><a href="#6-设计模式之原型模式-Prototype-Pattren" class="headerlink" title="6. 设计模式之原型模式(Prototype Pattren)"></a>6. 设计模式之原型模式(Prototype Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Prototype 模式是一种对象创建型模式,它采用复制原型对象的方法来创建对象的实例.使用Prototype 模式创建的实例,具有和原型一样的数据</p>
-<h3 id="2-原型模式的特点"><a href="#2-原型模式的特点" class="headerlink" title="2. 原型模式的特点"></a>2. 原型模式的特点</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/6.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/5.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/5.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">5</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="5-设计模式之建造者模式-Builder-Pattren"><a href="#5-设计模式之建造者模式-Builder-Pattren" class="headerlink" title="5. 设计模式之建造者模式(Builder Pattren)"></a>5. 设计模式之建造者模式(Builder Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>&nbsp;&nbsp;Builder 模式也叫建造者模式或者生成器模式.<br>&nbsp;&nbsp;Builder 模式是一种对象创建型模式之一,用来隐藏复合对象的创建过程,它把复合对象的创建过程加以抽象,通过子类继承或者重载的方式,动态的创建具有复合属性的对象</p>
-<h3 id="2-模式中包含的角色及其指责"><a href="#2-模式中包含的角色及其指责" class="headerlink" title="2. 模式中包含的角色及其指责"></a>2. 模式中包含的角色及其指责</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/5.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/%E6%8F%AD%E5%BC%80Bootstrap%E7%9A%84%E7%A5%9E%E7%A7%98%E9%9D%A2%E7%BA%B1(7)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1120,7 +1035,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">227</span>
+          <span class="site-state-item-count">229</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/window10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%EF%BC%88WSL%EF%BC%89%E5%8F%8A%E8%BF%81%E7%A7%BB%E5%88%B0%E9%9D%9E%E7%B3%BB%E7%BB%9F%E7%9B%98/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/vue/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/window10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%EF%BC%88WSL%EF%BC%89%E5%8F%8A%E8%BF%81%E7%A7%BB%E5%88%B0%E9%9D%9E%E7%B3%BB%E7%BB%9F%E7%9B%98/" class="post-title-link" itemprop="url">window10安装Linux子系统（WSL）及迁移到非系统盘</a>
+            <a href="/vue/" class="post-title-link" itemprop="url">vue</a>
         </h2>
 
         <div class="post-meta">
@@ -231,7 +231,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,7 +239,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/vue/" itemprop="url" rel="index"><span itemprop="name">vue</span></a>
                 </span>
             </span>
 
@@ -254,11 +258,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="window10安装Linux子系统（WSL）及迁移到非系统盘"><a href="#window10安装Linux子系统（WSL）及迁移到非系统盘" class="headerlink" title="window10安装Linux子系统（WSL）及迁移到非系统盘"></a>window10安装Linux子系统（WSL）及迁移到非系统盘</h1><h2 id="痛点："><a href="#痛点：" class="headerlink" title="痛点："></a>痛点：</h2><p>在电脑上想要使用linux又想使用windows系统只能安装双系统，因为虚拟机的性能差且使用麻烦，双系统使用起来倒是也还行，ubuntu的桌面系统现在用起来也可以，但是来回切换比较麻烦，故想尝试一下windows自带的这个WSL功能使用起来如何。<br>记录一下安装过程。</p>
-<h2 id="Linux子系统"><a href="#Linux子系统" class="headerlink" title="Linux子系统"></a>Linux子系统</h2><p>WSL（Windows Subsystem for Linux）详细介绍见官网：<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-au/windows/wsl/about">https://docs.microsoft.com/en-au/windows/wsl/about</a></p>
+          <h1 id="vue"><a href="#vue" class="headerlink" title="vue"></a>vue</h1><p>Vue (读音 /vjuː/，类似于 <strong>view</strong>) 是一套用于构建用户界面的<strong>渐进式框架</strong>。与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与<a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/guide/single-file-components.html">现代化的工具链</a>以及各种<a target="_blank" rel="noopener" href="https://github.com/vuejs/awesome-vue#libraries--plugins">支持类库</a>结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。</p>
+<p><code>MVVM</code>思想</p>
+<ul>
+<li><code>M</code>:<code>module</code> 包含数据和一些基本的操作</li>
+<li><code>V</code>: <code>view</code>视图,页面渲染结果</li>
+<li><code>VM</code>:<code>view-module</code>模型和视图间的双向操作</li>
+</ul>
+<p>视图和数据通过<code>VM</code> 绑定起来,模型里面有变化会自动的通过<code>Directives</code> 填写到视图中,视图表单中添加了内容也会自动的通过<code>DOM Listeners</code> 保存到模型中</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/window10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%EF%BC%88WSL%EF%BC%89%E5%8F%8A%E8%BF%81%E7%A7%BB%E5%88%B0%E9%9D%9E%E7%B3%BB%E7%BB%9F%E7%9B%98/#more" rel="contents">
+              <a class="btn" href="/vue/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -282,7 +292,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/window10%E4%B8%8B%E5%AD%90%E7%B3%BB%E7%BB%9Fubuntu%E5%AE%89%E8%A3%85Docker/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/ES6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -296,7 +306,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/window10%E4%B8%8B%E5%AD%90%E7%B3%BB%E7%BB%9Fubuntu%E5%AE%89%E8%A3%85Docker/" class="post-title-link" itemprop="url">window10下子系统ubuntu安装Docker</a>
+            <a href="/ES6/" class="post-title-link" itemprop="url">ES6</a>
         </h2>
 
         <div class="post-meta">
@@ -307,7 +317,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -315,7 +325,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/ES6/" itemprop="url" rel="index"><span itemprop="name">ES6</span></a>
                 </span>
             </span>
 
@@ -330,13 +344,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="window10下子系统ubuntu安装Docker"><a href="#window10下子系统ubuntu安装Docker" class="headerlink" title="window10下子系统ubuntu安装Docker"></a>window10下子系统ubuntu安装Docker</h1><p>准备工作<br>开启window子系统<br>网上有很多教程，这里不做过多的记录，可使用以下教程:Win10安装Ubuntu子系统教程（附安装图形化界面）</p>
-<p><img src="https://img-blog.csdnimg.cn/20190704180341303.png" alt="img"></p>
-<p>下载Docker for Window安装包<br>进入docker官网下载页面</p>
-<p><img src="https://img-blog.csdnimg.cn/20190704180156291.png" alt="img"></p>
+          <h1 id="ES6"><a href="#ES6" class="headerlink" title="ES6"></a>ES6</h1><p><code>ECMAScript6.0</code> (以下简称<code>ES6</code>,<code>ECMAScript</code> 是一种由<code>Ecma</code> 国际通过<code>ECMA-262</code>标准化的脚本),是<code>javaScript</code> 语言的下一代标准,2015年6月份正式发布,从<code>ES6</code>  开始的版本号采用年号,如<code>ES2015</code>,就是<code>ES6</code>. <code>ES2016</code> 就是<code>ES7</code></p>
+<p><code>ECMAScript</code> 是规范,<code>JavaScript</code> 则是具体的实现. </p>
+<p>在<code>ES6</code> 中,加入了很多新的特性. </p>
+<h2 id="1-声明变量"><a href="#1-声明变量" class="headerlink" title="1. 声明变量"></a>1. 声明变量</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/window10%E4%B8%8B%E5%AD%90%E7%B3%BB%E7%BB%9Fubuntu%E5%AE%89%E8%A3%85Docker/#more" rel="contents">
+              <a class="btn" href="/ES6/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -360,7 +374,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/linux%20%E5%91%BD%E4%BB%A4%E5%A4%A7%E5%85%A8/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -374,7 +388,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/linux%20%E5%91%BD%E4%BB%A4%E5%A4%A7%E5%85%A8/" class="post-title-link" itemprop="url">linux 命令大全</a>
+            <a href="/%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="post-title-link" itemprop="url">序列化和反序列化</a>
         </h2>
 
         <div class="post-meta">
@@ -385,7 +399,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -393,7 +407,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/2-%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">2. 分布式架构基础</span></a>
                 </span>
             </span>
 
@@ -408,12 +426,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>[TOC]</p>
-<h4 id="1-查看-HTTP-链接情况"><a href="#1-查看-HTTP-链接情况" class="headerlink" title="1. 查看  HTTP  链接情况"></a>1. 查看  HTTP  链接情况</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -n | awk &#39;&#x2F;^tcp&#x2F; &#123;++S[$NF]&#125; END &#123;for(a in S) print a, S[a]&#125;&#39;</span><br></pre></td></tr></table></figure>
-<h4 id="2-查看当前IP个数和每IP连接数"><a href="#2-查看当前IP个数和每IP连接数" class="headerlink" title="2. 查看当前IP个数和每IP连接数"></a>2. 查看当前IP个数和每IP连接数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -an | grep 80 | awk &#39;&#123;print $5&#125;&#39; | awk &#39;BEGIN &#123;FS&#x3D;&quot;:&quot;&#125; NF&#x3D;&#x3D;2 &#123;print $1&#125; NF&#x3D;&#x3D;5 &#123;print $4&#125;&#39; | sort | uniq -c | sort -n</span><br></pre></td></tr></table></figure>
+          <h1 id="序列化和反序列化"><a href="#序列化和反序列化" class="headerlink" title="序列化和反序列化"></a>序列化和反序列化</h1><h2 id="Java领域中对象如何传输"><a href="#Java领域中对象如何传输" class="headerlink" title="Java领域中对象如何传输"></a>Java领域中对象如何传输</h2><h3 id="基于socket-进行对象传输"><a href="#基于socket-进行对象传输" class="headerlink" title="基于socket 进行对象传输"></a>基于socket 进行对象传输</h3><p>User</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.notes.serial;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2019/9/2</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(String name, Integer age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(Integer age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;User&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;name=&#x27;&quot;</span> + name + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, age=&quot;</span> + age +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/linux%20%E5%91%BD%E4%BB%A4%E5%A4%A7%E5%85%A8/#more" rel="contents">
+              <a class="btn" href="/%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -437,7 +454,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Centos7%E8%AE%BE%E7%BD%AE%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%9F%BA%E4%BA%8ESocket%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AARPC%E6%A1%86%E6%9E%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -451,7 +468,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Centos7%E8%AE%BE%E7%BD%AE%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/" class="post-title-link" itemprop="url">Centos7设置定时任务</a>
+            <a href="/%E5%9F%BA%E4%BA%8ESocket%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AARPC%E6%A1%86%E6%9E%B6/" class="post-title-link" itemprop="url">基于Socket手写一个RPC框架</a>
         </h2>
 
         <div class="post-meta">
@@ -462,7 +479,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -470,7 +487,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/2-%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">2. 分布式架构基础</span></a>
                 </span>
             </span>
 
@@ -485,14 +506,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Centos7-设置定时任务"><a href="#Centos7-设置定时任务" class="headerlink" title="Centos7 设置定时任务"></a>Centos7 设置定时任务</h1><p><strong>1、安装 crontabs服务并设置开机自启：</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yum install crontabs</span><br><span class="line">systemctl <span class="built_in">enable</span> crond</span><br><span class="line">systemctl start crond</span><br></pre></td></tr></table></figure>
-
-<p><strong>2、配置定时规则</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim &#x2F;etc&#x2F;crontab</span><br></pre></td></tr></table></figure>
+          <h1 id="这里基于Socket-手写一个五脏俱全的RPC-框架"><a href="#这里基于Socket-手写一个五脏俱全的RPC-框架" class="headerlink" title="这里基于Socket 手写一个五脏俱全的RPC 框架"></a>这里基于Socket 手写一个五脏俱全的RPC 框架</h1><h2 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h2><p>我们这里先建两个项目</p>
+<p>rpc-server-api : 用于存放需要对外的接口类</p>
+<p>rpc-server-prodiver： 存放业务代码的项目</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Centos7%E8%AE%BE%E7%BD%AE%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/#more" rel="contents">
+              <a class="btn" href="/%E5%9F%BA%E4%BA%8ESocket%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AARPC%E6%A1%86%E6%9E%B6/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -516,7 +535,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/8.kubernetes%E7%BB%84%E4%BB%B6%E4%B9%8BStorage/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Http%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -530,7 +549,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/8.kubernetes%E7%BB%84%E4%BB%B6%E4%B9%8BStorage/" class="post-title-link" itemprop="url">8</a>
+            <a href="/Http%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">Http 通信协议</a>
         </h2>
 
         <div class="post-meta">
@@ -541,7 +560,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -549,7 +568,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/2-%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">2. 分布式架构基础</span></a>
                 </span>
             </span>
 
@@ -564,16 +587,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="kubernetes组件之Storage"><a href="#kubernetes组件之Storage" class="headerlink" title="kubernetes组件之Storage"></a>kubernetes组件之Storage</h1><h2 id="1-Volume"><a href="#1-Volume" class="headerlink" title="1 Volume"></a>1 <a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/storage/volumes/"><code>Volume</code></a></h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">On-disk files in a Container are ephemeral, which presents some problems for non-trivial applications when running in Containers. First, when a Container crashes, kubelet will restart it, but the files will be lost - the Container starts with a clean state. Second, when running Containers together in a Pod it is often necessary to share files between those Containers. The Kubernetes Volume abstraction solves both of these problems.</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="2-Host-类型volume-实战"><a href="#2-Host-类型volume-实战" class="headerlink" title="2 Host 类型volume 实战"></a>2 <code>Host</code> 类型<code>volume</code> 实战</h2><blockquote>
-<p>背景： 定义一个<code>Pod</code>, 其中包含两个<code>contailer</code>,都使用<code>pod</code>的<code>vloume</code></p>
-</blockquote>
+          <h1 id="Http-通信协议"><a href="#Http-通信协议" class="headerlink" title="Http  通信协议"></a>Http  通信协议</h1><h2 id="Http通信协议的基本原理"><a href="#Http通信协议的基本原理" class="headerlink" title="Http通信协议的基本原理"></a>Http通信协议的基本原理</h2><p>http协议在远程通信场景中的应用还是挺广泛的,包括现在主流的微服务架构的通信都是基于http协议,. 由于经常使用的关系,所以大家对于http协议的理解还是比较深刻的,我这里就直接帮大家梳理一下http协议的基本原理</p>
+<h3 id="一次Http协议的基本请求"><a href="#一次Http协议的基本请求" class="headerlink" title="一次Http协议的基本请求"></a>一次Http协议的基本请求</h3><p>我们先来思考一个问题,我们在浏览器输入一个网址后,浏览器是如何展示目标网址中的内容的? 内容是从哪里来的?</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/8.kubernetes%E7%BB%84%E4%BB%B6%E4%B9%8BStorage/#more" rel="contents">
+              <a class="btn" href="/Http%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -597,7 +615,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/7.%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84CICD/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -611,7 +629,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/7.%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84CICD/" class="post-title-link" itemprop="url">7</a>
+            <a href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/" class="post-title-link" itemprop="url">任务调度之Quartz</a>
         </h2>
 
         <div class="post-meta">
@@ -622,7 +640,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -630,7 +648,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
+                  <a href="/categories/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/" itemprop="url" rel="index"><span itemprop="name">任务调度</span></a>
                 </span>
             </span>
 
@@ -645,18 +663,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="基于kubernetes的CICD-md"><a href="#基于kubernetes的CICD-md" class="headerlink" title="基于kubernetes的CICD.md"></a>基于kubernetes的CICD.md</h1><blockquote>
-<p>思考: 当我们需要部署一个项目到k8s中的时候,需要编写<code>Dockerfile</code>-&gt; 打包-&gt; <code>push</code> 镜像-&gt; 编写k8s 配置文件-&gt; 在进行启动等等。 </p>
-<p>当我们需要对这个项目的某些代码进行修改的时候,还要重新打包-&gt;push镜像-&gt;k8s启动等等. </p>
-</blockquote>
-<p><img src="http://files.luyanan.com//img/20200430100422.png" alt="image-20200430100403943"></p>
-<blockquote>
-<p>思考: 如果能够按照上述图解一样,在本地进行开发,然后<code>git push</code> 到<code>guthub</code>, 就能访问最终的应用多好. </p>
-</blockquote>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a>1. 环境准备</h2>
+          <h1 id="任务调度之Quartz"><a href="#任务调度之Quartz" class="headerlink" title="任务调度之Quartz"></a>任务调度之Quartz</h1><h2 id="1-漫谈任务调度"><a href="#1-漫谈任务调度" class="headerlink" title="1. 漫谈任务调度"></a>1. 漫谈任务调度</h2><h3 id="1-1-什么时候需要任务调度"><a href="#1-1-什么时候需要任务调度" class="headerlink" title="1.1 什么时候需要任务调度"></a>1.1 什么时候需要任务调度</h3><h4 id="1-1-1-任务调度的背景"><a href="#1-1-1-任务调度的背景" class="headerlink" title="1.1.1 任务调度的背景"></a>1.1.1 任务调度的背景</h4><p>在业务系统中,有很多这样的场景:</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/7.%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84CICD/#more" rel="contents">
+              <a class="btn" href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BQuartz/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -680,7 +690,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/6.kubectl%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -694,7 +704,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/6.kubectl%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">6</a>
+            <a href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/" class="post-title-link" itemprop="url">任务调度之Eliastic-Job</a>
         </h2>
 
         <div class="post-meta">
@@ -705,7 +715,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -713,7 +723,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
+                  <a href="/categories/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/" itemprop="url" rel="index"><span itemprop="name">任务调度</span></a>
                 </span>
             </span>
 
@@ -728,181 +738,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="1、查看集群状态"><a href="#1、查看集群状态" class="headerlink" title="1、查看集群状态"></a>1、查看集群状态</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl version --short=<span class="literal">true</span> 查看客户端及服务端程序版本信息</span><br><span class="line">kubectl cluster-info 查看集群信息</span><br></pre></td></tr></table></figure>
-
-<h2 id="2、创建资源对象"><a href="#2、创建资源对象" class="headerlink" title="2、创建资源对象"></a><strong>2、创建资源对象</strong></h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl run name --image=(镜像名) --replicas=(备份数) --port=(容器要暴露的端口) --labels=(设定自定义标签)</span><br><span class="line">kubectl create -f **.yaml  陈述式对象配置管理方式</span><br><span class="line">kubectl apply -f **.yaml  声明式对象配置管理方式（也适用于更新等）</span><br></pre></td></tr></table></figure>
-
-<h2 id="3、查看资源对象"><a href="#3、查看资源对象" class="headerlink" title="3、查看资源对象"></a>3、查看资源对象</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/6.kubectl%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/10.kubernetes%E7%B3%BB%E7%BB%9F%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/10.kubernetes%E7%B3%BB%E7%BB%9F%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/" class="post-title-link" itemprop="url">10</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="kubernetes系统核心组件"><a href="#kubernetes系统核心组件" class="headerlink" title="kubernetes系统核心组件"></a>kubernetes系统核心组件</h1><h2 id="1-Master和Node"><a href="#1-Master和Node" class="headerlink" title="1. Master和Node"></a>1. <code>Master</code>和<code>Node</code></h2><blockquote>
-<p>官网:<a target="_blank" rel="noopener" href="https://kubernetes.io/zh/docs/concepts/architecture/master-node-communication/">https://kubernetes.io/zh/docs/concepts/architecture/master-node-communication/</a></p>
-</blockquote>
-<p>k8s 集群中的控制节点,负责整个集群的管理和控制,可以做成高可用,防止一台<code>master</code> 宕机或者不可用,其中有一些关键的组件, 比如<code>API Server</code>、<code>Controller Manage</code> 、<code>Scheduler</code>等. </p>
-<blockquote>
-<p>Node</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/10.kubernetes%E7%B3%BB%E7%BB%9F%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/1.Kubernetes%E4%B9%8B%E5%85%A5%E9%97%A8%E7%AF%87/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/1.Kubernetes%E4%B9%8B%E5%85%A5%E9%97%A8%E7%AF%87/" class="post-title-link" itemprop="url">1</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Kubernetes之入门篇"><a href="#Kubernetes之入门篇" class="headerlink" title="Kubernetes之入门篇"></a>Kubernetes之入门篇</h1><h2 id="1-K8S核心组件和架构图"><a href="#1-K8S核心组件和架构图" class="headerlink" title="1. K8S核心组件和架构图"></a>1. K8S核心组件和架构图</h2><p><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/">K8S Docs Concepts</a></p>
+          <h1 id="任务调度之Eliastic-Job-md"><a href="#任务调度之Eliastic-Job-md" class="headerlink" title="任务调度之Eliastic-Job.md"></a>任务调度之Eliastic-Job.md</h1><h2 id="1-1-任务调度高级需求"><a href="#1-1-任务调度高级需求" class="headerlink" title="1.1 任务调度高级需求"></a>1.1 任务调度高级需求</h2><p><code>Quartz</code> 的不足:</p>
 <ol>
-<li><p>先从<code>contailer</code> 开始, K8S 既然是容器编排工具, 那么一定会有<code>contailer</code></p>
-<p> <img src="http://files.luyanan.com//img/20200420103423.png" alt="image-20200420103421591"></p>
-</li>
-<li><p>那k8s 如何操作这些<code>contailer</code>呢?  k8s 不想直接操作这些<code>contailer</code>, 因为操作<code>contailer</code> 是<code>docker</code> 做的事情,k8s 中有自己的操作单位,称之为<code>Prod</code></p>
-<p> 说白了, <code>Prod</code> 就是一个或者多个<code>contailer</code>的集合. </p>
-<p><img src="http://files.luyanan.com//img/20200420103706.png" alt="image-20200420103705134"></p>
-<p>看看官网是怎么描述的? <a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/workloads/pods/pod/">https://kubernetes.io/docs/concepts/workloads/pods/pod/</a></p>
-</li>
+<li>作业只能通过DB 抢占随机负载, 无法协调. </li>
+<li>作业不能分片, 单个任务数据太多了跑不完,消耗线程,负载不均匀. </li>
+<li>作业日志可视化监控,统计. </li>
 </ol>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A Pod (as in a pod of whales or pea pod) is a group of one or more containers (such as Docker containers), with shared storage/network, and a specification for how to run the containers. A Pod’s contents are always co-located and co-scheduled, and run in a shared context. A Pod models an application-specific “logical host” - it contains one or more application containers which are relatively tightly coupled — in a pre-container world, being executed on the same physical or virtual machine would mean being executed on the same logical host</span><br></pre></td></tr></table></figure>
+<h3 id="1-2-发展历史"><a href="#1-2-发展历史" class="headerlink" title="1.2 发展历史"></a>1.2 发展历史</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/1.Kubernetes%E4%B9%8B%E5%85%A5%E9%97%A8%E7%AF%87/#more" rel="contents">
+              <a class="btn" href="/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E4%B9%8BEliastic-Job/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -926,7 +771,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/5.JVM%E4%B9%8B%E8%B0%83%E4%BC%98/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%90%AD%E5%BB%BAVPS%E6%9C%8D%E5%8A%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -940,7 +785,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/5.JVM%E4%B9%8B%E8%B0%83%E4%BC%98/" class="post-title-link" itemprop="url">5</a>
+            <a href="/Linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%90%AD%E5%BB%BAVPS%E6%9C%8D%E5%8A%A1/" class="post-title-link" itemprop="url">Linux环境下搭建VPS服务</a>
         </h2>
 
         <div class="post-meta">
@@ -951,7 +796,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -959,7 +804,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                  <a href="/categories/vpn/" itemprop="url" rel="index"><span itemprop="name">vpn</span></a>
                 </span>
             </span>
 
@@ -974,17 +819,172 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="JVM之调优"><a href="#JVM之调优" class="headerlink" title="JVM之调优"></a>JVM之调优</h1><h2 id="1-重新认识JVM"><a href="#1-重新认识JVM" class="headerlink" title="1. 重新认识JVM"></a>1. 重新认识JVM</h2><p>我们画一张图来展示JVM的大体物理结构</p>
-<p><img src="http://files.luyanan.com//img/20200511085020.png" alt="image-20200511085019210"></p>
-<h2 id="2-GC优化"><a href="#2-GC优化" class="headerlink" title="2. GC优化"></a>2. GC优化</h2>
+          <h3 id="linux-环境下搭建vps-服务"><a href="#linux-环境下搭建vps-服务" class="headerlink" title="linux 环境下搭建vps 服务"></a>linux 环境下搭建vps 服务</h3><blockquote>
+<p>说明:</p>
+<blockquote>
+<p>由于大部分的VPN被封,无意间接触到了VPS（Virtual Private Server 虚拟专用服务器，可用于FQ），所以简单记录下VPS服务搭建流程。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>此教程基于centos7,使用阿里服务器(香港区域,可访问外网)进行搭建</p>
+</blockquote>
+</blockquote>
+<h4 id="1-安装组件"><a href="#1-安装组件" class="headerlink" title="1. 安装组件"></a>1. 安装组件</h4><h5 id="1-1-安装python-组件"><a href="#1-1-安装python-组件" class="headerlink" title="1.1 安装python 组件"></a>1.1 安装python 组件</h5>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/5.JVM%E4%B9%8B%E8%B0%83%E4%BC%98/#more" rel="contents">
+              <a class="btn" href="/Linux%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%90%AD%E5%BB%BAVPS%E6%9C%8D%E5%8A%A1/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
           <!--/noindex-->
         
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BASpringBoot%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BASpringBoot%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">深入浅出SpringBoot核心原理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring-Boot/" itemprop="url" rel="index"><span itemprop="name">Spring Boot</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="深入浅出SpringBoot核心原理"><a href="#深入浅出SpringBoot核心原理" class="headerlink" title="深入浅出SpringBoot核心原理"></a>深入浅出SpringBoot核心原理</h1><h2 id="1-SpringBoot-的基本认识"><a href="#1-SpringBoot-的基本认识" class="headerlink" title="1. SpringBoot 的基本认识"></a>1. SpringBoot 的基本认识</h2><p>不管是不是Spring Cloud Netflix  还是Spring Cloud Alibaba, 都是基于SpringBoot 这个框架来构建的.</p>
+<h3 id="1-什么是SpringBoot"><a href="#1-什么是SpringBoot" class="headerlink" title="1. 什么是SpringBoot"></a>1. 什么是SpringBoot</h3><p>对于Sping框架,我们接触的比较多的应该是Spring MVC和Spring. 而Spring 的核心在于IOC(控制反转)和ID(依赖注入). 而这些框架在使用的过程中需要配置大量的XML，或者需要做很多繁琐的配置. </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BASpringBoot%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%BE%85%E8%A1%A5%E5%85%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%BE%85%E8%A1%A5%E5%85%85/" class="post-title-link" itemprop="url">待补充</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring-Boot/" itemprop="url" rel="index"><span itemprop="name">Spring Boot</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="这里是添加一些需要补充的知识"><a href="#这里是添加一些需要补充的知识" class="headerlink" title="这里是添加一些需要补充的知识"></a>这里是添加一些需要补充的知识</h2><h3 id="ComponentScan-详解"><a href="#ComponentScan-详解" class="headerlink" title="@ComponentScan 详解"></a>@ComponentScan 详解</h3><blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u012326462/article/details/82765485">https://blog.csdn.net/u012326462/article/details/82765485</a></p>
+</blockquote>
+
       
     </div>
 
@@ -1070,7 +1070,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">227</span>
+          <span class="site-state-item-count">229</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

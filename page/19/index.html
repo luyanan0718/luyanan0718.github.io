@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/13.%20Netty%E7%BC%96%E8%A7%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%A6%82%E4%BD%95%E5%80%9F%E5%8A%A9GitHub%E6%90%AD%E5%BB%BA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84maven%E4%BB%93%E5%BA%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/13.%20Netty%E7%BC%96%E8%A7%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF/" class="post-title-link" itemprop="url">13</a>
+            <a href="/%E5%A6%82%E4%BD%95%E5%80%9F%E5%8A%A9GitHub%E6%90%AD%E5%BB%BA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84maven%E4%BB%93%E5%BA%93/" class="post-title-link" itemprop="url">如何借助GitHub搭建属于自己的maven仓库</a>
         </h2>
 
         <div class="post-meta">
@@ -231,7 +231,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,7 +239,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/github/" itemprop="url" rel="index"><span itemprop="name">github</span></a>
                 </span>
             </span>
 
@@ -254,11 +258,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Netty-编解码的艺术"><a href="#Netty-编解码的艺术" class="headerlink" title="Netty 编解码的艺术"></a>Netty 编解码的艺术</h1><h2 id="1-什么是拆包-粘包"><a href="#1-什么是拆包-粘包" class="headerlink" title="1. 什么是拆包/粘包"></a>1. 什么是拆包/粘包</h2><h3 id="1-TCP-粘包-拆包"><a href="#1-TCP-粘包-拆包" class="headerlink" title="1. TCP 粘包/拆包"></a>1. TCP 粘包/拆包</h3><p>TCP 是一个”流”协议, 所谓流, 就是没有界限的一长串二进制数据, TCP 作为传输协议并不了解业务数据的具体含义, 它会根据TCP缓冲区的实际情况进行数据包的划分, 所以在业务上认为是一个完整的包, 可能会被TCP 拆分成多个包进行发送, 也有可能把多个小的包封装成一个大的数据包发送, 这就是所谓的TCP 粘包和拆包问题.</p>
-<p>同样, 在Netty 的编码器中, 也会对半包和粘包问题做相应的处理. 什么是半包? 顾名思义就是不完整的数据包, 因为Netty 在轮询读事件的时候, 每次将channel 中读取的数据, 不一定是一个完整的数据包, 这种情况下, 就叫半包。 粘包同样也不难理解, 如果Client 往Server 发送数据包, 如果发送频繁很有可能会将多个数据都发送到通道中, 如果在server 在读取的时候可能会读取到超过一个完整数据包的长度, 这种情况叫粘包. 有关半包和粘包, 如下图所示：</p>
+          <h1 id="借助GitHub搭建属于自己的maven仓库"><a href="#借助GitHub搭建属于自己的maven仓库" class="headerlink" title="借助GitHub搭建属于自己的maven仓库"></a>借助GitHub搭建属于自己的maven仓库</h1><h2 id="I-背景"><a href="#I-背景" class="headerlink" title="I. 背景"></a>I. 背景</h2><p>在Github上也写了不少的项目了，然后经常遇到的一个问题就是，很多自己写的项目，希望在另外一个项目中使用时，只能把这个项目下载下来，相当之不方便</p>
+<p>因为大多数的java后端项目都是基于maven管理依赖的，所以就希望能有一个公共的maven仓库，可以把自己的项目扔进去，然后再应用就方便很多了</p>
+<p>基于此，就有了本文这个教程了</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/13.%20Netty%E7%BC%96%E8%A7%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF/#more" rel="contents">
+              <a class="btn" href="/%E5%A6%82%E4%BD%95%E5%80%9F%E5%8A%A9GitHub%E6%90%AD%E5%BB%BA%E5%B1%9E%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84maven%E4%BB%93%E5%BA%93/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -282,7 +287,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/12.2%20%20Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/docker%E5%AE%89%E8%A3%85%E5%8F%AF%E9%81%93%E4%BA%91%E7%A7%81%E6%9C%89%E7%BD%91%E7%9B%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -296,7 +301,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/12.2%20%20Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf/" class="post-title-link" itemprop="url">12</a>
+            <a href="/docker%E5%AE%89%E8%A3%85%E5%8F%AF%E9%81%93%E4%BA%91%E7%A7%81%E6%9C%89%E7%BD%91%E7%9B%98/" class="post-title-link" itemprop="url">docker安装可道云私有网盘</a>
         </h2>
 
         <div class="post-meta">
@@ -307,7 +312,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -315,7 +320,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
                 </span>
             </span>
 
@@ -330,13 +335,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="4-Pooled-池化内存分配"><a href="#4-Pooled-池化内存分配" class="headerlink" title="4. Pooled 池化内存分配"></a>4. Pooled 池化内存分配</h2><h3 id="1-PooledByteBufAllocator-简述"><a href="#1-PooledByteBufAllocator-简述" class="headerlink" title="1. PooledByteBufAllocator 简述"></a>1. PooledByteBufAllocator 简述</h3><p>现在开始, 我们来分析Pooled 池化内存的分配原理, 我们首先还是先找到 AbstractByteBufAllocator 的子类 PooledByteBufAllocator  实现的分配内存的两个方法. newDirectBuffer()方法和 newHeapBuffer()方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> ByteBuf <span class="title">newHeapBuffer</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">int</span> maxCapacity)</span> </span>&#123;</span><br><span class="line">        PoolThreadCache cache = threadCache.get();</span><br><span class="line">        PoolArena&lt;<span class="keyword">byte</span>[]&gt; heapArena = cache.heapArena;</span><br><span class="line"></span><br><span class="line">        ByteBuf buf;</span><br><span class="line">        <span class="keyword">if</span> (heapArena != <span class="keyword">null</span>) &#123;</span><br><span class="line">            buf = heapArena.allocate(cache, initialCapacity, maxCapacity);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            buf = <span class="keyword">new</span> UnpooledHeapByteBuf(<span class="keyword">this</span>, initialCapacity, maxCapacity);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> toLeakAwareBuffer(buf);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> ByteBuf <span class="title">newDirectBuffer</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">int</span> maxCapacity)</span> </span>&#123;</span><br><span class="line">        PoolThreadCache cache = threadCache.get();</span><br><span class="line">        PoolArena&lt;ByteBuffer&gt; directArena = cache.directArena;</span><br><span class="line"></span><br><span class="line">        ByteBuf buf;</span><br><span class="line">        <span class="keyword">if</span> (directArena != <span class="keyword">null</span>) &#123;</span><br><span class="line">            buf = directArena.allocate(cache, initialCapacity, maxCapacity);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (PlatformDependent.hasUnsafe()) &#123;</span><br><span class="line">                buf = UnsafeByteBufUtil.newUnsafeDirectByteBuf(<span class="keyword">this</span>, initialCapacity, maxCapacity);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                buf = <span class="keyword">new</span> UnpooledDirectByteBuf(<span class="keyword">this</span>, initialCapacity, maxCapacity);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> toLeakAwareBuffer(buf);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>我们发现这两个方法大体结构上是一样的. 我们以newDirectBuffer 为例简单的分析一下：</p>
+          <h1 id="docker安装可道云私有网盘"><a href="#docker安装可道云私有网盘" class="headerlink" title="docker安装可道云私有网盘"></a>docker安装可道云私有网盘</h1><h2 id="1-镜像查找"><a href="#1-镜像查找" class="headerlink" title="1. 镜像查找"></a>1. 镜像查找</h2><p>我们可以在<code>https://dashboard.daocloud.io/packages/50846266-dc26-473e-9725-4e5e2d8c7534</code> 中找见 <code>KodExplorer docker</code>的<code>docker</code> 最新镜像</p>
+<h2 id="2-容器启动"><a href="#2-容器启动" class="headerlink" title="2.   容器启动"></a>2.   容器启动</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker  run -d -p 8888:80   daocloud.io/huiqiang/kod:master</span><br><span class="line">或者</span><br><span class="line">docker run -d -p 8888:80  registry.cn-hangzhou.aliyuncs.com/l_third_party/kod:master</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/12.2%20%20Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf/#more" rel="contents">
+              <a class="btn" href="/docker%E5%AE%89%E8%A3%85%E5%8F%AF%E9%81%93%E4%BA%91%E7%A7%81%E6%9C%89%E7%BD%91%E7%9B%98/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -360,7 +363,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/12.1%20Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/vagrant%E5%AE%89%E8%A3%85centos7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -374,7 +377,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/12.1%20Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf/" class="post-title-link" itemprop="url">12</a>
+            <a href="/vagrant%E5%AE%89%E8%A3%85centos7/" class="post-title-link" itemprop="url">vagrant安装centos7</a>
         </h2>
 
         <div class="post-meta">
@@ -385,7 +388,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -393,7 +396,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                  <a href="/categories/%E5%AE%89%E8%A3%85/" itemprop="url" rel="index"><span itemprop="name">安装</span></a>
                 </span>
             </span>
 
@@ -408,556 +411,574 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Netty-内存分配ByteBuf"><a href="#Netty-内存分配ByteBuf" class="headerlink" title="Netty 内存分配ByteBuf"></a>Netty 内存分配ByteBuf</h1><h2 id="1-初始ByteBuf"><a href="#1-初始ByteBuf" class="headerlink" title="1. 初始ByteBuf"></a>1. 初始ByteBuf</h2><p>ByteBuf 是Netty 整个结构里面最为底层的模块,主要负责把数据从底层IO里面读到ByteBuf.然后传递给应用程序. 应用程序出了完成后再把数据封装成ByteBuf 写回到IO. 所以, ByteBuf 是直接与底层打交道的一层抽象.  这块内容, 相对于Netty 其他模块来说,是非常复杂的. 但是没关系, 我会把这部分内容分别拆解, 从不同的角度来分析ByteBuf的分配和回收. 本章主要从内存与内存管理的抽象、不同规格大小和不同类型的内存的分配策略以及内存的回收过程来展开.</p>
-<h3 id="1-ByteBuf-的基本结构"><a href="#1-ByteBuf-的基本结构" class="headerlink" title="1. ByteBuf 的基本结构"></a>1. ByteBuf 的基本结构</h3><p>我们可以首先来看一下Netty 官方对ByteBuf 的描述如下：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/12.1%20Netty%E5%86%85%E5%AD%98%E5%88%86%E9%85%8DByteBuf/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/11.Promise%20%E4%B8%8E%20Future%20%E5%8F%8C%E5%AD%90%E6%98%9F%E7%9A%84%E7%A7%98%E5%AF%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/11.Promise%20%E4%B8%8E%20Future%20%E5%8F%8C%E5%AD%90%E6%98%9F%E7%9A%84%E7%A7%98%E5%AF%86/" class="post-title-link" itemprop="url">11</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Promise-与-Future-双子星的秘密"><a href="#Promise-与-Future-双子星的秘密" class="headerlink" title="Promise 与 Future 双子星的秘密"></a>Promise 与 Future 双子星的秘密</h1><h2 id="1-异步结果Future"><a href="#1-异步结果Future" class="headerlink" title="1. 异步结果Future"></a>1. 异步结果Future</h2><p>java.util.concurrent.Future 是java 提供的接口, 表示异步执行的状态, Future  的get()  方法会判断任务是否执行完成,如果完成就返回结果, 否则阻塞线程, 直到任务完成.</p>
-<p>Netty  扩展了Java 的Future , 最主要的改进就是增加了监听器Listener 接口, 通过监听可以让异步执行的更加有效率, 不需要通过get 来等待异步执行结束, 而是通过监听器回调来精确的控制异步执行结束的时间点.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Future</span>&lt;<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">java</span>.<span class="title">util</span>.<span class="title">concurrent</span>.<span class="title">Future</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns &#123;<span class="doctag">@code</span> true&#125; if and only if the I/O operation was completed</span></span><br><span class="line"><span class="comment">     * successfully.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isSuccess</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * returns &#123;<span class="doctag">@code</span> true&#125; if and only if the operation can be cancelled via &#123;<span class="doctag">@link</span> #cancel(boolean)&#125;.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isCancellable</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the cause of the failed I/O operation if the I/O operation has</span></span><br><span class="line"><span class="comment">     * failed.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the cause of the failure.</span></span><br><span class="line"><span class="comment">     *         &#123;<span class="doctag">@code</span> null&#125; if succeeded or this future is not</span></span><br><span class="line"><span class="comment">     *         completed yet.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Throwable <span class="title">cause</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Adds the specified listener to this future.  The</span></span><br><span class="line"><span class="comment">     * specified listener is notified when this future is</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@linkplain</span> #isDone() done&#125;.  If this future is already</span></span><br><span class="line"><span class="comment">     * completed, the specified listener is notified immediately.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">addListener</span><span class="params">(GenericFutureListener&lt;? extends Future&lt;? <span class="keyword">super</span> V&gt;&gt; listener)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Adds the specified listeners to this future.  The</span></span><br><span class="line"><span class="comment">     * specified listeners are notified when this future is</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@linkplain</span> #isDone() done&#125;.  If this future is already</span></span><br><span class="line"><span class="comment">     * completed, the specified listeners are notified immediately.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">addListeners</span><span class="params">(GenericFutureListener&lt;? extends Future&lt;? <span class="keyword">super</span> V&gt;&gt;... listeners)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Removes the first occurrence of the specified listener from this future.</span></span><br><span class="line"><span class="comment">     * The specified listener is no longer notified when this</span></span><br><span class="line"><span class="comment">     * future is &#123;<span class="doctag">@linkplain</span> #isDone() done&#125;.  If the specified</span></span><br><span class="line"><span class="comment">     * listener is not associated with this future, this method</span></span><br><span class="line"><span class="comment">     * does nothing and returns silently.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">removeListener</span><span class="params">(GenericFutureListener&lt;? extends Future&lt;? <span class="keyword">super</span> V&gt;&gt; listener)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Removes the first occurrence for each of the listeners from this future.</span></span><br><span class="line"><span class="comment">     * The specified listeners are no longer notified when this</span></span><br><span class="line"><span class="comment">     * future is &#123;<span class="doctag">@linkplain</span> #isDone() done&#125;.  If the specified</span></span><br><span class="line"><span class="comment">     * listeners are not associated with this future, this method</span></span><br><span class="line"><span class="comment">     * does nothing and returns silently.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">removeListeners</span><span class="params">(GenericFutureListener&lt;? extends Future&lt;? <span class="keyword">super</span> V&gt;&gt;... listeners)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future until it is done, and rethrows the cause of the failure if this future</span></span><br><span class="line"><span class="comment">     * failed.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">sync</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future until it is done, and rethrows the cause of the failure if this future</span></span><br><span class="line"><span class="comment">     * failed.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">syncUninterruptibly</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future to be completed.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> InterruptedException</span></span><br><span class="line"><span class="comment">     *         if the current thread was interrupted</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">await</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future to be completed without</span></span><br><span class="line"><span class="comment">     * interruption.  This method catches an &#123;<span class="doctag">@link</span> InterruptedException&#125; and</span></span><br><span class="line"><span class="comment">     * discards it silently.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Future&lt;V&gt; <span class="title">awaitUninterruptibly</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future to be completed within the</span></span><br><span class="line"><span class="comment">     * specified time limit.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if and only if the future was completed within</span></span><br><span class="line"><span class="comment">     *         the specified time limit</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> InterruptedException</span></span><br><span class="line"><span class="comment">     *         if the current thread was interrupted</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">await</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future to be completed within the</span></span><br><span class="line"><span class="comment">     * specified time limit.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if and only if the future was completed within</span></span><br><span class="line"><span class="comment">     *         the specified time limit</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> InterruptedException</span></span><br><span class="line"><span class="comment">     *         if the current thread was interrupted</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">await</span><span class="params">(<span class="keyword">long</span> timeoutMillis)</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future to be completed within the</span></span><br><span class="line"><span class="comment">     * specified time limit without interruption.  This method catches an</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> InterruptedException&#125; and discards it silently.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if and only if the future was completed within</span></span><br><span class="line"><span class="comment">     *         the specified time limit</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">awaitUninterruptibly</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Waits for this future to be completed within the</span></span><br><span class="line"><span class="comment">     * specified time limit without interruption.  This method catches an</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> InterruptedException&#125; and discards it silently.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if and only if the future was completed within</span></span><br><span class="line"><span class="comment">     *         the specified time limit</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">awaitUninterruptibly</span><span class="params">(<span class="keyword">long</span> timeoutMillis)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Return the result without blocking. If the future is not done yet this will return &#123;<span class="doctag">@code</span> null&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * As it is possible that a &#123;<span class="doctag">@code</span> null&#125; value is used to mark the future as successful you also need to check</span></span><br><span class="line"><span class="comment">     * if the future is really done with &#123;<span class="doctag">@link</span> #isDone()&#125; and not relay on the returned &#123;<span class="doctag">@code</span> null&#125; value.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">V <span class="title">getNow</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@inheritDoc</span>&#125;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * If the cancellation was successful it will fail the future with an &#123;<span class="doctag">@link</span> CancellationException&#125;.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">cancel</span><span class="params">(<span class="keyword">boolean</span> mayInterruptIfRunning)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/11.Promise%20%E4%B8%8E%20Future%20%E5%8F%8C%E5%AD%90%E6%98%9F%E7%9A%84%E7%A7%98%E5%AF%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/10.Netty%E5%A4%A7%E5%8A%A8%E8%84%89Pipeline/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/10.Netty%E5%A4%A7%E5%8A%A8%E8%84%89Pipeline/" class="post-title-link" itemprop="url">10</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Netty-大动脉Pileline"><a href="#Netty-大动脉Pileline" class="headerlink" title="Netty 大动脉Pileline"></a>Netty 大动脉Pileline</h1><h2 id="1-Pepeline-设计原理"><a href="#1-Pepeline-设计原理" class="headerlink" title="1. Pepeline 设计原理"></a>1. Pepeline 设计原理</h2><h3 id="1-1-Channel-与-ChannelPipeline"><a href="#1-1-Channel-与-ChannelPipeline" class="headerlink" title="1.1 Channel 与 ChannelPipeline"></a>1.1 Channel 与 ChannelPipeline</h3><p>相信大家已经知道了, 在Netty中每个Channel 都有且仅有一个ChannelPipeline 与之对应, 他们的组成关系如下:</p>
-<p><img src="http://files.luyanan.com//img/20190929092313.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/10.Netty%E5%A4%A7%E5%8A%A8%E8%84%89Pipeline/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/1.%20Java%20IO%20%20%20%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/1.%20Java%20IO%20%20%20%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF/" class="post-title-link" itemprop="url">1</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Java-IO-演进之路"><a href="#Java-IO-演进之路" class="headerlink" title="Java IO  演进之路"></a>Java IO  演进之路</h1><p>在此之前, 必须要了解几个概念</p>
-<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><h3 id="阻塞-Block-和非阻塞-Non-Block"><a href="#阻塞-Block-和非阻塞-Non-Block" class="headerlink" title="阻塞(Block) 和非阻塞(Non-Block)"></a>阻塞(Block) 和非阻塞(Non-Block)</h3><p>阻塞和非阻塞是进程在访问数据的时候,数据是否准备就绪的一种处理方式,当数据没有准备的时候</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/1.%20Java%20IO%20%20%20%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/mysql%20%20%20%E7%99%BE%E7%A7%91%E5%85%A8%E4%B9%A6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/mysql%20%20%20%E7%99%BE%E7%A7%91%E5%85%A8%E4%B9%A6/" class="post-title-link" itemprop="url">mysql   百科全书</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>[TOC]</p>
-<h3 id="Windows服务"><a href="#Windows服务" class="headerlink" title="Windows服务"></a>Windows服务</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">--###  启动MySQL</span><br><span class="line"></span><br><span class="line">    net start mysql</span><br><span class="line">-- 创建Windows服务</span><br><span class="line">    sc create mysql binPath&#x3D; mysqld_bin_path(注意：等号与值之间有空格)</span><br></pre></td></tr></table></figure>
-<h3 id="连接与断开服务器"><a href="#连接与断开服务器" class="headerlink" title="连接与断开服务器"></a>连接与断开服务器</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql -h 地址 -P 端口 -u 用户名 -p 密码</span><br><span class="line"></span><br><span class="line">SHOW PROCESSLIST -- 显示哪些线程正在运行</span><br><span class="line">SHOW VARIABLES -- 显示系统变量信息</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/mysql%20%20%20%E7%99%BE%E7%A7%91%E5%85%A8%E4%B9%A6/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/5.MySQL%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/5.MySQL%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">5</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="MySQL性能优化总结"><a href="#MySQL性能优化总结" class="headerlink" title="MySQL性能优化总结"></a><img src="C:/Users/luyanan/AppData/Roaming/Typora/typora-user-images/image-20200519093843796.png" alt="image-20200519093843796">MySQL性能优化总结</h1><h2 id="1-优化思路"><a href="#1-优化思路" class="headerlink" title="1. 优化思路"></a>1. 优化思路</h2><p>作为开发人员,说到数据库性能优化,你的思路是怎么样的呢? </p>
-<p>或者具体一点, 如果在面试中遇到这个问题: 你会从哪些维度来优化数据库,你会怎么回答呢? </p>
-<p>我们说到性能优化,其实大部分的时候想要实现的目标就是让我们的查询更快. 一个查询动作又是由很多个环节组成的,每个环接都会消耗时间。 </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/5.MySQL%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/4.MySQL%E4%BA%8B%E5%8A%A1%E4%B8%8E%E9%94%81%E8%AF%A6%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/4.MySQL%E4%BA%8B%E5%8A%A1%E4%B8%8E%E9%94%81%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">4</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="MySQL事务和锁详解"><a href="#MySQL事务和锁详解" class="headerlink" title="MySQL事务和锁详解"></a>MySQL事务和锁详解</h1><h2 id="1-什么是数据库的事务"><a href="#1-什么是数据库的事务" class="headerlink" title="1. 什么是数据库的事务"></a>1. 什么是数据库的事务</h2><h3 id="1-1-事务的典型场景"><a href="#1-1-事务的典型场景" class="headerlink" title="1.1 事务的典型场景"></a>1.1 事务的典型场景</h3><p>在项目中,什么地方会用到事务,或者配置了事务? 无论是在方法上加注解, 还是配置切面.</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tx:advice</span> <span class="attr">id</span>=<span class="string">&quot;txAdvice&quot;</span> <span class="attr">transaction-manager</span>=<span class="string">&quot;transactionManager&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;save*&quot;</span> <span class="attr">rollback-for</span>=<span class="string">&quot;Throwable&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;add*&quot;</span> <span class="attr">rollback-for</span>=<span class="string">&quot;Throwable&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;send*&quot;</span> <span class="attr">rollback-for</span>=<span class="string">&quot;Throwable&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">&quot;insert*&quot;</span> <span class="attr">rollback-for</span>=<span class="string">&quot;Throwable&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tx:advice</span>&gt;</span></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/4.MySQL%E4%BA%8B%E5%8A%A1%E4%B8%8E%E9%94%81%E8%AF%A6%E8%A7%A3/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/2.MySQL%E6%9E%B6%E6%9E%84/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2.MySQL%E6%9E%B6%E6%9E%84/" class="post-title-link" itemprop="url">2</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:37 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:37+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="MySQL架构"><a href="#MySQL架构" class="headerlink" title="MySQL架构"></a>MySQL架构</h1><h2 id="1-模块详解"><a href="#1-模块详解" class="headerlink" title="1. 模块详解"></a>1. 模块详解</h2><p><img src="http://files.luyanan.com//img/20200514171158.png" alt="image-20200514171157637"></p>
-<ol>
-<li><code>Connector</code>:  用来支持各种语言和SQL的交互, 比如<code>php</code>、<code>Python</code>、<code>Java</code>的<code>JDBC</code>.,</li>
-<li><code>Management Serveices &amp; Utilities</code>: 系统管理和控制工具,包括备份恢复、MySQL复制、集群等等. </li>
-<li><code>Connection Pool</code>: 连接池,管理需要缓冲的资源,包括用户密码权限线程等. </li>
-<li><code>SQL Interface</code>: 用来接收用户的SQL命令,返回用户需要的查询结果. </li>
-<li><code>Parser</code>:  用来解析SQL语句</li>
-<li><code>Optimizer</code>:查询优化器</li>
-<li><code>Cache and Buffer</code>: 查询缓存,除了行记录的缓存之外，还有表缓存、key缓存、权限缓存等等. </li>
-<li><code>Pluggable Storage Engines</code>:插件式引擎,它提供API给服务层使用,跟具体的文件打交道. </li>
+          <h1 id="基于vagrant-安装centos7-环境"><a href="#基于vagrant-安装centos7-环境" class="headerlink" title="基于vagrant 安装centos7 环境"></a>基于vagrant 安装centos7 环境</h1><h2 id="1-安装Vagrant"><a href="#1-安装Vagrant" class="headerlink" title="1. 安装Vagrant"></a>1. 安装<code>Vagrant</code></h2><ol>
+<li>访问官网</li>
 </ol>
-<h2 id="2-架构分层"><a href="#2-架构分层" class="headerlink" title="2. 架构分层"></a>2. 架构分层</h2>
+<p><a target="_blank" rel="noopener" href="https://www.vagrantup.com/">https://www.vagrantup.com/</a></p>
+<ol start="2">
+<li><p>点击Download<br>Windows，MacOS，Linux等</p>
+</li>
+<li><p>选择对应的版本</p>
+</li>
+<li><p>傻瓜式的安装</p>
+<ol>
+<li><p>在命令行输入<code>vagrant</code> ,出现</p>
+<p><img src="http://files.luyanan.com//img/20200414121803.png" alt="image-20200414114016716"></p>
+</li>
+</ol>
+</li>
+</ol>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2.MySQL%E6%9E%B6%E6%9E%84/#more" rel="contents">
+              <a class="btn" href="/vagrant%E5%AE%89%E8%A3%85centos7/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/rocketmq%20%E9%83%A8%E7%BD%B2%E5%90%AF%E5%8A%A8%E6%8C%87%E5%8D%97-Docker%20%E7%89%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/rocketmq%20%E9%83%A8%E7%BD%B2%E5%90%AF%E5%8A%A8%E6%8C%87%E5%8D%97-Docker%20%E7%89%88/" class="post-title-link" itemprop="url">rocketmq 部署启动指南-Docker 版</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%89%E8%A3%85/" itemprop="url" rel="index"><span itemprop="name">安装</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="rocketmq-部署启动指南-Docker-版"><a href="#rocketmq-部署启动指南-Docker-版" class="headerlink" title="rocketmq 部署启动指南-Docker 版"></a>rocketmq 部署启动指南-Docker 版</h1><p>最近学习使用 rocketmq，需要搭建 rocketmq 服务端，本文主要记录 rocketmq 搭建过程以及这个过程踩到的一些坑。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>在搭建之前，我们需要做一些准备工作，这里我们需要使用 docker 搭建服务，所以需要提前安装 docker。此外，由于 rocketmq 需要部署 broker 与 nameserver ，考虑到分开部署比较麻烦，这里将会使用 docker-compose。</p>
+<p><em>rocketmq 架构图如下:</em></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/rocketmq%20%E9%83%A8%E7%BD%B2%E5%90%AF%E5%8A%A8%E6%8C%87%E5%8D%97-Docker%20%E7%89%88/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Redis%E4%B8%80%E4%B8%BB%E4%BA%8C%E4%BB%8ESentinel%E7%9B%91%E6%8E%A7%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Redis%E4%B8%80%E4%B8%BB%E4%BA%8C%E4%BB%8ESentinel%E7%9B%91%E6%8E%A7%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">Redis一主二从Sentinel监控配置</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%89%E8%A3%85/" itemprop="url" rel="index"><span itemprop="name">安装</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Redis一主二从Sentinel监控配置"><a href="#Redis一主二从Sentinel监控配置" class="headerlink" title="Redis一主二从Sentinel监控配置"></a><strong>Redis一主二从Sentinel监控配置</strong></h1><p>开启哨兵模式，至少需要3个Sentinel实例（奇数个，否则无法选举Leader）。<br>本例通过3个Sentinel实例监控3个Redis服务（1主2从）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IP地址	          节点角色&amp;端口</span><br><span class="line">192.168.8.203	Master：6379 / Sentinel : 26379</span><br><span class="line">192.168.8.204	Slave ：6379 / Sentinel : 26379</span><br><span class="line">192.168.8.205	Slave ：6379 / Sentinel : 26379</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://files.luyanan.com//img/20200403163131.png" alt="image-20200403163130311"></p>
+<p>在204和205的redis.conf配置中添加一行</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Redis%E4%B8%80%E4%B8%BB%E4%BA%8C%E4%BB%8ESentinel%E7%9B%91%E6%8E%A7%E9%85%8D%E7%BD%AE/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/gitlab%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/gitlab%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">gitlab搭建</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%89%E8%A3%85/" itemprop="url" rel="index"><span itemprop="name">安装</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="搭建gitlab"><a href="#搭建gitlab" class="headerlink" title="搭建gitlab"></a>搭建gitlab</h1><p><a target="_blank" rel="noopener" href="https://about.gitlab.com/install/#centos-7">https://about.gitlab.com/install/#centos-7</a></p>
+<h2 id="1-说明"><a href="#1-说明" class="headerlink" title="1. 说明"></a>1. 说明</h2><p>安装<code>gitlab</code> 的机器至少需要4G的内存, 因为<code>gitlab</code> 比较吃内存. </p>
+<h2 id="2-安装必要的依赖"><a href="#2-安装必要的依赖" class="headerlink" title="2. 安装必要的依赖"></a>2. 安装必要的依赖</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/gitlab%E6%90%AD%E5%BB%BA/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Docker%E5%AE%89%E8%A3%85RabbitMQ%E9%9B%86%E7%BE%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Docker%E5%AE%89%E8%A3%85RabbitMQ%E9%9B%86%E7%BE%A4/" class="post-title-link" itemprop="url">Docker安装RabbitMQ集群</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%89%E8%A3%85/" itemprop="url" rel="index"><span itemprop="name">安装</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Docker安装RabbitMQ集群"><a href="#Docker安装RabbitMQ集群" class="headerlink" title="Docker安装RabbitMQ集群"></a><strong>Docker安装RabbitMQ集群</strong></h1><p>环境CentOS 7<br>机器IP：192.168.8.146<br>1个磁盘节点+2个内存节点</p>
+<p>一、安装docker<br>这个过程里面可能会遇到很多问题，不要慌，根据错误提示来解决。</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lonelyxmas/p/10430207.html">https://www.cnblogs.com/lonelyxmas/p/10430207.html</a><br>1）更新yum源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum update</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Docker%E5%AE%89%E8%A3%85RabbitMQ%E9%9B%86%E7%BE%A4/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/docker%E5%AE%89%E8%A3%85nginx/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/docker%E5%AE%89%E8%A3%85nginx/" class="post-title-link" itemprop="url">docker安装nginx</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%89%E8%A3%85/" itemprop="url" rel="index"><span itemprop="name">安装</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="docker安装nginx"><a href="#docker安装nginx" class="headerlink" title="docker安装nginx"></a>docker安装nginx</h1><ul>
+<li>随便启动一个nginx实例，只是为了复制出配置</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p80:80 --name nginx -d nginx:1.10</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将容器内的配置文件拷贝到/mydata/nginx/conf/ 下</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /mydata/nginx/html</span><br><span class="line">mkdir -p /mydata/nginx/logs</span><br><span class="line">mkdir -p /mydata/nginx/conf</span><br><span class="line">docker container cp nginx:/etc/nginx/*  /mydata/nginx/conf/ </span><br><span class="line"><span class="meta">#</span><span class="bash">由于拷贝完成后会在config中存在一个nginx文件夹，所以需要将它的内容移动到conf中</span></span><br><span class="line">mv /mydata/nginx/conf/nginx/* /mydata/nginx/conf/</span><br><span class="line">rm -rf /mydata/nginx/conf/nginx</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/docker%E5%AE%89%E8%A3%85nginx/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/docker%E5%92%8Cjennkins%E9%83%A8%E7%BD%B2springcloud%20dubbo%E5%BA%94%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/docker%E5%92%8Cjennkins%E9%83%A8%E7%BD%B2springcloud%20dubbo%E5%BA%94%E7%94%A8/" class="post-title-link" itemprop="url">docker和jennkins部署springcloud dubbo应用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%89%E8%A3%85/" itemprop="url" rel="index"><span itemprop="name">安装</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="基于docker和jenkins实现springboot-dubbo的自动化部署"><a href="#基于docker和jenkins实现springboot-dubbo的自动化部署" class="headerlink" title="基于docker和jenkins实现springboot dubbo的自动化部署"></a>基于docker和jenkins实现springboot dubbo的自动化部署</h1><h2 id="1-容器镜像仓库"><a href="#1-容器镜像仓库" class="headerlink" title="1. 容器镜像仓库"></a>1. 容器镜像仓库</h2><p>我们这里使用的是阿里的容器镜像仓库([<a target="_blank" rel="noopener" href="https://cr.console.aliyun.com/]">https://cr.console.aliyun.com/]</a>:)</p>
+<h3 id="1-1-创建镜像仓库"><a href="#1-1-创建镜像仓库" class="headerlink" title="1.1 创建镜像仓库"></a>1.1 创建镜像仓库</h3><p><img src="http://files.luyanan.com//img/20200229163815.png"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/docker%E5%92%8Cjennkins%E9%83%A8%E7%BD%B2springcloud%20dubbo%E5%BA%94%E7%94%A8/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Docker-Compose%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Docker-Compose%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">Docker-Compose的基本命令</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%89%E8%A3%85/" itemprop="url" rel="index"><span itemprop="name">安装</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Docker-Compose的基本使用"><a href="#Docker-Compose的基本使用" class="headerlink" title="Docker-Compose的基本使用"></a>Docker-Compose的基本使用</h1><h3 id="1-搭建Docker-Compose环境"><a href="#1-搭建Docker-Compose环境" class="headerlink" title="1. 搭建Docker-Compose环境"></a>1. 搭建Docker-Compose环境</h3><p>1.下载安装docker-compose</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#下载</span><br><span class="line">sudo curl -L https:<span class="comment">//github.com/docker/compose/releases/download/1.20.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose</span></span><br><span class="line">#安装</span><br><span class="line">chmod +x /usr/local/bin/docker-compose</span><br><span class="line">#查看版本</span><br><span class="line">docker-compose version</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ask.qcloudimg.com/http-save/4069756/pnxjffqrpg.png?imageView2/2/w/1620" alt="img"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Docker-Compose%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1048,7 +1069,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">227</span>
+          <span class="site-state-item-count">229</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

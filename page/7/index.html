@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Sentinel%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8%E4%BB%A5%E5%8F%8A%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bset(5)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Sentinel%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8%E4%BB%A5%E5%8F%8A%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">Sentinel的基本应用以及原理分析</a>
+            <a href="/redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bset(5)/" class="post-title-link" itemprop="url">redis基本类型之set(5)</a>
         </h2>
 
         <div class="post-meta">
@@ -229,9 +229,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,11 +238,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Sentinel/" itemprop="url" rel="index"><span itemprop="name">Sentinel</span></a>
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
                 </span>
             </span>
 
@@ -258,11 +253,49 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Sentinel的基本应用以及原理分析"><a href="#Sentinel的基本应用以及原理分析" class="headerlink" title="Sentinel的基本应用以及原理分析"></a>Sentinel的基本应用以及原理分析</h1><h2 id="限流的基本认识"><a href="#限流的基本认识" class="headerlink" title="限流的基本认识"></a>限流的基本认识</h2><h3 id="场景分析"><a href="#场景分析" class="headerlink" title="场景分析"></a>场景分析</h3><p>一个互联网产品, 打算搞一次大促来增加销量以及曝光. 公司的架构师基于往期的流量情况做了一个活动流量的预估. 然后整个公司的各个技术团队开始按照这个目标进行设计和优化, 最终在大家的不懈努力下,达到了链路压测的目标流量峰值. 到了活动开始那天, 大家都盯着监控面板, 看着流量像洪水一样涌进来, 由于前期的宣传工作做得非常好, 使得这个流程远远超过预期的峰值, 后端服务开始不稳定, CPU、内存各种爆表. 部分服务开始出现无响应的情况. 最后, 整个系统开始崩溃, 用户无法正常访问服务, 最后导致公司巨大的损失. </p>
-<h3 id="引入限流"><a href="#引入限流" class="headerlink" title="引入限流"></a>引入限流</h3>
+          <h1 id="redis基本类型之set"><a href="#redis基本类型之set" class="headerlink" title="redis基本类型之set"></a>redis基本类型之set</h1><h2 id="1存储类型"><a href="#1存储类型" class="headerlink" title="1存储类型:"></a>1存储类型:</h2><p><code>String</code>类型 无序不重复集合， 最多可以存储<code>2^32-1</code>(40亿左右)</p>
+<h2 id="2操作命令"><a href="#2操作命令" class="headerlink" title="2操作命令"></a>2操作命令</h2><table>
+<thead>
+<tr>
+<th>sadd key member [member…]</th>
+<th>将一个或者多个member 元素添加到集合key中</th>
+<th>返回添加元素的个数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>smembers key</td>
+<td>获取集合中所有的成员元素</td>
+<td></td>
+</tr>
+<tr>
+<td>sismember key member</td>
+<td>判断 member 是集合key 的成员</td>
+<td>是则返回1, 不是则返回0</td>
+</tr>
+<tr>
+<td>scard key</td>
+<td>获取集合中成员的个数</td>
+<td>成员个数</td>
+</tr>
+<tr>
+<td>srem key member [member…]</td>
+<td>删除集合中一个或者多个member 元素,不存在的成员则被忽略</td>
+<td>返回成功删除的成员的个数</td>
+</tr>
+<tr>
+<td>srandmember key [count]</td>
+<td>随机返回一个元素, 元素不会被删除<br>提供了 count时，count 正数, 返回包含 count 个数元素的集合， 集合元素各不相同。<br>count 是负数，返回一个 count 绝对 值的长度的集合， 集合中元素可能会重复多次。</td>
+<td>一个元素；多个元素的集合</td>
+</tr>
+<tr>
+<td>spop key [count]</td>
+<td>随机从集合中删除一个元素, count 是删除的元素个数。</td>
+<td>被删除的元素，key 不存在或空集合返回 nil</td>
+</tr>
+</tbody></table>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Sentinel%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8%E4%BB%A5%E5%8F%8A%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bset(5)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -286,7 +319,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Sentinel%20%E6%95%B4%E5%90%88Dubbo%E9%99%90%E6%B5%81%E5%AE%9E%E6%88%98/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bzset(6)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -300,7 +333,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Sentinel%20%E6%95%B4%E5%90%88Dubbo%E9%99%90%E6%B5%81%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">Sentinel 整合Dubbo限流实战</a>
+            <a href="/redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bzset(6)/" class="post-title-link" itemprop="url">redis基本类型之zset(6)</a>
         </h2>
 
         <div class="post-meta">
@@ -309,9 +342,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -319,11 +351,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Sentinel/" itemprop="url" rel="index"><span itemprop="name">Sentinel</span></a>
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
                 </span>
             </span>
 
@@ -338,12 +366,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Sentinel-整合Dubbo限流实战"><a href="#Sentinel-整合Dubbo限流实战" class="headerlink" title="Sentinel 整合Dubbo限流实战"></a>Sentinel 整合Dubbo限流实战</h1><h2 id="创建生产者项目"><a href="#创建生产者项目" class="headerlink" title="创建生产者项目"></a>创建生产者项目</h2><p>这里需要提供一个对外的api项目和一个Dubbo服务</p>
-<p><img src="http://files.luyanan.com//img/20191216215503.png"></p>
-<h3 id="添加依赖"><a href="#添加依赖" class="headerlink" title="添加依赖"></a>添加依赖</h3>
+          <h1 id="redis基本类型之zset"><a href="#redis基本类型之zset" class="headerlink" title="redis基本类型之zset"></a>redis基本类型之zset</h1><p>zset是一个有序的不重复集合</p>
+<h2 id="1操作命令"><a href="#1操作命令" class="headerlink" title="1操作命令"></a>1操作命令</h2><p>| <code>zadd key [NX|XX] [CH] [INCR] score member [score member…]</code> | ZADD 参数（options） (&gt;= Redis 3.0.2)<br>ZADD 命令在key后面分数/成员（score/member）对前面支持一些参数，他们是：<br>XX: 仅仅更新存在的成员，不添加新成员。<br>NX: 不更新存在的成员。只添加新成员。<br>CH: 修改返回值为发生变化的成员总数，原始是返回新添加成员的总数 (CH 是 changed 的意 思)。 | 在通常情况下，ZADD返回值只计算新添加成员的数量。 |<br>| ————– | ——————————————– | —- |<br>| ZINCRBY key increment member | 对有序集合中指定成员的分数加上增量 increment<br>可以通过传递一个负数值 increment ，让分数减去相应的值，比如 ZINCRBY key -5 member ，就是让 member 的 score 值减去 5<br>当 key 不存在，或分数不是 key 的成员时， ZINCRBY key increment member 等同于 ZADD key increment member 。<br>分数值可以是整数值或双精度浮点数。 |      |<br>| zrange key start stop [WITHSCORES] | 查询有序集合，指定区间的内的元素。集合成员按 score 值从小到大来排序。<br>start，stop 都是 从 0 开始。0 是第一个元素，1 是第二个元素，依次类推。<br>以 -1 表示最后一个成员，-2 表示倒数第二 个成员。WITHSCORES 选项让 score 和 value 一同返回。 | 自定区间的成员集合 |<br>| <code>zrevrange key start stop [WITHSCORES]</code> | 返回有序集 key 中，指定区间内的成员。<br>其中成员的位置按 score 值递减(从大到小)来排列。 其它同 zrange 命令。 | 自定区间的成员集合                               |<br>| <code>zrem key member [member…]</code>                                  | 删除有序集合 key 中的一个或多个成员，不存在的成员被忽略      | 被成功删除的成员数量，不包括被忽略的成员。 |<br>| zcard key | 获取有序集 key 的元素成员的个数                              | key 存在返回集合元素的个数， key 不存在，返回 0 |<br>| zrangebyscore key min max [WITHSCORES ] [LIMIT offset count] | 获取有序集 key 中，所有 score 值介于 min 和 max 之间（包括 min 和 max）的成员，有序 成员是按递增（从小到大）排序。<br>min ,max 是包括在内 ， 使用符号 ( 表示不包括。<br>min ， max 可以使用 -inf ，+inf 表示 最小和最大 limit 用来限制返回结果的数量和区间。<br>withscores 显示 score 和 value | 指定区间的集合数据 |<br>| zrevrangebyscore key max min [WITHSCORES ] [LIMIT offset count] | 返回有序集 key 中， score 值介于 max 和 min 之间(默认包括等于 max 或 min )的所有的成 员。<br>有序集成员按 score 值递减(从大到小)的次序排列。其他同 zrangebyscore |      |<br>| zcount key min max | 返回有序集 key 中， score 值在 min 和 max 之间(默认包括 score 值等于 min 或 max ) 的成员的数量 |      |</p>
+<h2 id="2存储类型"><a href="#2存储类型" class="headerlink" title="2存储类型"></a>2存储类型</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Sentinel%20%E6%95%B4%E5%90%88Dubbo%E9%99%90%E6%B5%81%E5%AE%9E%E6%88%98/#more" rel="contents">
+              <a class="btn" href="/redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bzset(6)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -367,7 +395,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RocketMQ%E9%97%AE%E9%A2%98/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/redis%E5%9F%BA%E7%A1%80(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -381,7 +409,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/RocketMQ%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">RocketMQ问题</a>
+            <a href="/redis%E5%9F%BA%E7%A1%80(1)/" class="post-title-link" itemprop="url">redis基础(1)</a>
         </h2>
 
         <div class="post-meta">
@@ -390,9 +418,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -400,11 +427,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/RocketMQ/" itemprop="url" rel="index"><span itemprop="name">RocketMQ</span></a>
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
                 </span>
             </span>
 
@@ -419,12 +442,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="RocketMQ-问题"><a href="#RocketMQ-问题" class="headerlink" title="RocketMQ 问题"></a>RocketMQ 问题</h1><h2 id="rocketmq-连接异常-sendDefaultImpl-call-timeout"><a href="#rocketmq-连接异常-sendDefaultImpl-call-timeout" class="headerlink" title="rocketmq 连接异常 sendDefaultImpl call timeout"></a>rocketmq 连接异常 sendDefaultImpl call timeout</h2><p>需要将broker 的ip 换成本地的ip<br>在<code>conf/broker.conf</code> 里面加上 <code>brokerIP1=[本机ip]</code></p>
-<p>然后重启</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup sh bin/mqbroker -n localhost:9876 -c conf/broker.conf autoCreateTopicEnable=<span class="literal">true</span> &amp;</span><br></pre></td></tr></table></figure>
+          <h1 id="redis基础"><a href="#redis基础" class="headerlink" title="redis基础"></a>redis基础</h1><p>本节,基于Redis最新版本5.05 进行讲解. </p>
+<h2 id="1-Redis入门"><a href="#1-Redis入门" class="headerlink" title="1. Redis入门"></a>1. Redis入门</h2><h3 id="1-1-Redis的诞生历程"><a href="#1-1-Redis的诞生历程" class="headerlink" title="1.1 Redis的诞生历程"></a>1.1 Redis的诞生历程</h3><h4 id="1-1-1-从一个故事说起"><a href="#1-1-1-从一个故事说起" class="headerlink" title="1.1.1 从一个故事说起"></a>1.1.1 从一个故事说起</h4>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/RocketMQ%E9%97%AE%E9%A2%98/#more" rel="contents">
+              <a class="btn" href="/redis%E5%9F%BA%E7%A1%80(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -448,7 +470,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RocketMQ%E4%BA%8B%E5%8A%A1%E6%80%A7%E6%B6%88%E6%81%AF/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/redis%E5%AE%9E%E6%88%98%E4%B9%8B%E5%AE%A2%E6%88%B7%E7%AB%AF(15)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -462,7 +484,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/RocketMQ%E4%BA%8B%E5%8A%A1%E6%80%A7%E6%B6%88%E6%81%AF/" class="post-title-link" itemprop="url">RocketMQ事务性消息</a>
+            <a href="/redis%E5%AE%9E%E6%88%98%E4%B9%8B%E5%AE%A2%E6%88%B7%E7%AB%AF(15)/" class="post-title-link" itemprop="url">redis实战之客户端(15)</a>
         </h2>
 
         <div class="post-meta">
@@ -471,9 +493,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -481,11 +502,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/RocketMQ/" itemprop="url" rel="index"><span itemprop="name">RocketMQ</span></a>
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
                 </span>
             </span>
 
@@ -500,12 +517,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="RocketMQ事务性消息"><a href="#RocketMQ事务性消息" class="headerlink" title="RocketMQ事务性消息"></a>RocketMQ事务性消息</h1><p>​    在现在的很多分布式集群环境中, 经常会遇到本地事务无法解决的问题, 所以会引进分布式事务. 所谓的分布式事务是指分布式架构中多个服务的节点的数据一致性. </p>
-<h2 id="1-经典的X-OpenDTP事务模型"><a href="#1-经典的X-OpenDTP事务模型" class="headerlink" title="1. 经典的X/OpenDTP事务模型"></a>1. 经典的X/OpenDTP事务模型</h2><p>​    X/Open DTP(X/Open <code>Distributed Transaction Processing Reference Model</code>) 是X/Open 这个组织定义的一套分布式事务的标准， 也就是定义了规范和API接口,由各个厂商进行具体的实现. </p>
-<p>​    这个标准提出了使用二阶段提交(2PC-<code> Two-Phase-Commit</code>) 来保证分布式事务的完整性.后来J2EE 也遵循了X/Open DTP 规范, 设计并使用了Java 的分布式事务编程接口规范-JTA</p>
+          <h1 id="redis客户端"><a href="#redis客户端" class="headerlink" title="redis客户端"></a>redis客户端</h1><h2 id="1-客户端通信原理"><a href="#1-客户端通信原理" class="headerlink" title="1. 客户端通信原理"></a>1. 客户端通信原理</h2><p>客户端和服务器端通过TCP 连接来进行数据交互, 服务器默认的端口号是6379, 客户端和服务端发送的命令和数据一律以<code>\r\n</code> (CRLF 回车+换行) 结尾. </p>
+<p>如果使用<code>wireshark</code> 对<code>jedis</code> 抓包</p>
+<p>环境: <code>jedis</code> 连接到运行在虚拟机202的redis, 执行命令, 对<code>VMnet8</code> 进行抓包</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/RocketMQ%E4%BA%8B%E5%8A%A1%E6%80%A7%E6%B6%88%E6%81%AF/#more" rel="contents">
+              <a class="btn" href="/redis%E5%AE%9E%E6%88%98%E4%B9%8B%E5%AE%A2%E6%88%B7%E7%AB%AF(15)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -529,7 +546,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RocketMQ%20%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/redis%E5%AE%9E%E6%88%98%E4%B9%8B%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7(16)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -543,7 +560,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/RocketMQ%20%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">RocketMQ 基本原理分析</a>
+            <a href="/redis%E5%AE%9E%E6%88%98%E4%B9%8B%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7(16)/" class="post-title-link" itemprop="url">redis实战之数据一致性(16)</a>
         </h2>
 
         <div class="post-meta">
@@ -552,9 +569,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -562,11 +578,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/RocketMQ/" itemprop="url" rel="index"><span itemprop="name">RocketMQ</span></a>
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
                 </span>
             </span>
 
@@ -581,17 +593,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="RocketMQ-基本原理分析"><a href="#RocketMQ-基本原理分析" class="headerlink" title="RocketMQ 基本原理分析"></a>RocketMQ 基本原理分析</h1><h2 id="1-思考一下消息中间件的设计"><a href="#1-思考一下消息中间件的设计" class="headerlink" title="1. 思考一下消息中间件的设计"></a>1. 思考一下消息中间件的设计</h2><h3 id="1-1-可以先从基本的需求开始考虑"><a href="#1-1-可以先从基本的需求开始考虑" class="headerlink" title="1.1 可以先从基本的需求开始考虑"></a>1.1 可以先从基本的需求开始考虑</h3><ul>
-<li>最基本的是要能支持消息的发送和接收, 需要涉及网络通信就一定就会涉及到NIO.</li>
-<li>消息中心的消息存储(持久化/非持久化)</li>
-<li>消息的序列化和非序列化</li>
-<li>是否跨语言</li>
-<li>消息的确认机制,如何避免消息重发. </li>
-</ul>
-<h3 id="1-2-高级功能"><a href="#1-2-高级功能" class="headerlink" title="1.2 高级功能"></a>1.2 高级功能</h3>
+          <h1 id="redis实战之数据一致性"><a href="#redis实战之数据一致性" class="headerlink" title="redis实战之数据一致性"></a>redis实战之数据一致性</h1><h2 id="1-缓存使用场景"><a href="#1-缓存使用场景" class="headerlink" title="1 缓存使用场景"></a>1 缓存使用场景</h2><p>针对读少写多的高并发场景, 我们可以使用缓存来提升查询速度. </p>
+<p>当我们使用reids 作为缓存的时候, 一般流程是这样的:</p>
+<ol>
+<li><p>如果数据在redis 缓存中, 应用就可以直接从redis 拿到数据, 不用访问数据库. </p>
+<p> <img src="http://files.luyanan.com//img/20200403100037.png" alt="image-20200403085340776">    </p>
+</li>
+<li><p>如果redis 里面没有，先到数据库查询, 然后写入到redis,再返回给应用. </p>
+<p> <img src="http://files.luyanan.com//img/20200403100032.png" alt="image-20200403090003337"></p>
+</li>
+</ol>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/RocketMQ%20%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/redis%E5%AE%9E%E6%88%98%E4%B9%8B%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7(16)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -615,7 +629,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%B6%88%E6%81%AF%E6%8A%95%E9%80%92/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/redis%E5%AE%9E%E6%88%98%E4%B9%8B%E9%AB%98%E5%B9%B6%E5%8F%91(17)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -629,7 +643,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Spring%20RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%B6%88%E6%81%AF%E6%8A%95%E9%80%92/" class="post-title-link" itemprop="url">Spring RabbitMQ可靠性消息投递</a>
+            <a href="/redis%E5%AE%9E%E6%88%98%E4%B9%8B%E9%AB%98%E5%B9%B6%E5%8F%91(17)/" class="post-title-link" itemprop="url">redis实战之高并发(17)</a>
         </h2>
 
         <div class="post-meta">
@@ -638,9 +652,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -648,11 +661,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
                 </span>
             </span>
 
@@ -667,23 +676,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Spring-RabbitMQ可靠性消息投递"><a href="#Spring-RabbitMQ可靠性消息投递" class="headerlink" title="Spring RabbitMQ可靠性消息投递"></a>Spring RabbitMQ可靠性消息投递</h1><p>RabbitMQ核心基础概念。</p>
-<ul>
-<li>Server:又称之为Broker，接受客户端的连接，实现AMQP实体服务。</li>
-<li>Connection:连接，应用程序与Broker的网络连接。</li>
-<li>Channel:网络信道，几乎所有的操作都在Channel中进行，Channel是进行消息读写的通道。客户端可以建立多个Channel，每个Channel代表一个会话任务。<br> 如果每一次访问RabbitMQ都建立一个Connection，在消息量大的时候建立TCP Connection的开销将是巨大的，效率也较低。Channel是在connection内部建立的逻辑连接，如果应用程序支持多线程，通常每个thread创建单独的channel进行通讯，AMQP method包含了channel id帮助客户端和message broker识别channel，所以channel之间是完全隔离的。Channel作为轻量级的Connection极大减少了操作系统建立TCP connection的开销。</li>
-<li>Message：消息，服务器和应用程序之间传送的数据，由Message Properties和Body组成。Properties可以对消息进行修饰，比如消息的优先级，延迟等高级特性，Body就是消息体内容。</li>
-<li>Virtual Host:虚拟地址，用于进行逻辑隔离，最上层的消息路由。一个Virtual Host里面可以有若干个Exchange和Queue，同一个Virtual Host里面不能有相同名称的Exchange或者Queue。</li>
-<li>Exchange：交换机，接收消息，根据路由键转发消息到绑定的队列。</li>
-<li>Binding:Exchange和Queue之间的虚拟连接，binding中可以包含routing key。</li>
-<li>Routing key:一个路由规则，虚拟机可以用它来确定如何路由一个特定消息。</li>
-<li>Queue：也可以称之为Message Queue(消息队列)，保存消息并将它们转发到消费者。</li>
-</ul>
-<p>通过下面2张图，我们能大概能明白AMQP协议模型和消息流转过程。在Exchange和Message Queue上面还有Virtual host。记住同一个Virtual Host里面不能有相同名称的ExChange和Message Queue。</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/4636177-22901bbb566bbcbc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/682/format/webp" alt="img"></p>
+          <h1 id="redis实战之高并发"><a href="#redis实战之高并发" class="headerlink" title="redis实战之高并发"></a>redis实战之高并发</h1><p>在redis 存储的所有数据中, 有一部分是被频繁访问的. 有两种情况可能会导致热点问题的产生, 一种是用户集中访问的数据, 例如抢购的商品, 明星结婚或者明星出轨的微博. 还有一种问题是在数据进行分片的情况下, 负载不均衡, 超过了单个服务器的承受能力. 热点数据可能引起缓存服务的不可用, 最终造成压力堆积到数据库. </p>
+<p>处于存储和流量优化的角度, 我们必须要找到这些热点数据. </p>
+<h2 id="1-热点数据的发现"><a href="#1-热点数据的发现" class="headerlink" title="1. 热点数据的发现"></a>1. 热点数据的发现</h2><p>除了自动的缓存淘汰机制之外，怎么找出那些访问频率最高的key呢?或者说, 我们可以在哪里记录key被访问的情况呢? </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Spring%20RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%B6%88%E6%81%AF%E6%8A%95%E9%80%92/#more" rel="contents">
+              <a class="btn" href="/redis%E5%AE%9E%E6%88%98%E4%B9%8B%E9%AB%98%E5%B9%B6%E5%8F%91(17)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -707,7 +705,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20RabbitMQ%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6(13)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -721,7 +719,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Spring%20RabbitMQ%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">Spring RabbitMQ参数配置详解</a>
+            <a href="/redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6(13)/" class="post-title-link" itemprop="url">redis的持久化机制(13)</a>
         </h2>
 
         <div class="post-meta">
@@ -730,9 +728,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -740,11 +737,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
                 </span>
             </span>
 
@@ -759,12 +752,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Spring-RabbitMQ参数配置详解"><a href="#Spring-RabbitMQ参数配置详解" class="headerlink" title="Spring RabbitMQ参数配置详解"></a>Spring RabbitMQ参数配置详解</h1><h1 id="1-基础信息"><a href="#1-基础信息" class="headerlink" title="1.基础信息"></a>1.基础信息</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">spring.rabbitmq.host: 默认localhost</span><br><span class="line">spring.rabbitmq.port: 默认<span class="number">5672</span></span><br><span class="line">spring.rabbitmq.username: 用户名</span><br><span class="line">spring.rabbitmq.password: 密码</span><br><span class="line">spring.rabbitmq.virtual-host: 连接到代理时用的虚拟主机</span><br><span class="line">spring.rabbitmq.addresses: 连接到server的地址列表（以逗号分隔），先addresses后host </span><br><span class="line">spring.rabbitmq.requested-heartbeat: 请求心跳超时时间，<span class="number">0</span>为不指定，如果不指定时间单位默认为妙</span><br><span class="line">spring.rabbitmq.publisher-confirms: 是否启用【发布确认】，默认<span class="keyword">false</span></span><br><span class="line">spring.rabbitmq.publisher-returns: 是否启用【发布返回】，默认<span class="keyword">false</span></span><br><span class="line">spring.rabbitmq.connection-timeout: 连接超时时间，单位毫秒，<span class="number">0</span>表示永不超时 </span><br></pre></td></tr></table></figure>
-
-<h1 id="2-SSL"><a href="#2-SSL" class="headerlink" title="2. SSL"></a>2. SSL</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">spring.rabbitmq.ssl.enabled: 是否支持ssl，默认<span class="keyword">false</span></span><br><span class="line">spring.rabbitmq.ssl.key-store: 持有SSL certificate的key store的路径</span><br><span class="line">spring.rabbitmq.ssl.key-store-password: 访问key store的密码</span><br><span class="line">spring.rabbitmq.ssl.trust-store: 持有SSL certificates的Trust store</span><br><span class="line">spring.rabbitmq.ssl.trust-store-password: 访问trust store的密码</span><br><span class="line">spring.rabbitmq.ssl.trust-store-type=JKS：Trust store 类型.</span><br><span class="line">spring.rabbitmq.ssl.algorithm: ssl使用的算法，默认由rabiitClient配置</span><br><span class="line">spring.rabbitmq.ssl.validate-server-certificate=<span class="keyword">true</span>：是否启用服务端证书验证</span><br><span class="line">spring.rabbitmq.ssl.verify-hostname=<span class="keyword">true</span> 是否启用主机验证</span><br></pre></td></tr></table></figure>
+          <h1 id="redis的持久化机制"><a href="#redis的持久化机制" class="headerlink" title="redis的持久化机制"></a>redis的持久化机制</h1><p><a target="_blank" rel="noopener" href="https://redis.io/topics/persistence">https://redis.io/topics/persistence</a></p>
+<p>redis速度快 , 很大一部分原因是因为他所有的数据都存储在内存中, 如果断电或者宕机, 都会导致内存中的数据丢失. 为了实现重启后数据不丢失, redis提供了两种数据持久化方案, 一种是<code>RDB</code> 快照(<code>Redis DataBase</code>), 另外一种是<code>AOF（Append Only File）</code>.</p>
+<h2 id="1-RDB"><a href="#1-RDB" class="headerlink" title="1. RDB"></a>1. <code>RDB</code></h2><p><code>RDB</code>是redis默认的持久化方案, 当满足一定条件后, 会把当前内存中的数据写入到磁盘中, 生成一个快照文件<code>dump.rdb</code>. redis 重启会通过加载<code>dump.rdb</code> 文件恢复数据. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/Spring%20RabbitMQ%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/#more" rel="contents">
+              <a class="btn" href="/redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6(13)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -788,7 +781,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(2)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/redis%E7%9A%84%E5%85%B6%E4%BB%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E6%80%BB%E7%BB%93(7)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -802,7 +795,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(2)/" class="post-title-link" itemprop="url">RabbitMQ工作模型与java编程(2)</a>
+            <a href="/redis%E7%9A%84%E5%85%B6%E4%BB%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E6%80%BB%E7%BB%93(7)/" class="post-title-link" itemprop="url">redis的其他数据结构和总结(7)</a>
         </h2>
 
         <div class="post-meta">
@@ -811,9 +804,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -821,11 +813,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
                 </span>
             </span>
 
@@ -840,12 +828,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="3-Spring-AMQP"><a href="#3-Spring-AMQP" class="headerlink" title="3. Spring AMQP"></a>3. Spring AMQP</h2><h3 id="3-1-Spring-AMQP-介绍"><a href="#3-1-Spring-AMQP-介绍" class="headerlink" title="3.1 Spring AMQP 介绍"></a>3.1 Spring AMQP 介绍</h3><p>思考： </p>
-<p>Java API 方式编程, 有什么问题? </p>
-<p>Spring 封装RabbitMQ的时候, 它做了什么呢? </p>
+          <h1 id="其他数据结构"><a href="#其他数据结构" class="headerlink" title="其他数据结构"></a>其他数据结构</h1><h2 id="1-BitMaps"><a href="#1-BitMaps" class="headerlink" title="1. BitMaps"></a>1. BitMaps</h2><p><code>BitMaps</code> 是在字符串类型上面定义的操作. 一个字节由8个二进制组成</p>
+<p><img src="http://files.luyanan.com//img/20200328161334.png" alt="image-20200328161332775"></p>
+<blockquote>
+<p> set k1 a </p>
+</blockquote>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(2)/#more" rel="contents">
+              <a class="btn" href="/redis%E7%9A%84%E5%85%B6%E4%BB%96%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E6%80%BB%E7%BB%93(7)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -869,7 +859,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(1)/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20AOP%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(7)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -883,7 +873,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(1)/" class="post-title-link" itemprop="url">RabbitMQ工作模型与java编程(1)</a>
+            <a href="/Spring%20AOP%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(7)/" class="post-title-link" itemprop="url">Spring AOP 源码解析(7)</a>
         </h2>
 
         <div class="post-meta">
@@ -892,9 +882,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -902,11 +891,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -921,11 +906,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="RabbitMQ工作模型与java编程"><a href="#RabbitMQ工作模型与java编程" class="headerlink" title="RabbitMQ工作模型与java编程"></a>RabbitMQ工作模型与java编程</h1><h2 id="1-MQ入门"><a href="#1-MQ入门" class="headerlink" title="1. MQ入门"></a>1. MQ入门</h2><h3 id="1-1-MQ的诞生历程"><a href="#1-1-MQ的诞生历程" class="headerlink" title="1.1 MQ的诞生历程"></a>1.1 MQ的诞生历程</h3><p>我们要去用MQ, 先来了解一下MQ是怎么诞生的,这样对于它解决了什么问题理解会更加深刻.大家知不知道世界上第一个MQ叫什么名字,是什么时候诞生的? </p>
-<p>​    1983年的时候, 有个在MIT工作的印度小伙伴突发奇想,以前我们的软件相互通信,都是点对点的,而且要实现相同的协议, 能不能有一种专门用来通信的中间件,就想主板(BUS)一样,把不同的软件集成起来呢? 于是它搞了一家公司(Tekneron),开发了世界上第一个消息队列软件The Information Bus(TIB). 最开始的时候, 它被高盛这些公司用在了金融交易里面。 因为TIB 实现了发布订阅(Publish/Subscrbe)模型, 信息的生产者和消费者完全解耦,这个特性引起了电信行业特别是新闻机构的注意. 1994年路透社收购了Teknekron. </p>
+          <h1 id="7-Spring-AOP-源码解析"><a href="#7-Spring-AOP-源码解析" class="headerlink" title="7. Spring AOP 源码解析"></a>7. Spring AOP 源码解析</h1><h2 id="Spring-AOP初体验"><a href="#Spring-AOP初体验" class="headerlink" title="Spring AOP初体验"></a>Spring AOP初体验</h2><hr>
+<hr>
+<h3 id="再述Spring-AOP应用场景"><a href="#再述Spring-AOP应用场景" class="headerlink" title="再述Spring AOP应用场景"></a>再述Spring AOP应用场景</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(1)/#more" rel="contents">
+              <a class="btn" href="/Spring%20AOP%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(7)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -949,7 +935,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E5%92%8C%E5%AE%9E%E8%B7%B5%E7%BB%8F%E9%AA%8C/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20DI%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(6)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -963,7 +949,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E5%92%8C%E5%AE%9E%E8%B7%B5%E7%BB%8F%E9%AA%8C/" class="post-title-link" itemprop="url">RabbitMQ可靠性投递和实践经验</a>
+            <a href="/Spring%20DI%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(6)/" class="post-title-link" itemprop="url">Spring DI 源码解析(6)</a>
         </h2>
 
         <div class="post-meta">
@@ -972,9 +958,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -982,11 +967,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
                 </span>
             </span>
 
@@ -1001,12 +982,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="RabbitMQ可靠性投递和实践经验"><a href="#RabbitMQ可靠性投递和实践经验" class="headerlink" title="RabbitMQ可靠性投递和实践经验"></a>RabbitMQ可靠性投递和实践经验</h1><h2 id="1-可靠性投递"><a href="#1-可靠性投递" class="headerlink" title="1. 可靠性投递"></a>1. 可靠性投递</h2><p>在RabbitMQ里面提供了很多保证可靠投递的机制, 这也是RbabitMQ的一个特性. </p>
-<p>​    我们在讲可靠性投递的时候,必须要明确一个问题,因为效率与可靠性是无法兼得的, 如果要保证每一个环节都成功, 势必会对消息的收发效率造成影响. 所以如果是一些业务实时一致性不是特别高的场景, 可以牺牲一些可靠性换取效率. </p>
-<p>​    比如发送通知或者记录日志的这种场景, 如果用户没有收到通知,不会造成业务影响,只要再次发送就可以了. </p>
+          <h1 id="6-Spring-DI-源码解析"><a href="#6-Spring-DI-源码解析" class="headerlink" title="6. Spring DI 源码解析"></a>6. Spring DI 源码解析</h1><h2 id="Spring自动装配之依赖注入"><a href="#Spring自动装配之依赖注入" class="headerlink" title="Spring自动装配之依赖注入"></a>Spring自动装配之依赖注入</h2><h3 id="依赖注入发生的时间"><a href="#依赖注入发生的时间" class="headerlink" title="依赖注入发生的时间"></a>依赖注入发生的时间</h3><p>当SpringIOC 容器完成了Bean定义资源的定位、载入和解析注册以后，IOC 容器中已经管理类Bean<br>定义的相关数据，但是此时 IOC容器还没有对所管理的 Bean进行依赖注入，依赖注入在以下两种情况<br>发生：</p>
+<h5 id="1-、用户第一次调用getBean-方法时，IOC-容器触发依赖注入。"><a href="#1-、用户第一次调用getBean-方法时，IOC-容器触发依赖注入。" class="headerlink" title="1)、用户第一次调用getBean()方法时，IOC 容器触发依赖注入。"></a>1)、用户第一次调用getBean()方法时，IOC 容器触发依赖注入。</h5>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E5%92%8C%E5%AE%9E%E8%B7%B5%E7%BB%8F%E9%AA%8C/#more" rel="contents">
+              <a class="btn" href="/Spring%20DI%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(6)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1097,7 +1077,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">227</span>
+          <span class="site-state-item-count">229</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

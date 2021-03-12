@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="jsonpath的介绍:JsonPath是一种简单的方法来提取给定JSON文档的部分内容。 JsonPath有许多编程语言，如Javascript，Python和PHP，Java。 JsonPath提供的json解析非常强大，它提供了类似正则表达式的语法，基本上可以满足所有你想要获得的json内容。 github上有它的应用:https:&#x2F;&#x2F;github.com&#x2F;json-path&#x2F;JsonPat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jsonpath的介绍">
+<meta property="og:url" content="http://luyanan.com/jsonpath%E7%9A%84%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="jsonpath的介绍:JsonPath是一种简单的方法来提取给定JSON文档的部分内容。 JsonPath有许多编程语言，如Javascript，Python和PHP，Java。 JsonPath提供的json解析非常强大，它提供了类似正则表达式的语法，基本上可以满足所有你想要获得的json内容。 github上有它的应用:https:&#x2F;&#x2F;github.com&#x2F;json-path&#x2F;JsonPat">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-12T02:15:06.144Z">
+<meta property="article:modified_time" content="2021-03-12T02:15:06.144Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://luyanan.com/jsonpath%E7%9A%84%E4%BB%8B%E7%BB%8D/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>jsonpath的介绍 | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/jsonpath%E7%9A%84%E4%BB%8B%E7%BB%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          jsonpath的介绍
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="jsonpath的介绍"><a href="#jsonpath的介绍" class="headerlink" title="jsonpath的介绍:"></a>jsonpath的介绍:</h1><p>JsonPath是一种简单的方法来提取给定JSON文档的部分内容。 JsonPath有许多编程语言，如Javascript，Python和PHP，Java。</p>
+<p>JsonPath提供的json解析非常强大，它提供了类似正则表达式的语法，基本上可以满足所有你想要获得的json内容。</p>
+<p>github上有它的应用:<a target="_blank" rel="noopener" href="https://github.com/json-path/JsonPath">https://github.com/json-path/JsonPath</a> </p>
+<p>JsonPath可在Central Maven存储库中找到。 Maven用户将其添加到您的POM:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.jayway.jsonpath<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>json-path<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>JsonPath表达式总是以与XPath表达式结合使用XML文档相同的方式引用JSON结构。</p>
+<p>JsonPath中的“根成员对象”始终称为$，无论是对象还是数组。</p>
+<p>JsonPath表达式可以使用点表示法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$.store.book [0].title</span><br></pre></td></tr></table></figure>
+
+<p>或括号表示法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$[&#39;store&#39;][&#39;book&#39;][0][&#39;title&#39;]</span><br></pre></td></tr></table></figure>
+
+<h1 id="jsonpath操作符："><a href="#jsonpath操作符：" class="headerlink" title="jsonpath操作符："></a><code>jsonpath操作符：</code></h1><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$</td>
+<td>查询根元素。这将启动所有路径表达式。</td>
+</tr>
+<tr>
+<td>@</td>
+<td>当前节点由过滤谓词处理。</td>
+</tr>
+<tr>
+<td>*</td>
+<td>通配符，必要时可用任何地方的名称或数字。</td>
+</tr>
+<tr>
+<td>..</td>
+<td>深层扫描。 必要时在任何地方可以使用名称。</td>
+</tr>
+<tr>
+<td>.<name></td>
+<td>点，表示子节点</td>
+</tr>
+<tr>
+<td>[‘<name>‘ (, ‘<name>‘)]</td>
+<td>括号表示子项</td>
+</tr>
+<tr>
+<td>[<number> (, <number>)]</td>
+<td>数组索引或索引</td>
+</tr>
+<tr>
+<td>[start:end]</td>
+<td>数组切片操作</td>
+</tr>
+<tr>
+<td>[?(<expression>)]</td>
+<td>过滤表达式。 表达式必须求值为一个布尔值。</td>
+</tr>
+</tbody></table>
+<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><p>函数可以在路径的尾部调用，函数的输出是路径表达式的输出，该函数的输出是由函数本身所决定的。</p>
+<table>
+<thead>
+<tr>
+<th align="left">函数</th>
+<th align="left">描述</th>
+<th align="left">输出</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>min()</code></td>
+<td align="left">提供数字数组的最小值</td>
+<td align="left"><code>Double</code></td>
+</tr>
+<tr>
+<td align="left"><code>max()</code></td>
+<td align="left">提供数字数组的最大值</td>
+<td align="left"><code>Double</code></td>
+</tr>
+<tr>
+<td align="left"><code>avg()</code></td>
+<td align="left">提供数字数组的平均值</td>
+<td align="left"><code>Double</code></td>
+</tr>
+<tr>
+<td align="left"><code>stddev()</code></td>
+<td align="left">提供数字数组的标准偏差值</td>
+<td align="left"><code>Double</code></td>
+</tr>
+<tr>
+<td align="left"><code>length()</code></td>
+<td align="left">提供数组的长度</td>
+<td align="left">Integer</td>
+</tr>
+</tbody></table>
+<h3 id="过滤器运算符"><a href="#过滤器运算符" class="headerlink" title="过滤器运算符"></a>过滤器运算符</h3><p>过滤器是用于筛选数组的逻辑表达式。一个典型的过滤器将是[?(@.age &gt; 18)]，其中@表示正在处理的当前项目。 可以使用逻辑运算符&amp;&amp;和||创建更复杂的过滤器。 字符串文字必须用单引号或双引号括起来([?(@.color == ‘blue’)] 或者 [?(@.color == “blue”)]).</p>
+<table>
+<thead>
+<tr>
+<th align="left">操作符</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>==</code></td>
+<td align="left">left等于right（注意1不等于’1’）</td>
+</tr>
+<tr>
+<td align="left"><code>!=</code></td>
+<td align="left">不等于</td>
+</tr>
+<tr>
+<td align="left"><code>&lt;</code></td>
+<td align="left">小于</td>
+</tr>
+<tr>
+<td align="left"><code>&lt;=</code></td>
+<td align="left">小于等于</td>
+</tr>
+<tr>
+<td align="left"><code>&gt;</code></td>
+<td align="left">大于</td>
+</tr>
+<tr>
+<td align="left"><code>&gt;=</code></td>
+<td align="left">大于等于</td>
+</tr>
+<tr>
+<td align="left"><code>=~</code></td>
+<td align="left">匹配正则表达式[?(@.name =~ /foo.*?/i)]</td>
+</tr>
+<tr>
+<td align="left"><code>in</code></td>
+<td align="left">左边存在于右边 [?(@.size in [‘S’, ‘M’])]</td>
+</tr>
+<tr>
+<td align="left"><code>nin</code></td>
+<td align="left">左边不存在于右边</td>
+</tr>
+<tr>
+<td align="left"><code>size</code></td>
+<td align="left">（数组或字符串）长度</td>
+</tr>
+<tr>
+<td align="left"><code>empty</code></td>
+<td align="left">（数组或字符串）为空</td>
+</tr>
+</tbody></table>
+<p>接下来我们就用java代码来写一个案例:</p>
+<h3 id="Java操作示例"><a href="#Java操作示例" class="headerlink" title="Java操作示例"></a>Java操作示例</h3><p>JSON</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;expensive&quot;: 10,</span><br><span class="line">    &quot;store&quot;: &#123;</span><br><span class="line">        &quot;bicycle&quot;: &#123;</span><br><span class="line">            &quot;color&quot;: &quot;red&quot;,</span><br><span class="line">            &quot;price&quot;: 19.95</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;book&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;author&quot;: &quot;Nigel Rees&quot;,</span><br><span class="line">                &quot;category&quot;: &quot;reference&quot;,</span><br><span class="line">                &quot;price&quot;: 8.95,</span><br><span class="line">                &quot;title&quot;: &quot;Sayings of the Century&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;author&quot;: &quot;Evelyn Waugh&quot;,</span><br><span class="line">                &quot;category&quot;: &quot;fiction&quot;,</span><br><span class="line">                &quot;price&quot;: 12.99,</span><br><span class="line">                &quot;title&quot;: &quot;Sword of Honour&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;author&quot;: &quot;Herman Melville&quot;,</span><br><span class="line">                &quot;category&quot;: &quot;fiction&quot;,</span><br><span class="line">                &quot;isbn&quot;: &quot;0-553-21311-3&quot;,</span><br><span class="line">                &quot;price&quot;: 8.99,</span><br><span class="line">                &quot;title&quot;: &quot;Moby Dick&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;author&quot;: &quot;J. R. R. Tolkien&quot;,</span><br><span class="line">                &quot;category&quot;: &quot;fiction&quot;,</span><br><span class="line">                &quot;isbn&quot;: &quot;0-395-19395-8&quot;,</span><br><span class="line">                &quot;price&quot;: 22.99,</span><br><span class="line">                &quot;title&quot;: &quot;The Lord of the Rings&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="left">JsonPath (点击链接测试)</th>
+<th align="left">结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$.store.book%5B*%5D.author"><code>$.store.book[*].author</code></a></td>
+<td align="left">获取json中store下book下的所有author值</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..author"><code>$..author</code></a></td>
+<td align="left">获取所有json中所有author的值</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$.store.*"><code>$.store.*</code></a></td>
+<td align="left">所有的东西，书籍和自行车</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$.store..price"><code>$.store..price</code></a></td>
+<td align="left">获取json中store下所有price的值</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..book%5B2%5D"><code>$..book[2]</code></a></td>
+<td align="left">获取json中book数组的第3个值</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..book%5B2%5D"><code>$..book[-2]</code></a></td>
+<td align="left">倒数的第二本书</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..book%5B0,1%5D"><code>$..book[0,1]</code></a></td>
+<td align="left">前两本书</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..book%5B:2%5D"><code>$..book[:2]</code></a></td>
+<td align="left">从索引0（包括）到索引2（排除）的所有图书</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..book%5B1:2%5D"><code>$..book[1:2]</code></a></td>
+<td align="left">从索引1（包括）到索引2（排除）的所有图书</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..book%5B-2:%5D"><code>$..book[-2:]</code></a></td>
+<td align="left">获取json中book数组的最后两个值</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..book%5B2:%5D"><code>$..book[2:]</code></a></td>
+<td align="left">获取json中book数组的第3个到最后一个的区间值</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..book%5B?(@.isbn)%5D"><code>$..book[?(@.isbn)]</code></a></td>
+<td align="left">获取json中book数组中包含isbn的所有值</td>
+</tr>
+<tr>
+<td align="left">[<code>$.store.book[?(@.price &lt; 10)\]</code>](<a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$.store.book%5B">http://jsonpath.herokuapp.com/?path=$.store.book[</a>?(@.price &lt; 10)])</td>
+<td align="left">获取json中book数组中price&lt;10的所有值</td>
+</tr>
+<tr>
+<td align="left">[<code>$..book[?(@.price &lt;= $[&#39;expensive&#39;\])]</code>](<a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..book%5B">http://jsonpath.herokuapp.com/?path=$..book[</a>?(@.price &lt;= $[‘expensive’])])</td>
+<td align="left">获取json中book数组中price&lt;=expensive的所有值</td>
+</tr>
+<tr>
+<td align="left">[<code>$..book[?(@.author =~ /.*REES/i)\]</code>](<a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..book%5B">http://jsonpath.herokuapp.com/?path=$..book[</a>?(@.author =~ /.*REES/i)])</td>
+<td align="left">获取json中book数组中的作者以REES结尾的所有值（REES不区分大小写）</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..*"><code>$..*</code></a></td>
+<td align="left">逐层列出json中的所有值，层级由外到内</td>
+</tr>
+<tr>
+<td align="left"><a target="_blank" rel="noopener" href="http://jsonpath.herokuapp.com/?path=$..book.length()"><code>$..book.length()</code></a></td>
+<td align="left">获取json中book数组的长度</td>
+</tr>
+</tbody></table>
+<p>上面的json字符串的读取案例:</p>
+<p>(1)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String json &#x3D; &quot;...&quot;;</span><br><span class="line"></span><br><span class="line">List&lt;String&gt; authors &#x3D; JsonPath.read(json, &quot;$.store.book[*].author&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>(2)</p>
+<p>如果你只想读取一次，那么上面的代码就可以了</p>
+<p>如果你还想读取其他路径，现在上面不是很好的方法，因为他每次获取都需要再解析整个文档。所以，我们可以先解析整个文档，再选择调用路径。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String json = <span class="string">&quot;...&quot;</span>;</span><br><span class="line">Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);</span><br><span class="line"></span><br><span class="line">String author0 = JsonPath.read(document, <span class="string">&quot;$.store.book[0].author&quot;</span>);</span><br><span class="line">String author1 = JsonPath.read(document, <span class="string">&quot;$.store.book[1].author&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>(3)</p>
+<p>当在java中使用JsonPath时，重要的是要知道你在结果中期望什么类型。 JsonPath将自动尝试将结果转换为调用者预期的类型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 抛出 java.lang.ClassCastException 异常</span></span><br><span class="line">List&lt;String&gt; list = JsonPath.parse(json).read(<span class="string">&quot;$.store.book[0].author&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 正常</span></span><br><span class="line">String author = JsonPath.parse(json).read(<span class="string">&quot;$.store.book[0].author&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>(4)</p>
+<p>默认情况下，MappingProvider SPI提供了一个简单的对象映射器。 这允许您指定所需的返回类型，MappingProvider将尝试执行映射。 在下面的示例中，演示了Long和Date之间的映射。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String json = <span class="string">&quot;&#123;\&quot;date_as_long\&quot; : 1411455611975&#125;&quot;</span>;</span><br><span class="line">Date date = JsonPath.parse(json).read(<span class="string">&quot;$[&#x27;date_as_long&#x27;]&quot;</span>, Date.class);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>(5)</p>
+<p>如果您将JsonPath配置为使用JacksonMappingProvider或GsonMappingProvider，您甚至可以将JsonPath输出直接映射到POJO中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Book book = JsonPath.parse(json).read(<span class="string">&quot;$.store.book[0]&quot;</span>, Book.class); </span><br></pre></td></tr></table></figure>
+
+<p>另外一个案例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&#123; &quot;store&quot;: &#123;</span><br><span class="line">    &quot;book&quot;: [ </span><br><span class="line">      &#123; &quot;category&quot;: &quot;reference&quot;,</span><br><span class="line">        &quot;author&quot;: &quot;Nigel Rees&quot;,</span><br><span class="line">        &quot;title&quot;: &quot;Sayings of the Century&quot;,</span><br><span class="line">        &quot;price&quot;: 8.95</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123; &quot;category&quot;: &quot;fiction&quot;,</span><br><span class="line">        &quot;author&quot;: &quot;Evelyn Waugh&quot;,</span><br><span class="line">        &quot;title&quot;: &quot;Sword of Honour&quot;,</span><br><span class="line">        &quot;price&quot;: 12.99,</span><br><span class="line">        &quot;isbn&quot;: &quot;0-553-21311-3&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;bicycle&quot;: &#123;</span><br><span class="line">      &quot;color&quot;: &quot;red&quot;,</span><br><span class="line">      &quot;price&quot;: 19.95</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">private&#96; &#96;static&#96; &#96;void&#96; &#96;jsonPathTest() &#123;</span><br><span class="line">  &#96;&#96;JSONObject json &#x3D; jsonTest();&#96;&#96;&#x2F;&#x2F;调用自定义的jsonTest()方法获得json对象，生成上面的json</span><br><span class="line">  &#96;&#96;&#x2F;&#x2F;输出book[0]的author值</span><br><span class="line">  &#96;&#96;String author &#x3D; JsonPath.read(json, &#96;&#96;&quot;$.store.book[0].author&quot;&#96;&#96;);  </span><br><span class="line">  &#96;&#96;&#x2F;&#x2F;输出全部author的值，使用Iterator迭代</span><br><span class="line">  &#96;&#96;List&lt;String&gt; authors &#x3D; JsonPath.read(json, &#96;&#96;&quot;$.store.book[*].author&quot;&#96;&#96;); </span><br><span class="line">  &#96;&#96;&#x2F;&#x2F;输出book[*]中category &#x3D;&#x3D; &#39;reference&#39;的book</span><br><span class="line">  &#96;&#96;List&lt;Object&gt; books &#x3D; JsonPath.read(json, &#96;&#96;&quot;$.store.book[?(@.category &#x3D;&#x3D; &#39;reference&#39;)]&quot;&#96;&#96;);       </span><br><span class="line">  &#96;&#96;&#x2F;&#x2F;输出book[*]中price&gt;10的book</span><br><span class="line">  &#96;&#96;List&lt;Object&gt; books &#x3D; JsonPath.read(json, &#96;&#96;&quot;$.store.book[?(@.price&gt;10)]&quot;&#96;&#96;);</span><br><span class="line">  &#96;&#96;&#x2F;&#x2F;输出book[*]中含有isbn元素的book</span><br><span class="line">  &#96;&#96;List&lt;Object&gt; books &#x3D; JsonPath.read(json, &#96;&#96;&quot;$.store.book[?(@.isbn)]&quot;&#96;&#96;);</span><br><span class="line">  &#96;&#96;&#x2F;&#x2F;输出该json中所有price的值</span><br><span class="line">  &#96;&#96;List&lt;Double&gt; prices &#x3D; JsonPath.read(json, &#96;&#96;&quot;$..price&quot;&#96;&#96;);</span><br><span class="line">  &#96;&#96;&#x2F;&#x2F;可以提前编辑一个路径，并多次使用它</span><br><span class="line">  &#96;&#96;JsonPath path &#x3D; JsonPath.compile(&#96;&#96;&quot;$.store.book[*]&quot;&#96;&#96;);</span><br><span class="line">  &#96;&#96;List&lt;Object&gt; books &#x3D; path.read(json);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"># Python</a>
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Window10%20%E5%88%A9%E7%94%A8WSL2%20%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F%E4%BB%A5%E5%8F%8Adocker/" rel="prev" title="Window10 利用WSL2 安装Linux子系统以及docker">
+      <i class="fa fa-chevron-left"></i> Window10 利用WSL2 安装Linux子系统以及docker
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F(7)/" rel="next" title="设计模式之适配器模式(7)">
+      设计模式之适配器模式(7) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#jsonpath%E7%9A%84%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">jsonpath的介绍:</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#jsonpath%E6%93%8D%E4%BD%9C%E7%AC%A6%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">jsonpath操作符：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0"><span class="nav-number">2.0.1.</span> <span class="nav-text">函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E5%99%A8%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-number">2.0.2.</span> <span class="nav-text">过滤器运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java%E6%93%8D%E4%BD%9C%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.0.3.</span> <span class="nav-text">Java操作示例</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">229</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

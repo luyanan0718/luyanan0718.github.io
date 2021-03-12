@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="MySQL的执行流程MySQL的发展历史和版本分支    时间 里程碑    1996年 MySQL 1.0发布,它的历史可以追溯到1979年,作者Monty用BASIC设计的一个报表工具   1996年10月 3.11.1 发布, MySQL没有2.0版本   2000年 ISAM升级为MyISAM引擎,MySQL开源   2003年 MySQL4.0 发布,集成了InnoDB存储引擎   20">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL的SQL执行流程(1)">
+<meta property="og:url" content="http://luyanan.com/MySQL%E7%9A%84SQL%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B(1)/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="MySQL的执行流程MySQL的发展历史和版本分支    时间 里程碑    1996年 MySQL 1.0发布,它的历史可以追溯到1979年,作者Monty用BASIC设计的一个报表工具   1996年10月 3.11.1 发布, MySQL没有2.0版本   2000年 ISAM升级为MyISAM引擎,MySQL开源   2003年 MySQL4.0 发布,集成了InnoDB存储引擎   20">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514112637.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514114851.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514123731.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514134807.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514142156.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514142903.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514143437.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514150325.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514151912.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514154032.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514154854.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514161009.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200514162319.png">
+<meta property="article:published_time" content="2021-03-12T02:15:06.339Z">
+<meta property="article:modified_time" content="2021-03-12T02:15:06.339Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com//img/20200514112637.png">
+
+<link rel="canonical" href="http://luyanan.com/MySQL%E7%9A%84SQL%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B(1)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MySQL的SQL执行流程(1) | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/MySQL%E7%9A%84SQL%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B(1)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL的SQL执行流程(1)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="MySQL的执行流程"><a href="#MySQL的执行流程" class="headerlink" title="MySQL的执行流程"></a>MySQL的执行流程</h1><p>MySQL的发展历史和版本分支</p>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>里程碑</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1996年</td>
+<td>MySQL 1.0发布,它的历史可以追溯到1979年,作者Monty用BASIC设计的一个报表工具</td>
+</tr>
+<tr>
+<td>1996年10月</td>
+<td>3.11.1 发布, MySQL没有2.0版本</td>
+</tr>
+<tr>
+<td>2000年</td>
+<td>ISAM升级为MyISAM引擎,MySQL开源</td>
+</tr>
+<tr>
+<td>2003年</td>
+<td>MySQL4.0 发布,集成了InnoDB存储引擎</td>
+</tr>
+<tr>
+<td>2005年</td>
+<td>MySQL5.0版本发布,提供了视图、存储过程等功能</td>
+</tr>
+<tr>
+<td>2008年</td>
+<td>MySQL AB公司被Sun公司收购,进入Sun MySQL时代</td>
+</tr>
+<tr>
+<td>2009年</td>
+<td>Oracle公司收购Sun公司, 进入Oracle MySQL时代</td>
+</tr>
+<tr>
+<td>2010年</td>
+<td>MySQL5.5发布,InnoDB 成为默认的存储引擎</td>
+</tr>
+<tr>
+<td>2016年</td>
+<td>MySQL发布8.0.0版本.为什么没有6、7呢?5.6可以当成6.x, 5.7 可以当成7.x</td>
+</tr>
+</tbody></table>
+<p>因为Mysql 是开源的(也有收费版本)，所以在MySQL 稳定版本的基础上也发展出来了很多的分支,就想<code>Linux</code> 一样, 有<code>Ubuntu</code>、<code>RedHat</code>、<code>ContOS</code>、<code>Fedora [fɪ&#39;dɔrə]</code>、 <code>Debian[Deb&#39;-ee-en]</code>等等. </p>
+<p>大家最熟悉的应该是<code>MariaDB</code>,因为<code>Contos7</code> 里面自带了一个<code>MariaDB</code>,它是怎么来的呢? Oracle 收购MySQL了之后, MySQL创始人之一<code>Monty</code>担心MySQL数据库的发展的未来(开发缓慢,封闭,可能会被闭源),就创建了一个分支<code>MariaDB</code>,默认使用全新的<code>Maria</code>存储引擎,它是原<code>MyISAM</code> 存储引擎的升级版本. </p>
+<p>其他流行分支:</p>
+<p><code>Percona Server</code>是MySQL最重要的分支之一,它基于<code>InnoDB</code>存储引擎的基础上,提高了性能和易管理性,最后形成了增强版的<code>XtraDB</code> 引擎, 可以用来更好的发挥服务器硬件上的性能. </p>
+<p>国内有一些MySQL的分支或者自研的存储引擎,比如网易的<code>InnoSQL</code>、极数云舟的<code>ArkDB</code>.</p>
+<p>我们操作数据库有各种各样的方式,比如<code>Linux</code> 系统中的命令行,比如数据库工具<code>Navicat</code>、比如程序,例如Java语言中的<code>JDBC API</code> 或者<code>ORM</code>框架. </p>
+<p>大家有没有思考过,当我们的工具或者程序连接上数据库之后,实际上发生了什么事情呢? 它的内部是怎么工作的呢? </p>
+<p>以一条查询语句为例,我们来看下MySQL的工作流程是怎么样的? </p>
+<p> 一条查询SQL语句是怎么执行的?</p>
+<p><img src="http://files.luyanan.com//img/20200514112637.png" alt="image-20200514112627726"></p>
+<p> 我们的程序或者工具要操作数据库,第一步要做什么事情呢? </p>
+<p>跟数据库建立连接</p>
+<h2 id="1-通讯协议"><a href="#1-通讯协议" class="headerlink" title="1 通讯协议"></a>1 通讯协议</h2><p>首先,MySQL 必须运行一个服务,监听默认的3306端口. </p>
+<p>在我们开发系统跟第三方对接的时候, 必须要弄清楚的有两件事情.</p>
+<p>第一个就是通讯协议, 比如我们使用的是<code>HTTP</code> 还是<code>WebService</code>还是<code>TCP</code>.</p>
+<p>第二个是消息格式,比如我们用<code>XML</code> 格式还是<code>JSON</code>格式, 还是定长格式? 报文头长度多少,包含什么内容,每个字段的详细含义 . </p>
+<h3 id="1-1-通讯协议"><a href="#1-1-通讯协议" class="headerlink" title="1.1 通讯协议"></a>1.1 通讯协议</h3><p>MySQL 是支持多种通信协议的,可以使用同步/异步的方式, 支持长连接/短连接,这里我们拆分来看,第一个是通讯类型. </p>
+<h5 id="通讯类型-同步或者异步"><a href="#通讯类型-同步或者异步" class="headerlink" title="通讯类型:同步或者异步"></a><strong>通讯类型:同步或者异步</strong></h5><p><strong>同步通信的特点:</strong></p>
+<ol>
+<li>同步通信依赖于被调用方,受限于被调用方的性能,也就是说,应用操作数据库,线程会阻塞,等待数据库的返回. </li>
+<li>一般只能做到一对一的, 很难做到一对多的通信. </li>
+</ol>
+<p><strong>异步跟同步相反:</strong></p>
+<ol>
+<li>异步可以避免应用阻塞,但是不能节省SQL执行的时间</li>
+<li>如果异步存在并发,每一个SQL的执行都要单独建立一个连接,避免数据混乱.但是这样会给服务器带来巨大的压力(一个连接就会创建一个线程,线程间切换会占用大量的CPU资源).另外异步通信还带来的编码的复杂度,所以一般不建议使用. 如果要使用异步, 必须使用连接池,排队从连接池获取连接而不是创建新连接. </li>
+</ol>
+<p>一般来说, 我们连接数据库都是同步连接. </p>
+<h5 id="连接方式-长连接或者短连接"><a href="#连接方式-长连接或者短连接" class="headerlink" title="连接方式:长连接或者短连接"></a>连接方式:长连接或者短连接</h5><p>MySQL既支持短连接,也支持长连接. 短连接就是操作完毕以后, 马上<code>close</code>掉. 长连接可以保持打开,减少服务器创建和释放连接的消耗 ,后面的程序访问的时候还可以使用这个连接. 一般我们会在线程池中使用长连接. </p>
+<p>保持长连接会消耗内存,长时间不活动的连接,MySQL服务器会断开. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show global variables like &#39;wait_timeout&#39;; -- 非交互式超时时间，如 JDBC 程序</span><br><span class="line">show global variables like &#39;interactive_timeout&#39;; -- 交互式超时时间，如数据库工具</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://files.luyanan.com//img/20200514114851.png" alt="image-20200514114849958"></p>
+<p>默认都是28800秒,8个小时. </p>
+<p>那我们怎么看MySQL当前有多少个连接呢? </p>
+<p>可以使用<code>show status</code>  命令查看</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show global status like <span class="string">&#x27;Thread%&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://files.luyanan.com//img/20200514123731.png" alt="image-20200514123727144"></p>
+<p><code>Threads_cached</code>: 缓存中线程连接数</p>
+<p><code>Threads_connected</code>： 当前打开的连接数</p>
+<p><code>Threads_created</code>:为处理连接创建的线程数</p>
+<p><code>Threads_running</code>: 非睡眠状态的连接数,通常指并发连接数. </p>
+<p>每产生一个连接或者一个会话,在服务端会创建一个线程来处理. 反过来,如果要杀死会话, 那就<code>Kill</code> 线程. </p>
+<p>有了连接数,怎么知道当前连接的状态? </p>
+<p>可以使用<code>SHOW PROCESSLIST;</code>(root用户), 查看SQL的执行状态. </p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/show-processlist.html">https://dev.mysql.com/doc/refman/5.7/en/show-processlist.html</a></p>
+<p><img src="http://files.luyanan.com//img/20200514134807.png" alt="image-20200514134806326"></p>
+<p>一些常见的状态:</p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/thread-commands.html">https://dev.mysql.com/doc/refman/5.7/en/thread-commands.html</a></p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Sleep</code></td>
+<td>线程正在等待客户端,以向他发送一个新语句</td>
+</tr>
+<tr>
+<td><code>Query</code></td>
+<td>线程正在执行查询或者往客户端发送数据</td>
+</tr>
+<tr>
+<td><code>Locked</code></td>
+<td>该查询被其它查询锁住</td>
+</tr>
+<tr>
+<td><code>Copying to tmp table on disk</code></td>
+<td>临时结果集合大于<code>tmp_table_size</code>, 线程把临时表从存储器内部格式改为磁盘模式,以节省存储器</td>
+</tr>
+<tr>
+<td><code>Sending data</code></td>
+<td>线程正在为<code>select</code> 语句处理行,同时正在向客户端发送数据</td>
+</tr>
+<tr>
+<td><code>Sorting for group</code></td>
+<td>线程正在分类,以满足<code>GROUP BY</code>要求</td>
+</tr>
+<tr>
+<td><code>Sorting for order</code></td>
+<td>线程正在分类,以满足<code>ORDER BY</code> 要求</td>
+</tr>
+</tbody></table>
+<p>MySQL服务允许的最大连接数是多少 呢? </p>
+<p>在5.7版本中， 默认是151个,最大可以设置为<code>16384（2^14）</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show variables like <span class="string">&#x27;max_connections&#x27;</span>;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="http://files.luyanan.com//img/20200514142156.png" alt="image-20200514142154541"></p>
+<p><code>show</code>的参数说明：</p>
+<ol>
+<li>级别: 会话<code>session</code>级别(默认),全局<code>global</code> 级别</li>
+<li>动态修改: <code>set</code> 重启后失败; 永久生效需要修改配置文件<code>/etc/my.cnf</code></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> global max_connections = 1000;</span><br></pre></td></tr></table></figure>
+
+<p><strong>通讯协议</strong></p>
+<p>MySQL支持哪些通信协议呢? </p>
+<p>第一种是<code>Unix Socket</code></p>
+<p>比如我们在<code>linxu</code>服务器上,如果没有指定<code>-h</code>参数,它就用<code>socket</code>方式登录(省略了<code>-S /var/lib/mysql/mysql.sock</code>)</p>
+<p><img src="http://files.luyanan.com//img/20200514142903.png" alt="image-20200514142902367"></p>
+<p> 它不用通过网络协议,也可以连接到MySQL服务器,它需要用到服务器上的一个物理文件(<code>/var/lib/mysql/mysql.sock</code>).</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select @@socket;</span><br></pre></td></tr></table></figure>
+
+<p>如果指定了<code>-h</code>参数,就会用第二种方式,<code>TCP/IP</code>协议. </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql -h 192.168.56.20 -uroot -pluyanan</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>我们的编程一眼的连接模块都是通过<code>TCP</code>协议连接到MySQL服务器的,比如<code>mysql-connector-java-x.x.xx.jar</code></p>
+<p>另外还有命名管道(<code>Named Pipes</code>)和内存共享(<code>Share Memory</code>) 的方式,这两种通讯方式只能在<code>Window</code> 上使用,一般用到较少. </p>
+<h3 id="1-2-通讯方式"><a href="#1-2-通讯方式" class="headerlink" title="1.2 通讯方式"></a>1.2 通讯方式</h3><p>第二个是通讯方式</p>
+<p><img src="http://files.luyanan.com//img/20200514143437.png" alt="image-20200514143436152"></p>
+<p><strong>单工:</strong></p>
+<p>在两台计算机通信的时候,数据的传输是单向的,生活中的类比: 遥控器. </p>
+<p><strong>半双工:</strong></p>
+<p>在两台计算机之间, 数据传输是双向的,你可以给我发送,我也可以给你发送,但是在这个通讯连接中,同一个时间只能有一台服务器在发送数据,也就是你要给我发送的话, 也必须等我发给你完了之后你才能给我发。 生活中的类比: 对讲机. </p>
+<p><strong>全双工:</strong></p>
+<p>数据的传输是双向的, 而且可以同时传输. 生活中的类比: 打电话. </p>
+<p><strong>MySQL使用了半双工的通信方式?</strong></p>
+<p>要么是客户端向服务端发送数据,要么是服务端向客户端发送数据,这两个动作不能同时发生,所以客户端发送SQL给服务端的时候(在一次连接中), 数据是不能分成小块发送的,不管你的SQL语句多大, 都不能一次性发送. </p>
+<p>比如我们用<code>Mybatis</code> 动态SQL生成一个批量插入的语句,插入100W条数据,<code>values</code> 后面跟了一长串的内容, 或者<code>where</code>条件<code>in</code> 里面的值太多了,会出现问题. </p>
+<p>这个时候我们必须调整MySQL服务器配置的<code>max_allowed_packet</code>参数的值(默认是4M)，把它调大, 否则就会报错. </p>
+<p>另一方面,对于服务端来说,也是一次性发送所有的数据,不能因为你已经取到想要的数据就中断操作,这个时候会对网络和内存产生大量的消耗. </p>
+<p>所以, 我们一定要再程序里面避免不带<code>limit</code> 的这种操作,比如一次性把满足条件的数据全部查出来,一定要先<code>count</code>一下,如果数据量大的话, 可以分批查询. </p>
+<p>执行一条查询语句, 客户端跟服务端建立连接后,下一步要做什么呢? </p>
+<h2 id="2-查询缓存"><a href="#2-查询缓存" class="headerlink" title="2 查询缓存"></a>2 查询缓存</h2><p>MySQL 内部自带了一个缓存模块. </p>
+<p>缓存的作用我们知道，把数据以<code>KV</code>的形式放到内存中,可以加快数据的读取速度,也可以减少服务器处理的时间.但是MySQL的缓存我们好像比较陌生,从来没有去配置过,也不知道它什么时候生效? </p>
+<p>比如<code>user_innodb</code> 有500W条数据, 没有索引,我们在没有索引的字段上执行同样的查询,大家觉得第二次会快吗? </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from user_innodb where name&#x3D;&#39;张三&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>发现第二次速度并没有快, 缓存没有生效,为什么呢? MySQL 的缓存默认是关闭的,</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show variables like &#39;query_cache%&#39;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>默认关闭的意思就是不推荐使用,为什么MySQL不推荐使用它自带的缓存呢? </p>
+<p>主要是因为MySQL自带的缓存的应用场景有限,第一个是他要求SQL语句必须一模一样,中间多一个空格,字母大小写不同都被认为是不同的SQL.</p>
+<p>第二个就是表里面的任意一条数据发生变化的时候,这种表的所有的缓存都会失效,所以对于有大量数据更新的场景,也不适合. </p>
+<p>所以缓存这块,我们还是交给<code>ORM</code>框架(比如<code>Mybatis</code> 默认开启了一级缓存), 或者独立的缓存服务,比如<code>Redis</code>来处理更合适. </p>
+<p>在MySQL8.0 中，查询缓存已经被移除了. </p>
+<h2 id="3-语法解析和预处理-Parser-amp-Preprocessor"><a href="#3-语法解析和预处理-Parser-amp-Preprocessor" class="headerlink" title="3 语法解析和预处理(Parser &amp; Preprocessor)"></a>3 语法解析和预处理(<code>Parser</code> &amp; <code>Preprocessor</code>)</h2><p>我们没有使用缓存的话, 就会跳过缓存的模块,那下一步我们要做什么呢? </p>
+<p>这里有一个疑问, 为什么我的一条SQL语句能够被识别呢? 假设我随便执行一个字符串<code>aaa</code>, 服务端就会报出一个1064的错. </p>
+<p><img src="http://files.luyanan.com//img/20200514150325.png" alt="image-20200514150324087"></p>
+<p>它是怎么知道我输入的内容是错误的呢? </p>
+<p>这个就是MySQL的<code>Parser</code> 解析器和<code>PreProcessor</code> 预处理模块. </p>
+<p>这一步主要做的事情就是对语句基于SQL的语法进行词法和语法分析和语义的解析. </p>
+<h3 id="3-1-词法解析"><a href="#3-1-词法解析" class="headerlink" title="3.1 词法解析"></a>3.1 词法解析</h3><p>词法分析就是把一个完整的SQL 语句打碎成一个个的单词. </p>
+<p>比如一个简单的SQL语句</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select name from user where id  &#x3D; 1;</span><br></pre></td></tr></table></figure>
+
+<p>它会被打碎成8个符号, 每个符号是什么类型? 从哪里开始到哪里结束. </p>
+<h3 id="3-2-语法解析"><a href="#3-2-语法解析" class="headerlink" title="3.2 语法解析"></a>3.2 语法解析</h3><p>第二步就是语法分析, 语法分析就会SQL做一些语法检查,比如单引号有没有闭合,然后根据MySQL定义的语法规则,根据SQL生成一个数据结构,这个数据结构我们把它叫做解析数(<code>select_lex</code>).</p>
+<p><img src="http://files.luyanan.com//img/20200514151912.png" alt="image-20200514151911435"></p>
+<p>任何数据库的中间件,比如<code>Mycat</code>、<code>Sharding-JDBC(用到了Druid Parser)</code>,都必须要有词法和语法分析功能,在市面上也有很多的开源的词法解析的工具(比如<code>LEX</code>、<code>Yacc</code>).</p>
+<h3 id="3-3-预处理器"><a href="#3-3-预处理器" class="headerlink" title="3.3 预处理器"></a>3.3 预处理器</h3><p>问题:如果我写了一个语法和词法都正确的SQL,但是表名或者字段都不存在,会在哪里报错呢? 是在数据库的执行层还是解析器? 比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from user2;</span><br></pre></td></tr></table></figure>
+
+<p>解析器可以分析语法, 但是它怎么知道数据库里面有什么表? 表里面有什么字段呢? </p>
+<p>实际上还是在解析的时候报错, 解析SQL的环节里面有个预处理器. </p>
+<p>它会检查生成的解析树, 解决解析器无法解析的语义. 比如他会检查表和列表是否存在, 检查名称和别名,保证没有歧义.</p>
+<p>预处理之后得到一个新的解析数.</p>
+<h2 id="4-查询优化-Query-Optimizer-和查询执行计划"><a href="#4-查询优化-Query-Optimizer-和查询执行计划" class="headerlink" title="4 查询优化(Query Optimizer)和查询执行计划"></a>4 查询优化(<code>Query Optimizer</code>)和查询执行计划</h2><h3 id="4-1-什么是优化器"><a href="#4-1-什么是优化器" class="headerlink" title="4.1 什么是优化器?"></a>4.1 什么是优化器?</h3><p>得到解析树之后,是不是执行SQL语句了呢? </p>
+<p>这里我们有一个问题, 一条SQL语句是不是只有一种执行方式? 或者说数据库最终执行的SQL是不是就是我们发送的SQL呢? </p>
+<p>这个答案是否定的, 一条SQL 语句是可以有很多种执行方式的,最终返回相同的结果, 他们是等价的,但是如果有那么多的执行方式,这些执行方式最终是怎么得到呢? 最终选择哪一种方式去执行? 根据什么判断标准去选择&gt; </p>
+<p>这个就是MySQL的查询优化器的模块<code>Query Optimizer</code></p>
+<p>查询优化器的目的就是根据解析数生成不同的执行计划(<code>Execution Plan</code>),然后选出一种最优的执行计划,MySQL里面使用的是基于开销(<code>cost</code>)的优化器,那种执行计划开销最小, 就用哪种? </p>
+<p>可以使用这个命令查看查询的开销</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show status like &#39;Last_query_cost&#39;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/server-status-variables.html">https://dev.mysql.com/doc/refman/5.7/en/server-status-variables.html</a></p>
+<h3 id="4-2-优化器可以做什么"><a href="#4-2-优化器可以做什么" class="headerlink" title="4.2 优化器可以做什么?"></a>4.2 优化器可以做什么?</h3><p> MySQL的优化器能处理那些优化类型呢? </p>
+<p>举两个简单的例子: </p>
+<ol>
+<li>当我们对多张表进行关联查询的时候,以哪个表的数据作为基准表. </li>
+<li>有多个索引可以使用的时候,选择哪个索引. </li>
+</ol>
+<p>实际上,对于每一种数据库来说,优化器的模块都是必不可少的,他们通过复杂的算法尽可能优化查询效率的目标. </p>
+<p>如果对于优化器的细节感兴趣,可以看看《数据库查询优化器的艺术-原理解析与SQL 性能优化》。</p>
+<p><img src="http://files.luyanan.com//img/20200514154032.png" alt="image-20200514154031805"></p>
+<p>但是优化器也不是万能的,并不是再垃圾的SQL语句都能自动优化,也不是每次都能选择到最优的执行计划,大家在编写SQL的时候还是要注意的. </p>
+<p>如果我们想知道优化器是怎么工作的,它生成了几种执行计划,每种执行计划是<code>cost</code>是多少? 应该怎么做? </p>
+<h3 id="4-3-优化器是怎么得到执行计划的"><a href="#4-3-优化器是怎么得到执行计划的" class="headerlink" title="4.3 优化器是怎么得到执行计划的?"></a>4.3 优化器是怎么得到执行计划的?</h3><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/internals/en/optimizer-tracing.html">https://dev.mysql.com/doc/internals/en/optimizer-tracing.html</a></p>
+<p>首先我们要启动优化器的追踪(默认是关闭的)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES LIKE &#39;optimizer_trace&#39;;</span><br><span class="line">set optimizer_trace&#x3D;&#39;enabled&#x3D;on&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>注意开启这开关是会消耗性能的,因为他要把优化分析的结果写到表里面,所以不要轻易开启,或者查看完之后关闭它(搞改成<code>off</code>).</p>
+<p>注意:参数分为<code>session</code>和<code>global</code>级别. </p>
+<p>接着我们执行一个SQL语句,优化器就会生成执行计划 . </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select t.tcid from teacher t,teacher_contact tc where t.tcid &#x3D; tc.tcid;</span><br></pre></td></tr></table></figure>
+
+<p>这个时候优化器分析的过程已经记录到系统表里面了, 我们可以查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">select * from information_schema.optimizer_trace\G</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>它是一个<code>JSON</code>类型的数据，主要分为三部分, 准备阶段、优化阶段、执行阶段. </p>
+<p><img src="http://files.luyanan.com//img/20200514154854.png" alt="image-20200514154853239"></p>
+<p><code>expanded_query</code>是 优化后的SQL语句. </p>
+<p><code>considered_execution_plans</code> 里面列出了所有的执行计划. </p>
+<p>分析玩了之后记得关闭它. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set optimizer_trace&#x3D;&quot;enabled&#x3D;off&quot;;</span><br><span class="line">SHOW VARIABLES LIKE &#39;optimizer_trace&#39;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-4-优化器得到的结果"><a href="#4-4-优化器得到的结果" class="headerlink" title="4.4 优化器得到的结果"></a>4.4 优化器得到的结果</h3><p>优化完之后,得到一个什么东西呢? </p>
+<p>优化器最终会把解析树变成一个查询执行计划,查询执行计划是一个数据结构. </p>
+<p>当然, 这个执行计划是不是一定是最优的执行计划呢? 不一定, 因为MySQL也有可能覆盖不到所有的执行计划. </p>
+<p>我们怎么查看MySQL的执行计划呢? 比如多张表关联查询,先查询哪张表? 在执行查询的时候可能用到哪些索引? 实际上用到了哪些索引? </p>
+<p>MySQL 提供了一个执行计划的工具,我们在SQL语句前加上<code>EXPLAIN</code>, 就可以看到执行计划的信息. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN select name from user where id&#x3D;1;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意: <code>Explain</code>的结果也不一定是最终执行的方式. </p>
+</blockquote>
+<h2 id="5-存储引擎"><a href="#5-存储引擎" class="headerlink" title="5 存储引擎"></a>5 存储引擎</h2><p>得到执行计划后,SQL语句是不是就可以执行了呢? </p>
+<p>问题又来了: </p>
+<ol>
+<li>从逻辑的角度来说, 我们的数据是放到哪里? 或者说放到一个什么样的结构里面呢? </li>
+<li>执行计划在哪里执行? 是谁去执行? </li>
+</ol>
+<h3 id="5-1-存储引擎基本介绍"><a href="#5-1-存储引擎基本介绍" class="headerlink" title="5.1 存储引擎基本介绍"></a>5.1 存储引擎基本介绍</h3><p>我们先回答第一个问题: 在关系型数据库里面,数据是放到什么结构里? </p>
+<p>放到表<code>Table</code>里面的. 我们可以把表理解为<code>Excel</code> 电子表格的形式,所以我们的表在存储数据的同时,还要组织数据的存储结构,这个存储结构就是由我们的存储引擎决定的,所以我们也可以把存储引擎叫做表类型. </p>
+<p>在MySQL里面,支持多种存储引擎,他们是可以相互替换的,所以叫做插件式的存储引擎,为什么要搞这么多的存储引擎呢? 一种还不够用吗? </p>
+<h3 id="5-2-查看存储引擎"><a href="#5-2-查看存储引擎" class="headerlink" title="5.2 查看存储引擎"></a>5.2 查看存储引擎</h3><p>比如我们数据库里面已经存在的表,我们怎么查看他们的存储引擎呢?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show table status from &#96;库名&#96;;</span><br></pre></td></tr></table></figure>
+
+<p>或者通过<code>DDL</code> 建表语句查看</p>
+<p>在MySQL里面, 我们创建的每一张表都可以指定它的存储引擎,而不是一个数据库只能使用一个存储引擎. 存储引擎的使用是以表为单位的,而且,创建表之后还可以修改存储引擎. </p>
+<p>我们说一张表使用存储引擎决定我们存储数据的结构,那在服务器上他们是怎么储存的呢? 我们先要找到数据库存放数据的路径. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show variables like &#39;datadir&#39;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>默认情况下，每个数据库都有自己的一个文件夹, </p>
+<p>任何一个存储引擎都有一个<code>frm</code> 文件, 这个是表结构定义文件.,</p>
+<p><img src="http://files.luyanan.com//img/20200514161009.png" alt="image-20200514161008126"></p>
+<p>不同的存储引擎存储数据的方式是不一样的,产生的文件也是不一样的,<code>innodb</code>是一个,<code>memory</code>没有,<code>myisam</code>是两个. </p>
+<p>这些存储引擎是差别在哪里呢? </p>
+<h3 id="5-3-存储引擎比较"><a href="#5-3-存储引擎比较" class="headerlink" title="5.3 存储引擎比较"></a>5.3 存储引擎比较</h3><p>常见的存储引擎: </p>
+<p><code>MyISAM</code> 和<code>Innodb</code>是我们用的最多的两个存储引擎,在<code>MySQL5.5</code> 版本之前,默认的存储引擎是<code>MyISAM</code>,它是MySQL自带的,我们创建表的时候不指定存储引擎,它就会使用<code>MyISAM</code>作为存储引擎. </p>
+<p><code>MyISAM</code>的前身是 <code>ISAM</code>（<code>Indexed Sequential Access Method</code>: 利用索引, 顺序读取数据的方法).</p>
+<p>5.5 版本之后默认的存储引擎就改成了<code>InnoDB</code>,它是第三方公司为MySQL开发的,为什么要改呢? 最主要的原因是<code>InnoDB</code> 支持事务, 支持行级别的锁,对于业务一致性要求高的场景来说更适合. </p>
+<p>这个里面又有 <code>Oracle</code> 和 <code>MySQL</code> 公司的一段恩怨情仇。 <code>InnoDB</code> 本来是 <code>InnobaseOy</code> 公司开发的，它和 <code>MySQL AB</code> 公司合作开源了 <code>InnoDB</code> 的代码。但是没想到 <code>MySQL</code> 的竞争对手 <code>Oracle</code> 把 <code>InnobaseOy</code> 收购了。 后来 08 年 <code>Sun</code> 公司（开发 Java 语言的 <code>Sun</code>）收购了 <code>MySQL AB</code>，09 年 <code>Sun</code> 公司 又被 <code>Oracle</code> 收购了，所以 <code>MySQL</code>，<code>InnoDB</code> 又是一家了。有人觉得 <code>MySQL</code> 越来越像 <code>Oracle</code>，其实也是这个原因。</p>
+<p>那么除了这两个我们最熟悉的存储引擎,数据库还支持其他哪些常用的存储引擎呢? </p>
+<p><strong>数据库支持的存储引擎?</strong></p>
+<p>我们可以用这个命令查看数据库对存储引擎的支持情况. </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show engines ;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="http://files.luyanan.com//img/20200514162319.png" alt="image-20200514162317843"></p>
+<p>其中有存储引擎的描述和对事物、<code>XA</code>协议和<code>Savepoints</code>的支持. </p>
+<ul>
+<li><code>XA</code> 协议用来实现分布式事务(分为本地资源管理器、事务管理器)</li>
+<li><code>Savepoints</code> 用来实现子事务(嵌套事务), 创建了一个<code>Savepoints</code>之后,事务就可以回滚到这个点, 不会影响到创建<code>Savepoints</code>之前的操作. </li>
+</ul>
+<p>这些数据库支持的存储引擎,分别有哪些特性? </p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/storage-engines.html">https://dev.mysql.com/doc/refman/5.7/en/storage-engines.html</a></p>
+<h5 id="MyISAM（3-个文件）"><a href="#MyISAM（3-个文件）" class="headerlink" title="MyISAM（3 个文件）"></a><strong>MyISAM（3 个文件）</strong></h5><blockquote>
+<p>These tables have a small footprint. Table-level locking limits the performance in read/write workloads, so it is often used in read-only or read-mostly workloads in Web and data warehousing configurations</p>
+</blockquote>
+<p>应用范围比较小,表级别锁定限制了读/写的性能, 因此在web和数据仓库配置中,它通常只用于只读或者以读为主的工作. </p>
+<p><strong>特点:</strong></p>
+<ul>
+<li><p>支持表级别的锁(插入/更新会锁表), 不支持事务. </p>
+</li>
+<li><p>拥有较高的插入(<code>insert</code>)和查询(<code>select</code>)的速度. </p>
+</li>
+<li><p>存储了表的行数(<code>count</code>的速度更快)</p>
+<p> (怎么向数据库快速插入100W条数据呢? 我们可以先用<code>MyISAM</code>插入数据, 然后修改存储引擎为<code>InnoDB</code>的操作)</p>
+</li>
+<li><p><strong>适合:</strong> 只读之类的数据分析项目. </p>
+</li>
+</ul>
+<h5 id="InnoDB（2-个文件）"><a href="#InnoDB（2-个文件）" class="headerlink" title="InnoDB（2 个文件）"></a><code>InnoDB（2 个文件）</code></h5><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-storage-engine.html">https://dev.mysql.com/doc/refman/5.7/en/innodb-storage-engine.html</a></p>
+<blockquote>
+<p>The default storage engine in MySQL 5.7. InnoDB is a transaction-safe (ACID compliant) storage engine for MySQL that has commit, rollback, and crash-recovery capabilities to protect user data. InnoDB row-level locking (without escalation to coarser granularity locks) and Oracle-style consistent nonlocking reads increase multi-user concurrency and performance. InnoDB stores user data in clustered indexes to reduce I/O for common queries based on primary keys. To maintain data integrity, InnoDB also supports FOREIGN KEY referential-integrity constraints.</p>
+</blockquote>
+<p><code>mysql5.7</code> 中默认的存储引擎, <code>InnoDB</code>是一个事务安全(与<code>ACID</code>兼容)的MySQL存储引擎,它具有提交、回滚和崩溃恢复的功能来保护用户数据.<code>InnoDB</code> 行级锁(不升级为更粗粒度的锁)和<code>Oracle</code>风格的一致非锁读提高了多用户并发性和性能. <code>innoDB</code> 将用户数据存储在聚集索引中,以减少基于主键的常见查询的<code>I/O</code>, 为了保持数据完整性, <code>InnoDB</code>还支持外键引用完整性约束. </p>
+<p><strong>特点:</strong></p>
+<ul>
+<li><p> 支持事务,支持外键,因此数据的完整性、一致性更高, </p>
+</li>
+<li><p>支持行界别的锁和表级别的锁. </p>
+</li>
+<li><p>支持读写并发,写不阻塞读(MVCC)，</p>
+</li>
+<li><p>特殊的索引存放方式,可以减少IO,提升查询效率. </p>
+</li>
+<li><p><strong>适合:</strong> 经常更新的表,存在并发读写或者有事务处理的业务系统. </p>
+</li>
+</ul>
+<h5 id="Memory（1-个文件）"><a href="#Memory（1-个文件）" class="headerlink" title="Memory（1 个文件）"></a><code>Memory（1 个文件）</code></h5><blockquote>
+<p>Stores all data in RAM, for fast access in environments that require quick lookups of non-critical data. This engine was formerly known as the HEAP engine. Its use cases are decreasing; InnoDB with its buffer pool memory area provides a general-purpose and durable way to keep most or all data in memory, and NDBCLUSTER provides fast key-value lookups for huge distributed data sets</p>
+</blockquote>
+<p>将所有数据都存储在<code>RAM</code>中,以便在需要快速查找非关键数据的环境中快速访问. 这个引擎以前被称为堆引擎. 其使用案例正在减少,<code>InnoDB</code> 及其缓冲池内存区域提供了一种通用、持久的方法来将大部分或所有的数据都保存在内存中,而<code>ndbcluster</code> 为大型分布式数据集提供了快速的键值查找. </p>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>把数据放在内存中,读写速度很快,但是数据库重启或者崩溃, 数据会全部消失, 只适合做临时表. </li>
+<li>将表中的数据存储到内存中. </li>
+</ul>
+<h5 id="CSV（3-个文件）"><a href="#CSV（3-个文件）" class="headerlink" title="CSV（3 个文件）"></a><code>CSV（3 个文件）</code></h5><blockquote>
+<p>Its tables are really text files with comma-separated values. CSV tables let you import or dump data in CSV format, to exchange data with scripts and applications that read and write that same format. Because CSV tables are not indexed, you typically keep the data in InnoDB tables during normal operation, and only use CSV tables during the import or export stage.</p>
+</blockquote>
+<p>它的表实际上是带有逗号分隔的文本文件,<code>csv</code>表允许以<code>csv</code> 格式导入或者转储数据, 以便以读写相同格式的脚本和应用程序交换数据. 因为<code>csv</code>表没有索引,所以通常在正常操作期间将数据保存在<code>innoDB</code>表中,并且只在导入或者导出阶段使用<code>csv</code>., </p>
+<p><strong>特点:</strong></p>
+<ul>
+<li>不允许空行,不支持索引</li>
+<li>格式通用,可以直接编辑,适合在不同数据库之间导入导出. </li>
+</ul>
+<h5 id="Archive（2-个文件）"><a href="#Archive（2-个文件）" class="headerlink" title="Archive（2 个文件）"></a><code>Archive（2 个文件）</code></h5><blockquote>
+<p>These compact, unindexed tables are intended for storing and retrieving large amounts of seldom-referenced historical, archived, or security audit information.</p>
+</blockquote>
+<p>这些紧凑的未索引的表用于存储和检索大量很少引用的历史、存档和安全审计信息,</p>
+<p>特点： 不支持索引, 不支持<code>update delete</code></p>
+<p>这是MySQL里面常见的一些存储引擎,我们看到了, 不同的存储疫情提供的特性不一样,他们有不同的存储机制、索引方式、锁定水平等功能. </p>
+<p>我们在不同的业务场景中对数据操作的要求不同,就可以选择不同的存储引擎来满足我们的需求, 这个就是MySQL支持那么多存储引擎的原因. </p>
+<h3 id="5-4-如何选择存储引擎"><a href="#5-4-如何选择存储引擎" class="headerlink" title="5.4 如何选择存储引擎?"></a>5.4 如何选择存储引擎?</h3><p>如果对数据一致性要求比较高,需要事务支持,可以选择<code>InnoDB</code>. </p>
+<p>如果数据查询多更新少,对查询性能要求比较高,可以选择<code>MyIASM</code></p>
+<p>如果需要一个用于查询的临时表,可以选择<code>Memory</code>.</p>
+<p>如果所有的存储引擎都不能满足你的要求,并且技术能力足够,可以根据官网内部手册用C语言开发一个存储引擎. </p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/internals/en/custom-engine.html">https://dev.mysql.com/doc/internals/en/custom-engine.html</a></p>
+<h2 id="6-执行引擎-Query-Execution-Engine-返回结果"><a href="#6-执行引擎-Query-Execution-Engine-返回结果" class="headerlink" title="6 执行引擎(Query Execution Engine),返回结果."></a>6 执行引擎(<code>Query Execution Engine</code>),返回结果.</h2><p>OK,存储引擎分析完了,它是我们存储数据的形式,继续第二个问题,是谁使用执行计划去操作执行引擎呢? </p>
+<p>这就是我们的执行引擎, 它利用存储引擎提供的相应的API 来完成操作. </p>
+<p>为什么我们修改了表的存储引擎,操作方式不需要做任何改变? 因为不同功能的存储引擎实现的API是相同的。 </p>
+<p>最后将数据返回给客户端,即使没有结果也是要返回的. </p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/redis%E4%B9%8Bredis%E4%B8%BA%E4%BB%80%E4%B9%88%E9%82%A3%E4%B9%88%E5%BF%AB(11)/" rel="prev" title="redis之redis为什么那么快(11)">
+      <i class="fa fa-chevron-left"></i> redis之redis为什么那么快(11)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/MySQL%E6%9E%B6%E6%9E%84(2)/" rel="next" title="MySQL架构(2)">
+      MySQL架构(2) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">MySQL的执行流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E9%80%9A%E8%AE%AF%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.1.</span> <span class="nav-text">1 通讯协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E9%80%9A%E8%AE%AF%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 通讯协议</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%9A%E8%AE%AF%E7%B1%BB%E5%9E%8B-%E5%90%8C%E6%AD%A5%E6%88%96%E8%80%85%E5%BC%82%E6%AD%A5"><span class="nav-number">1.1.1.0.1.</span> <span class="nav-text">通讯类型:同步或者异步</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E6%96%B9%E5%BC%8F-%E9%95%BF%E8%BF%9E%E6%8E%A5%E6%88%96%E8%80%85%E7%9F%AD%E8%BF%9E%E6%8E%A5"><span class="nav-number">1.1.1.0.2.</span> <span class="nav-text">连接方式:长连接或者短连接</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E9%80%9A%E8%AE%AF%E6%96%B9%E5%BC%8F"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 通讯方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98"><span class="nav-number">1.2.</span> <span class="nav-text">2 查询缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90%E5%92%8C%E9%A2%84%E5%A4%84%E7%90%86-Parser-amp-Preprocessor"><span class="nav-number">1.3.</span> <span class="nav-text">3 语法解析和预处理(Parser &amp; Preprocessor)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E8%AF%8D%E6%B3%95%E8%A7%A3%E6%9E%90"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 词法解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 语法解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E9%A2%84%E5%A4%84%E7%90%86%E5%99%A8"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3 预处理器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96-Query-Optimizer-%E5%92%8C%E6%9F%A5%E8%AF%A2%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92"><span class="nav-number">1.4.</span> <span class="nav-text">4 查询优化(Query Optimizer)和查询执行计划</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E4%BB%80%E4%B9%88%E6%98%AF%E4%BC%98%E5%8C%96%E5%99%A8"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 什么是优化器?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E4%BC%98%E5%8C%96%E5%99%A8%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 优化器可以做什么?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E4%BC%98%E5%8C%96%E5%99%A8%E6%98%AF%E6%80%8E%E4%B9%88%E5%BE%97%E5%88%B0%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E7%9A%84"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 优化器是怎么得到执行计划的?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-%E4%BC%98%E5%8C%96%E5%99%A8%E5%BE%97%E5%88%B0%E7%9A%84%E7%BB%93%E6%9E%9C"><span class="nav-number">1.4.4.</span> <span class="nav-text">4.4 优化器得到的结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.5.</span> <span class="nav-text">5 存储引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1 存储引擎基本介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E6%9F%A5%E7%9C%8B%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.5.2.</span> <span class="nav-text">5.2 查看存储引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E6%AF%94%E8%BE%83"><span class="nav-number">1.5.3.</span> <span class="nav-text">5.3 存储引擎比较</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#MyISAM%EF%BC%883-%E4%B8%AA%E6%96%87%E4%BB%B6%EF%BC%89"><span class="nav-number">1.5.3.0.1.</span> <span class="nav-text">MyISAM（3 个文件）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#InnoDB%EF%BC%882-%E4%B8%AA%E6%96%87%E4%BB%B6%EF%BC%89"><span class="nav-number">1.5.3.0.2.</span> <span class="nav-text">InnoDB（2 个文件）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Memory%EF%BC%881-%E4%B8%AA%E6%96%87%E4%BB%B6%EF%BC%89"><span class="nav-number">1.5.3.0.3.</span> <span class="nav-text">Memory（1 个文件）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#CSV%EF%BC%883-%E4%B8%AA%E6%96%87%E4%BB%B6%EF%BC%89"><span class="nav-number">1.5.3.0.4.</span> <span class="nav-text">CSV（3 个文件）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Archive%EF%BC%882-%E4%B8%AA%E6%96%87%E4%BB%B6%EF%BC%89"><span class="nav-number">1.5.3.0.5.</span> <span class="nav-text">Archive（2 个文件）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.5.4.</span> <span class="nav-text">5.4 如何选择存储引擎?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E6%89%A7%E8%A1%8C%E5%BC%95%E6%93%8E-Query-Execution-Engine-%E8%BF%94%E5%9B%9E%E7%BB%93%E6%9E%9C"><span class="nav-number">1.6.</span> <span class="nav-text">6 执行引擎(Query Execution Engine),返回结果.</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">229</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="redis基本类型之hash 1存储类型包含键值对的无序散列表, value只能是字符串, 不能嵌套其他类型.  同样是存储字符串, Hash与String有什么区别呢?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis基本类型之hash(3)">
+<meta property="og:url" content="http://luyanan.com/redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bhash(3)/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="redis基本类型之hash 1存储类型包含键值对的无序散列表, value只能是字符串, 不能嵌套其他类型.  同样是存储字符串, Hash与String有什么区别呢?">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com//img/20200327201704.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200327204826.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200327210901.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200327215020.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20200328135042.png">
+<meta property="article:published_time" content="2021-03-12T02:15:06.329Z">
+<meta property="article:modified_time" content="2021-03-12T02:15:06.329Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Python, Rust, C++, Go, 爬虫, 深度学习, 服务研发, 对象存储">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com//img/20200327201704.png">
+
+<link rel="canonical" href="http://luyanan.com/redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bhash(3)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>redis基本类型之hash(3) | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bhash(3)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          redis基本类型之hash(3)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="redis基本类型之hash"><a href="#redis基本类型之hash" class="headerlink" title="redis基本类型之hash"></a>redis基本类型之hash</h1><p><img src="http://files.luyanan.com//img/20200327201704.png" alt="image-20200327201703297"></p>
+<h2 id="1存储类型"><a href="#1存储类型" class="headerlink" title="1存储类型"></a>1存储类型</h2><p>包含键值对的无序散列表, value只能是字符串, 不能嵌套其他类型. </p>
+<p>同样是存储字符串, Hash与String有什么区别呢? </p>
+<ol>
+<li>把所有相关的值都聚集到一个key中, 节省内存空间. </li>
+<li>只使用一个key, 减少key冲突. </li>
+<li>当需要批量获取值的时候, 只需要使用一个命令,减少内存/IO/CPU 的消耗. </li>
+</ol>
+<p>**Hash不适用的场景: **</p>
+<ol>
+<li>Field不能单独设置过期时间</li>
+<li>没有bit操作</li>
+<li>需要考虑数据量分布的问题(value值非常大的时候, 无法分不到多个节点)</li>
+</ol>
+<h2 id="2操作命令"><a href="#2操作命令" class="headerlink" title="2操作命令"></a>2操作命令</h2><table>
+<thead>
+<tr>
+<th>hset key field value</th>
+<th>设置值, 如果key不存在, 则新建, 如果field存在, 则覆盖</th>
+<th>如果field不存在, 返回1, 如果存在, 覆盖并返回0</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>hget key field</td>
+<td>根据指定key 和field 获取值</td>
+<td>如果field不存在返回null</td>
+</tr>
+<tr>
+<td>hmset key field value [field value„]</td>
+<td>将多个 field value设置到哈希表的key中</td>
+<td>成功返回”ok”,否则异常</td>
+</tr>
+<tr>
+<td>hmget key field [field„]</td>
+<td>获取指定key中多个 field 的值</td>
+<td>返回指定的值</td>
+</tr>
+<tr>
+<td>hgetall key</td>
+<td>根据key 获取所有的field和value</td>
+<td>返回列表</td>
+</tr>
+<tr>
+<td>hdel key field [field„]</td>
+<td>根据key和field列表删除指定的值</td>
+<td>返回删除的数量</td>
+</tr>
+<tr>
+<td>hkeys key</td>
+<td>查看指定key 的所有field</td>
+<td>返回列表</td>
+</tr>
+<tr>
+<td>hvals key</td>
+<td>查看指定key 的所有value值</td>
+<td>返回value值的列表</td>
+</tr>
+<tr>
+<td>hexists key field</td>
+<td>查看指定key 的指定field是否存在</td>
+<td>存在返回1, 不存在返回0</td>
+</tr>
+</tbody></table>
+<h2 id="3存储-实现-原理"><a href="#3存储-实现-原理" class="headerlink" title="3存储(实现)原理"></a>3存储(实现)原理</h2><p>Redis的Hash本身也是一个KV的结构, 类似于java中的HashMap    </p>
+<p>外层的哈希(Redis KV 的实现), 只用到了<code>hashtable</code>.当存储hash数据类型的时候, 我们把他叫做内层的哈希, 内层的哈希有两种数据结构的实现. </p>
+<ul>
+<li>ziplist  <code>OBJ_ENCODING_ZIPLIST</code> 压缩列表 </li>
+<li>hashtable  <code>OBJ_ENCODING_HT</code> 哈希表</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; hset h2 f aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">127.0.0.1:6379&gt; hset h3 f aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">127.0.0.1:6379&gt; object encoding h2</span><br><span class="line"><span class="string">&quot;ziplist&quot;</span> 127.0.0.1:6379&gt; object encoding h3</span><br><span class="line"><span class="string">&quot;hashtable&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="ziplist-压缩列表"><a href="#ziplist-压缩列表" class="headerlink" title="ziplist 压缩列表"></a>ziplist 压缩列表</h3><p>ziplist 压缩列表是什么? </p>
+<blockquote>
+<p> /* ziplist.c 源码头部注释 */ The ziplist is a specially encoded dually linked list that is designed to be very memory efficient. It stores both strings and integer values, where integers are encoded as actual integers instead of a series of characters. It allows push and pop operations on either side of the list in O(1) time. However, because every operation requires a reallocation of the memory used by the ziplist, the actual complexity is related to the amount of memory used by the ziplist.</p>
+</blockquote>
+<p>ziplist 是一个经过特殊编码的双向链表, 他不存储指向上一个链表节点和指向下一个链表节点的指针,而是存储上一个链表节点的长度和当前节点的长度, 通过牺牲部分的读写性能, 来换取高效的内存空间利用率, 是一种时间换空间的思想. 只用在字段个数少, 字段值小的场景中. </p>
+<h3 id="ziplist的内部结构"><a href="#ziplist的内部结构" class="headerlink" title="ziplist的内部结构?"></a>ziplist的内部结构?</h3><p>ziplist.c 源码第 16 </p>
+<blockquote>
+<ul>
+<li><zlbytes> <zltail> <zllen> <entry> <entry> … <entry> <zlend></li>
+</ul>
+</blockquote>
+<p><img src="http://files.luyanan.com//img/20200327204826.png" alt="image-20200327204806544"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zlentry</span> &#123;</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> prevrawlensize; <span class="comment">/* 上一个链表节点占用的长度 */</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> prevrawlen; <span class="comment">/* 存储上一个链表节点的长度数值所需要的字节数 */</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> lensize; <span class="comment">/* 存储当前链表节点长度数值所需要的字节数 */</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> len; <span class="comment">/* 当前链表节点占用的长度 */</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> headersize; <span class="comment">/* 当前链表节点的头部大小（prevrawlensize + lensize），即非数据域的大小 */</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">char</span> encoding; <span class="comment">/* 编码方式 */</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">char</span> *p; <span class="comment">/* 压缩链表以字符串的形式保存，该指针指向当前节点起始位置 */</span></span><br><span class="line">&#125; zlentry;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>编码 encoding（ziplist.c 源码第 204 行）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ZIP_STR_06B (0 &lt;&lt; 6) <span class="comment">//长度小于等于 63 字节</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ZIP_STR_14B (1 &lt;&lt; 6) <span class="comment">//长度小于等于 16383 字节</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ZIP_STR_32B (2 &lt;&lt; 6) <span class="comment">//长度小于等于 4294967295 字节</span></span></span><br></pre></td></tr></table></figure>
+
+<p><img src="http://files.luyanan.com//img/20200327210901.png" alt="image-20200327210859431"></p>
+<h3 id="问题-什么实时使用-ziplist存储"><a href="#问题-什么实时使用-ziplist存储" class="headerlink" title="问题: 什么实时使用 ziplist存储"></a>问题: 什么实时使用 ziplist存储</h3><p>当hash 的对象同时满足以下两个条件的时候, 使用<code>ziplist</code> 编码</p>
+<ol>
+<li> 所有的键值对的键和值的字符串长度都小于等于64byte(一个英文字母一个字节)</li>
+<li> 哈希对象中保存的键值对数量小于512个</li>
+</ol>
+<blockquote>
+<p>/* src/redis.conf 配置 */</p>
+</blockquote>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">hash-max-ziplist-value</span> <span class="string">64 // ziplist 中最大能存放的值长度</span></span><br><span class="line"><span class="meta">hash-max-ziplist-entries</span> <span class="string">512 // ziplist 中最多能存放的 entry 节点数量</span></span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 源码位置：t_hash.c ，当达字段个数超过阈值，使用 HT 作为编码 */</span></span><br><span class="line"><span class="keyword">if</span> (hashTypeLength(o) &gt; server.hash_max_ziplist_entries)</span><br><span class="line">hashTypeConvert(o, OBJ_ENCODING_HT);</span><br><span class="line"><span class="comment">/*源码位置： t_hash.c，当字段值长度过大，转为 HT */</span></span><br><span class="line"><span class="keyword">for</span> (i = start; i &lt;= end; i++) &#123;</span><br><span class="line"><span class="keyword">if</span> (sdsEncodedObject(argv[i]) &amp;&amp;</span><br><span class="line">sdslen(argv[i]-&gt;ptr) &gt; server.hash_max_ziplist_value)</span><br><span class="line">&#123;</span><br><span class="line">hashTypeConvert(o, OBJ_ENCODING_HT);</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>   一个哈希长度超过配置的阈值(键和值的长度有&gt;64byte,键值对小于512个)时, 会转换成 哈希表(<code>hashtable</code>)</p>
+<h3 id="hahstable-dict"><a href="#hahstable-dict" class="headerlink" title="hahstable(dict)"></a>hahstable(dict)</h3><p>再Redis中, <code>hashtabl</code> 被称之为字典(<code>dictionary</code>),他是一个数组+链表的结构. </p>
+<p>源码位置：dict.h</p>
+<p>我们知道, Redis 的KV结构是通过一个<code>dictEntry</code> 来实现的. </p>
+<p>Redis 又对<code>dictEntry</code> 进行了多层封装.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> &#123;</span></span><br><span class="line"> <span class="keyword">void</span> *key; <span class="comment">/* key 关键字定义 */</span></span><br><span class="line">  <span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">    <span class="keyword">void</span> *val; <span class="keyword">uint64_t</span> u64; <span class="comment">/* value 定义 */</span></span><br><span class="line">    <span class="keyword">int64_t</span> s64; <span class="keyword">double</span> d;</span><br><span class="line">&#125; v;</span><br><span class="line"> <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> *<span class="title">next</span>;</span> <span class="comment">/* 指向下一个键值对节点 */</span></span><br><span class="line">&#125; dictEntry;</span><br></pre></td></tr></table></figure>
+
+<p><code>dictEntry</code>  放到了<code>dictht</code>(hashtable里面)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* This is our hash table structure. Every dictionary has two of this as we</span></span><br><span class="line"><span class="comment">* implement incremental rehashing, for the old to the new table. */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictht</span> &#123;</span></span><br><span class="line"> dictEntry **table; <span class="comment">/* 哈希表数组 */</span></span><br><span class="line"> <span class="keyword">unsigned</span> <span class="keyword">long</span> size; <span class="comment">/* 哈希表大小 */</span></span><br><span class="line"> <span class="keyword">unsigned</span> <span class="keyword">long</span> sizemask; <span class="comment">/* 掩码大小，用于计算索引值。总是等于 size-1 */</span></span><br><span class="line"> <span class="keyword">unsigned</span> <span class="keyword">long</span> used; <span class="comment">/* 已有节点数 */</span></span><br><span class="line">&#125; dictht;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>ht</code> 放到了<code>dict</code> 里面. </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line"> dictType *type; <span class="comment">/* 字典类型 */</span></span><br><span class="line"> <span class="keyword">void</span> *privdata; <span class="comment">/* 私有数据 */</span></span><br><span class="line"> dictht ht[<span class="number">2</span>]; <span class="comment">/* 一个字典有两个哈希表 */</span></span><br><span class="line"> <span class="keyword">long</span> rehashidx; <span class="comment">/* rehash 索引 */</span></span><br><span class="line"> <span class="keyword">unsigned</span> <span class="keyword">long</span> iterators; <span class="comment">/* 当前正在使用的迭代器数量 */</span></span><br><span class="line">&#125; dict;</span><br></pre></td></tr></table></figure>
+
+<p>从最底层到最高层: <code>dictEntry</code> -&gt; <code>dictht</code> -&gt; <code>dict</code> -&gt;  <code>OBJ_ENCODING_HT</code></p>
+<p>总结: 哈希的存储结构 </p>
+<p><img src="http://files.luyanan.com//img/20200327215020.png" alt="image-20200327215019310"></p>
+<p>注意: <code>dictht</code>后面是NULL 说明第二个<code>ht</code> 还没有用到. <code>dictEntry*</code> 后面是NULL 说明还没有hash到这个位置, <code>dictEntry</code> 后面是NULL 说明没有发生 hash冲突. </p>
+<h3 id="为什么要定义两个哈希表呢-ht-2"><a href="#为什么要定义两个哈希表呢-ht-2" class="headerlink" title="为什么要定义两个哈希表呢? ht[2]"></a>为什么要定义两个哈希表呢? ht[2]</h3><p>redis的hash默认使用的是<code>ht[0]</code>,<code>ht[1]</code> 是不会初始化和分配空间的. </p>
+<p>哈希表<code>dictht</code> 是用链地址法来解决碰撞问题的. 在这种清空下, 哈希表之间的性能取决于他的大小(size属性), 和他所保存的节点的数量(used属性)之间的比率:</p>
+<ul>
+<li>比率在1:1 时(一个哈希ht只存储一个节点<code>entry</code>),哈希表的性能最好</li>
+<li>如果节点数量比哈希表的大小要大很多的时候(这个比例用<code>ratio</code> 表示, 5表示平均一个<code>ht</code> 存储5个<code>Entry</code> ),那么哈希表就会退化为多个链表, 哈希表本身的性能优势就不再存在. </li>
+</ul>
+<p>在这种情况下, 需要扩容, Redis里面的这种操作就叫做<code>rehash</code>. </p>
+<h4 id="rehash的步骤"><a href="#rehash的步骤" class="headerlink" title="rehash的步骤"></a><code>rehash</code>的步骤</h4><ol>
+<li><p>为字符<code>ht[1]</code> 哈希表分配空间, 这个哈希表的空间大小取决于要执行的操作, 以及<code>ht[0]</code> 当前包含的键值对的数量</p>
+<p> 扩展: <code>ht[1]</code> 的大小为第一个大于等于<code>ht[0].used*2</code></p>
+</li>
+<li><p> 将所有的<code>ht[0]</code> 上的节点<code>rehash</code>到<code>ht[1]</code> 上, 重新计算hash 值和索引, 然后放入指定的位置. </p>
+</li>
+<li><p>将<code>ht[0]</code> 全部迁移到<code>ht[1]</code>之后, 释放<code>ht[0]</code> 的空间, 将<code>ht[1]</code> 设置为 <code>ht[0]</code> 表, 并创建新的 <code>ht[1]</code>,  为下次<code>rehash</code> 做准备 . </p>
+</li>
+</ol>
+<h3 id="什么时候触发扩容"><a href="#什么时候触发扩容" class="headerlink" title="什么时候触发扩容"></a>什么时候触发扩容</h3><p>负载因子(（源码位置：dict.c):</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> dict_can_resize = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">unsigned</span> <span class="keyword">int</span> dict_force_resize_ratio = <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>ratio = used / size</code>:  已经使用的节点于字节大小的比例</p>
+<p><code>dict_can_resize</code>为1并且<code>dict_force_resize_ratio</code> 已使用字节树和字典大小之间的比率超过<code>1:5</code>, 触发扩容. </p>
+<p><strong>扩容判断</strong><code>_dictExpandIfNeeded</code>（源码 dict.c）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (d-&gt;ht[<span class="number">0</span>].used &gt;= d-&gt;ht[<span class="number">0</span>].size &amp;&amp;</span><br><span class="line">(dict_can_resize ||</span><br><span class="line"> d-&gt;ht[<span class="number">0</span>].used/d-&gt;ht[<span class="number">0</span>].size &gt; dict_force_resize_ratio))</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">return</span> dictExpand(d, d-&gt;ht[<span class="number">0</span>].used*<span class="number">2</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> DICT_OK;</span><br></pre></td></tr></table></figure>
+
+<p><strong>扩容方法</strong>  <code>dictExpand</code>（源码 dict.c）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Expand or create the hash table */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dictExpand</span><span class="params">(dict *d, <span class="keyword">unsigned</span> <span class="keyword">long</span> size)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/* the size is invalid if it is smaller than the number of</span></span><br><span class="line"><span class="comment">     * elements already inside the hash table */</span></span><br><span class="line">    <span class="keyword">if</span> (dictIsRehashing(d) || d-&gt;ht[<span class="number">0</span>].used &gt; size)</span><br><span class="line">        <span class="keyword">return</span> DICT_ERR;</span><br><span class="line"></span><br><span class="line">    dictht n; <span class="comment">/* the new hash table */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> realsize = _dictNextPower(size);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Rehashing to the same table size is not useful. */</span></span><br><span class="line">    <span class="keyword">if</span> (realsize == d-&gt;ht[<span class="number">0</span>].size) <span class="keyword">return</span> DICT_ERR;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Allocate the new hash table and initialize all pointers to NULL */</span></span><br><span class="line">    n.size = realsize;</span><br><span class="line">    n.sizemask = realsize<span class="number">-1</span>;</span><br><span class="line">    n.table = zcalloc(realsize*<span class="keyword">sizeof</span>(dictEntry*));</span><br><span class="line">    n.used = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Is this the first initialization? If so it&#x27;s not really a rehashing</span></span><br><span class="line"><span class="comment">     * we just set the first hash table so that it can accept keys. */</span></span><br><span class="line">    <span class="keyword">if</span> (d-&gt;ht[<span class="number">0</span>].table == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        d-&gt;ht[<span class="number">0</span>] = n;</span><br><span class="line">        <span class="keyword">return</span> DICT_OK;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Prepare a second hash table for incremental rehashing */</span></span><br><span class="line">    d-&gt;ht[<span class="number">1</span>] = n;</span><br><span class="line">    d-&gt;rehashidx = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> DICT_OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>缩容</strong>:  源码: server.c</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">htNeedsResize</span><span class="params">(dict *dict)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> size, used;</span><br><span class="line"></span><br><span class="line">    size = dictSlots(dict);</span><br><span class="line">    used = dictSize(dict);</span><br><span class="line">    <span class="keyword">return</span> (size &gt; DICT_HT_INITIAL_SIZE &amp;&amp;</span><br><span class="line">            (used*<span class="number">100</span>/size &lt; HASHTABLE_MIN_FILL));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="4应用场景"><a href="#4应用场景" class="headerlink" title="4应用场景"></a>4应用场景</h2><h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><p>String能做的事情， hash都能做。 </p>
+<h3 id="存储对象类型的数据"><a href="#存储对象类型的数据" class="headerlink" title="存储对象类型的数据"></a>存储对象类型的数据</h3><p>比如对象或者一张表的数据, 比<code>String</code> 节省了更多的key空间, 也更加便于集中管理. </p>
+<h3 id="购物车"><a href="#购物车" class="headerlink" title="购物车"></a>购物车</h3><p><img src="http://files.luyanan.com//img/20200328135042.png" alt="image-20200328135024356"></p>
+<p>key：用户 id；field：商品 id；value：商品数量。</p>
+<p> +1：hincr。-1：hdecr。删除：hdel。全选：hgetall。商品数：hlen。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bset(5)/" rel="prev" title="redis基本类型之set(5)">
+      <i class="fa fa-chevron-left"></i> redis基本类型之set(5)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8BString(2)/" rel="next" title="redis基本类型之String(2)">
+      redis基本类型之String(2) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8Bhash"><span class="nav-number">1.</span> <span class="nav-text">redis基本类型之hash</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E5%AD%98%E5%82%A8%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">1存储类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4"><span class="nav-number">1.2.</span> <span class="nav-text">2操作命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E5%AD%98%E5%82%A8-%E5%AE%9E%E7%8E%B0-%E5%8E%9F%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">3存储(实现)原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ziplist-%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8"><span class="nav-number">1.3.1.</span> <span class="nav-text">ziplist 压缩列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ziplist%E7%9A%84%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.2.</span> <span class="nav-text">ziplist的内部结构?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98-%E4%BB%80%E4%B9%88%E5%AE%9E%E6%97%B6%E4%BD%BF%E7%94%A8-ziplist%E5%AD%98%E5%82%A8"><span class="nav-number">1.3.3.</span> <span class="nav-text">问题: 什么实时使用 ziplist存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hahstable-dict"><span class="nav-number">1.3.4.</span> <span class="nav-text">hahstable(dict)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%AE%9A%E4%B9%89%E4%B8%A4%E4%B8%AA%E5%93%88%E5%B8%8C%E8%A1%A8%E5%91%A2-ht-2"><span class="nav-number">1.3.5.</span> <span class="nav-text">为什么要定义两个哈希表呢? ht[2]</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#rehash%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.5.1.</span> <span class="nav-text">rehash的步骤</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E8%A7%A6%E5%8F%91%E6%89%A9%E5%AE%B9"><span class="nav-number">1.3.6.</span> <span class="nav-text">什么时候触发扩容</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.4.</span> <span class="nav-text">4应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#String"><span class="nav-number">1.4.1.</span> <span class="nav-text">String</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%AF%B9%E8%B1%A1%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="nav-number">1.4.2.</span> <span class="nav-text">存储对象类型的数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%AD%E7%89%A9%E8%BD%A6"><span class="nav-number">1.4.3.</span> <span class="nav-text">购物车</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">229</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>

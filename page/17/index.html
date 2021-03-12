@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/2.redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8BString/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%B6%88%E6%81%AF%E6%8A%95%E9%80%92/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2.redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8BString/" class="post-title-link" itemprop="url">2</a>
+            <a href="/Spring%20RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%B6%88%E6%81%AF%E6%8A%95%E9%80%92/" class="post-title-link" itemprop="url">Spring RabbitMQ可靠性消息投递</a>
         </h2>
 
         <div class="post-meta">
@@ -231,7 +231,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,7 +239,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
                 </span>
             </span>
 
@@ -254,12 +258,23 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Redis-String类型"><a href="#Redis-String类型" class="headerlink" title="Redis String类型"></a>Redis String类型</h1><p>Redis 最基本的数据类型就是String, 为什么叫<code>Binary-safe strings</code>呢? </p>
-<h3 id="1-存储类型"><a href="#1-存储类型" class="headerlink" title="1 存储类型"></a>1 存储类型</h3><p>可以用来存储字符串、整数、浮点数</p>
-<h3 id="2-操作命令"><a href="#2-操作命令" class="headerlink" title="2 操作命令"></a>2 操作命令</h3>
+          <h1 id="Spring-RabbitMQ可靠性消息投递"><a href="#Spring-RabbitMQ可靠性消息投递" class="headerlink" title="Spring RabbitMQ可靠性消息投递"></a>Spring RabbitMQ可靠性消息投递</h1><p>RabbitMQ核心基础概念。</p>
+<ul>
+<li>Server:又称之为Broker，接受客户端的连接，实现AMQP实体服务。</li>
+<li>Connection:连接，应用程序与Broker的网络连接。</li>
+<li>Channel:网络信道，几乎所有的操作都在Channel中进行，Channel是进行消息读写的通道。客户端可以建立多个Channel，每个Channel代表一个会话任务。<br> 如果每一次访问RabbitMQ都建立一个Connection，在消息量大的时候建立TCP Connection的开销将是巨大的，效率也较低。Channel是在connection内部建立的逻辑连接，如果应用程序支持多线程，通常每个thread创建单独的channel进行通讯，AMQP method包含了channel id帮助客户端和message broker识别channel，所以channel之间是完全隔离的。Channel作为轻量级的Connection极大减少了操作系统建立TCP connection的开销。</li>
+<li>Message：消息，服务器和应用程序之间传送的数据，由Message Properties和Body组成。Properties可以对消息进行修饰，比如消息的优先级，延迟等高级特性，Body就是消息体内容。</li>
+<li>Virtual Host:虚拟地址，用于进行逻辑隔离，最上层的消息路由。一个Virtual Host里面可以有若干个Exchange和Queue，同一个Virtual Host里面不能有相同名称的Exchange或者Queue。</li>
+<li>Exchange：交换机，接收消息，根据路由键转发消息到绑定的队列。</li>
+<li>Binding:Exchange和Queue之间的虚拟连接，binding中可以包含routing key。</li>
+<li>Routing key:一个路由规则，虚拟机可以用它来确定如何路由一个特定消息。</li>
+<li>Queue：也可以称之为Message Queue(消息队列)，保存消息并将它们转发到消费者。</li>
+</ul>
+<p>通过下面2张图，我们能大概能明白AMQP协议模型和消息流转过程。在Exchange和Message Queue上面还有Virtual host。记住同一个Virtual Host里面不能有相同名称的ExChange和Message Queue。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4636177-22901bbb566bbcbc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/682/format/webp" alt="img"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2.redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B9%8BString/#more" rel="contents">
+              <a class="btn" href="/Spring%20RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%B6%88%E6%81%AF%E6%8A%95%E9%80%92/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -283,7 +298,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/17.redis%E5%AE%9E%E6%88%98%E4%B9%8B%E9%AB%98%E5%B9%B6%E5%8F%91/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Spring%20RabbitMQ%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -297,7 +312,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/17.redis%E5%AE%9E%E6%88%98%E4%B9%8B%E9%AB%98%E5%B9%B6%E5%8F%91/" class="post-title-link" itemprop="url">17</a>
+            <a href="/Spring%20RabbitMQ%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">Spring RabbitMQ参数配置详解</a>
         </h2>
 
         <div class="post-meta">
@@ -308,7 +323,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -316,7 +331,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
                 </span>
             </span>
 
@@ -331,12 +350,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="redis实战之高并发"><a href="#redis实战之高并发" class="headerlink" title="redis实战之高并发"></a>redis实战之高并发</h1><p>在redis 存储的所有数据中, 有一部分是被频繁访问的. 有两种情况可能会导致热点问题的产生, 一种是用户集中访问的数据, 例如抢购的商品, 明星结婚或者明星出轨的微博. 还有一种问题是在数据进行分片的情况下, 负载不均衡, 超过了单个服务器的承受能力. 热点数据可能引起缓存服务的不可用, 最终造成压力堆积到数据库. </p>
-<p>处于存储和流量优化的角度, 我们必须要找到这些热点数据. </p>
-<h2 id="1-热点数据的发现"><a href="#1-热点数据的发现" class="headerlink" title="1. 热点数据的发现"></a>1. 热点数据的发现</h2><p>除了自动的缓存淘汰机制之外，怎么找出那些访问频率最高的key呢?或者说, 我们可以在哪里记录key被访问的情况呢? </p>
+          <h1 id="Spring-RabbitMQ参数配置详解"><a href="#Spring-RabbitMQ参数配置详解" class="headerlink" title="Spring RabbitMQ参数配置详解"></a>Spring RabbitMQ参数配置详解</h1><h1 id="1-基础信息"><a href="#1-基础信息" class="headerlink" title="1.基础信息"></a>1.基础信息</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">spring.rabbitmq.host: 默认localhost</span><br><span class="line">spring.rabbitmq.port: 默认<span class="number">5672</span></span><br><span class="line">spring.rabbitmq.username: 用户名</span><br><span class="line">spring.rabbitmq.password: 密码</span><br><span class="line">spring.rabbitmq.virtual-host: 连接到代理时用的虚拟主机</span><br><span class="line">spring.rabbitmq.addresses: 连接到server的地址列表（以逗号分隔），先addresses后host </span><br><span class="line">spring.rabbitmq.requested-heartbeat: 请求心跳超时时间，<span class="number">0</span>为不指定，如果不指定时间单位默认为妙</span><br><span class="line">spring.rabbitmq.publisher-confirms: 是否启用【发布确认】，默认<span class="keyword">false</span></span><br><span class="line">spring.rabbitmq.publisher-returns: 是否启用【发布返回】，默认<span class="keyword">false</span></span><br><span class="line">spring.rabbitmq.connection-timeout: 连接超时时间，单位毫秒，<span class="number">0</span>表示永不超时 </span><br></pre></td></tr></table></figure>
+
+<h1 id="2-SSL"><a href="#2-SSL" class="headerlink" title="2. SSL"></a>2. SSL</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">spring.rabbitmq.ssl.enabled: 是否支持ssl，默认<span class="keyword">false</span></span><br><span class="line">spring.rabbitmq.ssl.key-store: 持有SSL certificate的key store的路径</span><br><span class="line">spring.rabbitmq.ssl.key-store-password: 访问key store的密码</span><br><span class="line">spring.rabbitmq.ssl.trust-store: 持有SSL certificates的Trust store</span><br><span class="line">spring.rabbitmq.ssl.trust-store-password: 访问trust store的密码</span><br><span class="line">spring.rabbitmq.ssl.trust-store-type=JKS：Trust store 类型.</span><br><span class="line">spring.rabbitmq.ssl.algorithm: ssl使用的算法，默认由rabiitClient配置</span><br><span class="line">spring.rabbitmq.ssl.validate-server-certificate=<span class="keyword">true</span>：是否启用服务端证书验证</span><br><span class="line">spring.rabbitmq.ssl.verify-hostname=<span class="keyword">true</span> 是否启用主机验证</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/17.redis%E5%AE%9E%E6%88%98%E4%B9%8B%E9%AB%98%E5%B9%B6%E5%8F%91/#more" rel="contents">
+              <a class="btn" href="/Spring%20RabbitMQ%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -360,7 +379,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/16.redis%E5%AE%9E%E6%88%98%E4%B9%8B%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(2)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -374,7 +393,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/16.redis%E5%AE%9E%E6%88%98%E4%B9%8B%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/" class="post-title-link" itemprop="url">16</a>
+            <a href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(2)/" class="post-title-link" itemprop="url">RabbitMQ工作模型与java编程(2)</a>
         </h2>
 
         <div class="post-meta">
@@ -385,7 +404,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -393,7 +412,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
                 </span>
             </span>
 
@@ -408,19 +431,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="redis实战之数据一致性"><a href="#redis实战之数据一致性" class="headerlink" title="redis实战之数据一致性"></a>redis实战之数据一致性</h1><h2 id="1-缓存使用场景"><a href="#1-缓存使用场景" class="headerlink" title="1 缓存使用场景"></a>1 缓存使用场景</h2><p>针对读少写多的高并发场景, 我们可以使用缓存来提升查询速度. </p>
-<p>当我们使用reids 作为缓存的时候, 一般流程是这样的:</p>
-<ol>
-<li><p>如果数据在redis 缓存中, 应用就可以直接从redis 拿到数据, 不用访问数据库. </p>
-<p> <img src="http://files.luyanan.com//img/20200403100037.png" alt="image-20200403085340776">    </p>
-</li>
-<li><p>如果redis 里面没有，先到数据库查询, 然后写入到redis,再返回给应用. </p>
-<p> <img src="http://files.luyanan.com//img/20200403100032.png" alt="image-20200403090003337"></p>
-</li>
-</ol>
+          <h2 id="3-Spring-AMQP"><a href="#3-Spring-AMQP" class="headerlink" title="3. Spring AMQP"></a>3. Spring AMQP</h2><h3 id="3-1-Spring-AMQP-介绍"><a href="#3-1-Spring-AMQP-介绍" class="headerlink" title="3.1 Spring AMQP 介绍"></a>3.1 Spring AMQP 介绍</h3><p>思考： </p>
+<p>Java API 方式编程, 有什么问题? </p>
+<p>Spring 封装RabbitMQ的时候, 它做了什么呢? </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/16.redis%E5%AE%9E%E6%88%98%E4%B9%8B%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/#more" rel="contents">
+              <a class="btn" href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(2)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -444,7 +460,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/15.%20redis%E5%AE%9E%E6%88%98%E4%B9%8B%E5%AE%A2%E6%88%B7%E7%AB%AF/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -458,7 +474,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/15.%20redis%E5%AE%9E%E6%88%98%E4%B9%8B%E5%AE%A2%E6%88%B7%E7%AB%AF/" class="post-title-link" itemprop="url">15</a>
+            <a href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(1)/" class="post-title-link" itemprop="url">RabbitMQ工作模型与java编程(1)</a>
         </h2>
 
         <div class="post-meta">
@@ -469,7 +485,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -477,7 +493,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
                 </span>
             </span>
 
@@ -492,12 +512,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="redis客户端"><a href="#redis客户端" class="headerlink" title="redis客户端"></a>redis客户端</h1><h2 id="1-客户端通信原理"><a href="#1-客户端通信原理" class="headerlink" title="1. 客户端通信原理"></a>1. 客户端通信原理</h2><p>客户端和服务器端通过TCP 连接来进行数据交互, 服务器默认的端口号是6379, 客户端和服务端发送的命令和数据一律以<code>\r\n</code> (CRLF 回车+换行) 结尾. </p>
-<p>如果使用<code>wireshark</code> 对<code>jedis</code> 抓包</p>
-<p>环境: <code>jedis</code> 连接到运行在虚拟机202的redis, 执行命令, 对<code>VMnet8</code> 进行抓包</p>
+          <h1 id="RabbitMQ工作模型与java编程"><a href="#RabbitMQ工作模型与java编程" class="headerlink" title="RabbitMQ工作模型与java编程"></a>RabbitMQ工作模型与java编程</h1><h2 id="1-MQ入门"><a href="#1-MQ入门" class="headerlink" title="1. MQ入门"></a>1. MQ入门</h2><h3 id="1-1-MQ的诞生历程"><a href="#1-1-MQ的诞生历程" class="headerlink" title="1.1 MQ的诞生历程"></a>1.1 MQ的诞生历程</h3><p>我们要去用MQ, 先来了解一下MQ是怎么诞生的,这样对于它解决了什么问题理解会更加深刻.大家知不知道世界上第一个MQ叫什么名字,是什么时候诞生的? </p>
+<p>​    1983年的时候, 有个在MIT工作的印度小伙伴突发奇想,以前我们的软件相互通信,都是点对点的,而且要实现相同的协议, 能不能有一种专门用来通信的中间件,就想主板(BUS)一样,把不同的软件集成起来呢? 于是它搞了一家公司(Tekneron),开发了世界上第一个消息队列软件The Information Bus(TIB). 最开始的时候, 它被高盛这些公司用在了金融交易里面。 因为TIB 实现了发布订阅(Publish/Subscrbe)模型, 信息的生产者和消费者完全解耦,这个特性引起了电信行业特别是新闻机构的注意. 1994年路透社收购了Teknekron. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/15.%20redis%E5%AE%9E%E6%88%98%E4%B9%8B%E5%AE%A2%E6%88%B7%E7%AB%AF/#more" rel="contents">
+              <a class="btn" href="/RabbitMQ%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%9E%8B%E4%B8%8Ejava%E7%BC%96%E7%A8%8B(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -521,7 +540,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/14.redis%E4%B9%8B%E5%88%86%E5%B8%83%E5%BC%8F%E7%AF%87/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E5%92%8C%E5%AE%9E%E8%B7%B5%E7%BB%8F%E9%AA%8C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -535,7 +554,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/14.redis%E4%B9%8B%E5%88%86%E5%B8%83%E5%BC%8F%E7%AF%87/" class="post-title-link" itemprop="url">14</a>
+            <a href="/RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E5%92%8C%E5%AE%9E%E8%B7%B5%E7%BB%8F%E9%AA%8C/" class="post-title-link" itemprop="url">RabbitMQ可靠性投递和实践经验</a>
         </h2>
 
         <div class="post-meta">
@@ -546,7 +565,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -554,7 +573,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/rabbitMQ/" itemprop="url" rel="index"><span itemprop="name">rabbitMQ</span></a>
                 </span>
             </span>
 
@@ -569,10 +592,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="redis-之分布式篇"><a href="#redis-之分布式篇" class="headerlink" title="redis 之分布式篇"></a>redis 之分布式篇</h1><h2 id="1-为什么需要redis集群"><a href="#1-为什么需要redis集群" class="headerlink" title="1. 为什么需要redis集群"></a>1. 为什么需要redis集群</h2><h3 id="1-1-为什么需要集群呢"><a href="#1-1-为什么需要集群呢" class="headerlink" title="1.1  为什么需要集群呢?"></a>1.1  为什么需要集群呢?</h3><h4 id="1-1-1-性能"><a href="#1-1-1-性能" class="headerlink" title="1.1.1 性能"></a>1.1.1 性能</h4><p>redis本身的<code>QPS</code> 已经很高了, 但是如果在一些并发量非常高的情况下, 性能还是会收到影响的, 这个时候我们希望有更多的redis服务来完成工作. </p>
+          <h1 id="RabbitMQ可靠性投递和实践经验"><a href="#RabbitMQ可靠性投递和实践经验" class="headerlink" title="RabbitMQ可靠性投递和实践经验"></a>RabbitMQ可靠性投递和实践经验</h1><h2 id="1-可靠性投递"><a href="#1-可靠性投递" class="headerlink" title="1. 可靠性投递"></a>1. 可靠性投递</h2><p>在RabbitMQ里面提供了很多保证可靠投递的机制, 这也是RbabitMQ的一个特性. </p>
+<p>​    我们在讲可靠性投递的时候,必须要明确一个问题,因为效率与可靠性是无法兼得的, 如果要保证每一个环节都成功, 势必会对消息的收发效率造成影响. 所以如果是一些业务实时一致性不是特别高的场景, 可以牺牲一些可靠性换取效率. </p>
+<p>​    比如发送通知或者记录日志的这种场景, 如果用户没有收到通知,不会造成业务影响,只要再次发送就可以了. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/14.redis%E4%B9%8B%E5%88%86%E5%B8%83%E5%BC%8F%E7%AF%87/#more" rel="contents">
+              <a class="btn" href="/RabbitMQ%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92%E5%92%8C%E5%AE%9E%E8%B7%B5%E7%BB%8F%E9%AA%8C/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -596,7 +621,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/13.redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -610,7 +635,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/13.redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/" class="post-title-link" itemprop="url">13</a>
+            <a href="/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">Nacos长轮询和集群分析</a>
         </h2>
 
         <div class="post-meta">
@@ -621,7 +646,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -629,7 +654,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/nacos/" itemprop="url" rel="index"><span itemprop="name">nacos</span></a>
                 </span>
             </span>
 
@@ -644,12 +673,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="redis的持久化机制"><a href="#redis的持久化机制" class="headerlink" title="redis的持久化机制"></a>redis的持久化机制</h1><p><a target="_blank" rel="noopener" href="https://redis.io/topics/persistence">https://redis.io/topics/persistence</a></p>
-<p>redis速度快 , 很大一部分原因是因为他所有的数据都存储在内存中, 如果断电或者宕机, 都会导致内存中的数据丢失. 为了实现重启后数据不丢失, redis提供了两种数据持久化方案, 一种是<code>RDB</code> 快照(<code>Redis DataBase</code>), 另外一种是<code>AOF（Append Only File）</code>.</p>
-<h2 id="1-RDB"><a href="#1-RDB" class="headerlink" title="1. RDB"></a>1. <code>RDB</code></h2><p><code>RDB</code>是redis默认的持久化方案, 当满足一定条件后, 会把当前内存中的数据写入到磁盘中, 生成一个快照文件<code>dump.rdb</code>. redis 重启会通过加载<code>dump.rdb</code> 文件恢复数据. </p>
+          <h1 id="长轮询的时间间隔"><a href="#长轮询的时间间隔" class="headerlink" title="长轮询的时间间隔"></a>长轮询的时间间隔</h1><p>我们知道客户端会有一个长训轮的任务去检查服务器端的配置是否发生了变化, 如果发生了变更, 那么客户端会拿到变更的<code>groupKey</code> 再根据 <code>groupKey</code> 去获取配置项的最新值 跟新到本地的缓存以及文件中,那么这种每次都靠客户端去请求, 那请求的时间间隔设置多少合适呢? </p>
+<p>如果间隔时间设置的太长的话有可能无法及时获取服务端的变更, 如果间隔时间设置的太短的话, 那么频繁的请求对于服务端来说无疑也是一种负担,所以最好的方式是客户端每隔一段长度适中的时间去服务端请求, 而在这期间如果配置发生了变更, 服务端能够主动将变更后的结果推送给客户端, 这样既能够保证客户端能够实时感知到配置的变化, 也降低了服务端的压力, 我们来看看nacos 设置的间隔时间是多久? </p>
+<h2 id="长轮询的概念"><a href="#长轮询的概念" class="headerlink" title="长轮询的概念"></a>长轮询的概念</h2><p>那么在讲解原理之前, 先给大家解释一下什么叫长轮询. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/13.redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/#more" rel="contents">
+              <a class="btn" href="/Nacos%E9%95%BF%E8%BD%AE%E8%AF%A2%E5%92%8C%E9%9B%86%E7%BE%A4%E5%88%86%E6%9E%90/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -673,7 +702,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/12.redis%E4%B9%8B%E5%86%85%E5%AD%98%E5%9B%9E%E6%94%B6/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -687,7 +716,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/12.redis%E4%B9%8B%E5%86%85%E5%AD%98%E5%9B%9E%E6%94%B6/" class="post-title-link" itemprop="url">12</a>
+            <a href="/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">Nacos基本原理以及实战</a>
         </h2>
 
         <div class="post-meta">
@@ -706,7 +735,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/nacos/" itemprop="url" rel="index"><span itemprop="name">nacos</span></a>
                 </span>
             </span>
 
@@ -721,12 +754,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="redis之内存回收"><a href="#redis之内存回收" class="headerlink" title="redis之内存回收"></a>redis之内存回收</h1><p>redis的所有数据都是存储在内存中, 在某些情况下需要对占用的内存进行内存回收. 内存回收主要分为两类: 一类是<code>key</code> 过期, 一类是使用内存达到上限(<code>max_memory</code>), 触发内存淘汰. </p>
-<h2 id="1-过期策略"><a href="#1-过期策略" class="headerlink" title="1. 过期策略"></a>1. 过期策略</h2><p>要实现key过期, 我们有几种思路</p>
-<h3 id="1-1-定时过期-主动淘汰"><a href="#1-1-定时过期-主动淘汰" class="headerlink" title="1.1 定时过期(主动淘汰)"></a>1.1 定时过期(主动淘汰)</h3>
+          <h1 id="Nacos-原理分析以及实战"><a href="#Nacos-原理分析以及实战" class="headerlink" title="Nacos 原理分析以及实战"></a>Nacos 原理分析以及实战</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Nacos 致力于帮助您发现、配置和管理微服务。Nacos 提供了一组简单易用的特性集，帮助您快速实现动态服务发现、服务配置、服务元数据及流量管理。</p>
+<p>Nacos 帮助您更敏捷和容易地构建、交付和管理微服务平台。 Nacos 是构建以“服务”为中心的现代应用架构 (例如微服务范式、云原生范式) 的服务基础设施。                                                                </p>
+<p>​                                                                                                                                     –&gt; copy 自官网. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/12.redis%E4%B9%8B%E5%86%85%E5%AD%98%E5%9B%9E%E6%94%B6/#more" rel="contents">
+              <a class="btn" href="/Nacos%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%AE%9E%E6%88%98/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -750,7 +783,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/11.redis%E4%B9%8Bredis%E4%B8%BA%E4%BB%80%E4%B9%88%E9%82%A3%E4%B9%88%E5%BF%AB/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -764,7 +797,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/11.redis%E4%B9%8Bredis%E4%B8%BA%E4%BB%80%E4%B9%88%E9%82%A3%E4%B9%88%E5%BF%AB/" class="post-title-link" itemprop="url">11</a>
+            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">分布式消息通信值Kafka的实现原理</a>
         </h2>
 
         <div class="post-meta">
@@ -783,7 +816,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/" itemprop="url" rel="index"><span itemprop="name">kafka</span></a>
                 </span>
             </span>
 
@@ -798,15 +835,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="redis为什么那么快"><a href="#redis为什么那么快" class="headerlink" title="redis为什么那么快"></a>redis为什么那么快</h1><h2 id="1-redis到底有多快"><a href="#1-redis到底有多快" class="headerlink" title="1. redis到底有多快?"></a>1. redis到底有多快?</h2><p><a target="_blank" rel="noopener" href="https://redis.io/topics/benchmarks">https://redis.io/topics/benchmarks</a></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/soft/redis-5.0.5/src</span><br><span class="line">redis-benchmark -t <span class="built_in">set</span>,lpush -n 100000 -q</span><br></pre></td></tr></table></figure>
-
-
-
-<p>结果(本地虚拟机)</p>
+          <h1 id="分布式消息通信之Kafka-的实现原理"><a href="#分布式消息通信之Kafka-的实现原理" class="headerlink" title="分布式消息通信之Kafka 的实现原理"></a>分布式消息通信之Kafka 的实现原理</h1><h2 id="消息中间件能做什么"><a href="#消息中间件能做什么" class="headerlink" title="消息中间件能做什么?"></a>消息中间件能做什么?</h2><p>消息中间件主要解决的就是分布式系统之间消息的传递问题, 它能够屏蔽各种平台以及协议之间的特性,实现应用程序之间的协同. 举个简单的例子, 就拿一个电商平台的注册功能来简单分析一下,用户注册这一个服务,不仅仅只是insert 一条数据库里面就完事了, 还需要发送激活邮件、发送新人红包或者积分、发送营销短信等一些列操作. 假如说这里面的每一个操作都需要消耗1s , 那么整个注册过程就需要耗时4s 才能响应给用户.</p>
+<p><img src="http://files.luyanan.com//img/20191227142436.png"></p>
+<p>但是我们从注册这个服务可以看到, 每一个子操作都是相对独立的. 同时, 基于领域划分后, 发送激活邮件、发送营销短信、赠送积分以及红包都属于不同的子域. 所以我们可以读这些子操作进行实现异步化执行, 类似于多线程并行处理的概念. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/11.redis%E4%B9%8Bredis%E4%B8%BA%E4%BB%80%E4%B9%88%E9%82%A3%E4%B9%88%E5%BF%AB/#more" rel="contents">
+              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E5%80%BCKafka%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -830,7 +864,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/10.redis%E4%BD%BF%E7%94%A8lua%E8%84%9A%E6%9C%AC/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -844,7 +878,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/10.redis%E4%BD%BF%E7%94%A8lua%E8%84%9A%E6%9C%AC/" class="post-title-link" itemprop="url">10</a>
+            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/" class="post-title-link" itemprop="url">分布式消息通信之Kafka的基本应用</a>
         </h2>
 
         <div class="post-meta">
@@ -863,7 +897,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/" itemprop="url" rel="index"><span itemprop="name">kafka</span></a>
                 </span>
             </span>
 
@@ -878,16 +916,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="redis使用lua脚本"><a href="#redis使用lua脚本" class="headerlink" title="redis使用lua脚本"></a>redis使用lua脚本</h1><p><code>lua</code>(<code>ˈluə</code>) 是一种轻量级脚本语言, 他是用C语言编写的, 跟数据库的存储过程有点类型, 使用<code>lua</code> 脚本来执行redis命令的好处: </p>
-<ol>
-<li>一次发送多条命令, 较少网络开销</li>
-<li> redis会将整个脚本来作为一个整体执行, 不会被其他请求打断, 保持原子性. </li>
-<li>对于复杂的组合命令, 我们可以放到文件中, 可以实现程序之间的命令复用. </li>
-</ol>
-<h2 id="1-在Redis-中调用lua-脚本"><a href="#1-在Redis-中调用lua-脚本" class="headerlink" title="1 在Redis 中调用lua 脚本"></a>1 在Redis 中调用<code>lua</code> 脚本</h2><p>使用<code>eval</code>(<code>ɪ&#39;væl</code>) 方法, 语法格式为: </p>
+          <h1 id="分布式消息通信之Kafka的基本应用"><a href="#分布式消息通信之Kafka的基本应用" class="headerlink" title="分布式消息通信之Kafka的基本应用"></a>分布式消息通信之Kafka的基本应用</h1><h2 id="消息中间件的背景分析"><a href="#消息中间件的背景分析" class="headerlink" title="消息中间件的背景分析"></a>消息中间件的背景分析</h2><h3 id="场景分析"><a href="#场景分析" class="headerlink" title="场景分析"></a>场景分析</h3><p>我们可以使用阻塞队列+线程池的方式来实现生产者和消费者的模式 . 比如在一个应用中, A 方法调用B方法去执行一些任务处理, 我们可以同步调用, 但是如果这个时候请求比较多的情况下, 同步调用会比较耗时会导致请求阻塞. 我们会使用阻塞队列+线程池的方式来实现异步任务的处理. </p>
+<p><img src="http://files.luyanan.com//img/20191224155658.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/10.redis%E4%BD%BF%E7%94%A8lua%E8%84%9A%E6%9C%AC/#more" rel="contents">
+              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%BA%94%E7%94%A8/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -911,7 +944,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/1.redis%E5%9F%BA%E7%A1%80/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -925,7 +958,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/1.redis%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">1</a>
+            <a href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/" class="post-title-link" itemprop="url">分布式消息通信之Kafka 的实现原理2</a>
         </h2>
 
         <div class="post-meta">
@@ -944,7 +977,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/" itemprop="url" rel="index"><span itemprop="name">kafka</span></a>
                 </span>
             </span>
 
@@ -959,11 +996,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="redis基础"><a href="#redis基础" class="headerlink" title="redis基础"></a>redis基础</h1><p>本节,基于Redis最新版本5.05 进行讲解. </p>
-<h2 id="1-Redis入门"><a href="#1-Redis入门" class="headerlink" title="1. Redis入门"></a>1. Redis入门</h2><h3 id="1-1-Redis的诞生历程"><a href="#1-1-Redis的诞生历程" class="headerlink" title="1.1 Redis的诞生历程"></a>1.1 Redis的诞生历程</h3><h4 id="1-1-1-从一个故事说起"><a href="#1-1-1-从一个故事说起" class="headerlink" title="1.1.1 从一个故事说起"></a>1.1.1 从一个故事说起</h4>
+          <h1 id="分布式消息通信之Kafka-的实现原理2"><a href="#分布式消息通信之Kafka-的实现原理2" class="headerlink" title="分布式消息通信之Kafka 的实现原理2"></a>分布式消息通信之Kafka 的实现原理2</h1><h2 id="分区的副本机制"><a href="#分区的副本机制" class="headerlink" title="分区的副本机制"></a>分区的副本机制</h2><p>我们已经知道kafka的每个topic 都可以分为多个partition, 并且多个partition 会均匀分布在集群中的各个节点下.虽然这种方式能够有效的对数据进行分片, 但是对于每个partition而言, 都是单点的. 当其中某个partition不可用的时候, 那么这部分消息就没办法消费. 所以kafka为了提高partition 的可靠性而提供了副本的概念(Replica),通过副本机制来实现冗余备份. </p>
+<p>每个分区可以有多个副本, 并且在副本集合中会存在一个leader 的副本, 所有的读写请求都是由leader 副本来进行处理. 剩余的其他副本都作为follower 副本. follower 副本会从leader 副本同步消息日志. 这个有点类似于zookeeper 中的leader 和follower 的概念. 但是具体的实现方式还是有比较大的差异的. 所以我们可以认为，副本集会存在一主多从的关系. </p>
+<p>一般情况下,同一个分区的多个副本会被均匀的分配到集群中的不同broker 上. 当leader 副本所在的broker 出现故障后, 可以重新选举新的leader 副本继续对外提供服务. 通过这样的副本机制来提高kafka 集群的可用性. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/1.redis%E5%9F%BA%E7%A1%80/#more" rel="contents">
+              <a class="btn" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E4%B9%8BKafka%20%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%862/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1054,7 +1092,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">227</span>
+          <span class="site-state-item-count">229</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

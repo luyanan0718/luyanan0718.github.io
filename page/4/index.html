@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/2.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Service%20Mesh%E5%88%9D%E5%85%A5%E9%97%A8(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">2</a>
+            <a href="/Service%20Mesh%E5%88%9D%E5%85%A5%E9%97%A8(1)/" class="post-title-link" itemprop="url">Service Mesh初入门(1)</a>
         </h2>
 
         <div class="post-meta">
@@ -229,9 +229,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,7 +238,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/Service-Mesh/" itemprop="url" rel="index"><span itemprop="name">Service Mesh</span></a>
                 </span>
             </span>
 
@@ -254,12 +253,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="2-设计模式之工厂方法模式"><a href="#2-设计模式之工厂方法模式" class="headerlink" title="2. 设计模式之工厂方法模式"></a>2. 设计模式之工厂方法模式</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>  工厂方法模式同样属于类的创建型模式 又被成为多态工厂模式. 工厂方法模式的意义是定义一个创建产品对象的工厂接口,将实际创建工作推迟到子类当中.核心工厂类不再负责产品的创建,这样核心类成为一个抽象工厂角色,仅负责具体工厂子类必须实现的接口,这样进一步抽象化的好处是使得工厂方法模式可以使系统在不修改具体工厂角色的情况下引进新的产品</p>
-<h3 id="2-模式中包含的角色及其职责"><a href="#2-模式中包含的角色及其职责" class="headerlink" title="2. 模式中包含的角色及其职责"></a>2. 模式中包含的角色及其职责</h3>
+          <h1 id="Service-Mesh初入门"><a href="#Service-Mesh初入门" class="headerlink" title="Service Mesh初入门"></a>Service Mesh初入门</h1><h2 id="1-分布式架构发展史"><a href="#1-分布式架构发展史" class="headerlink" title="1.  分布式架构发展史"></a>1.  分布式架构发展史</h2><h3 id="1-1-单机小型机时代"><a href="#1-1-单机小型机时代" class="headerlink" title="1.1  单机小型机时代"></a>1.1  单机小型机时代</h3><ul>
+<li><p>1969年,阿帕网诞生,最初是为了军事目的,后来演变成了<code>Inernet</code></p>
+</li>
+<li><p>2000年左右,互联网在中国盛行起来,但是那时候网民数量较少,所以多数企业服务单一,采用集中式部署的方式就能满足需求</p>
+<p><img src="http://files.luyanan.com//img/20200505165155.png" alt="image-20200505165154580"></p>
+</li>
+<li><p>一旦小型机或者数据库出现问题,会导致整个系统的故障,而且功能修改发布也不方便,所以不妨把大系统拆分成多个子系统, 比如<code>用户</code> 、<code>商品</code> 、<code>论坛</code>等, 也就是“垂直拆分”, 并且每个子系统都有各自的硬件</p>
+<p><img src="http://files.luyanan.com//img/20200505165359.png" alt="image-20200505165357739"></p>
+</li>
+</ul>
+<h3 id="1-2-集群化负载均衡时代"><a href="#1-2-集群化负载均衡时代" class="headerlink" title="1.2 集群化负载均衡时代"></a>1.2 集群化负载均衡时代</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/Service%20Mesh%E5%88%9D%E5%85%A5%E9%97%A8(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -283,7 +290,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/19.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/SpringApplication%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -297,7 +304,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/19.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">19</a>
+            <a href="/SpringApplication%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90(1)/" class="post-title-link" itemprop="url">SpringApplication深入解析(1)</a>
         </h2>
 
         <div class="post-meta">
@@ -306,9 +313,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -316,7 +322,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/Spring-Boot/" itemprop="url" rel="index"><span itemprop="name">Spring Boot</span></a>
                 </span>
             </span>
 
@@ -331,12 +337,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="19-设计模式之中介者模式-Mediator-Pattern"><a href="#19-设计模式之中介者模式-Mediator-Pattern" class="headerlink" title="19. 设计模式之中介者模式(Mediator Pattern)"></a>19. 设计模式之中介者模式(Mediator Pattern)</h2><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Mediator模式是行为模式的一种,在Mediator模式中,类之间的交互行为被统一的放在Mediator的对象中,对象通过Mediator对象同其他对象交互,Mediator对象起着控制器的作用.</p>
-<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
+          <h1 id="SpringApplication-深入解析"><a href="#SpringApplication-深入解析" class="headerlink" title="SpringApplication 深入解析"></a>SpringApplication 深入解析</h1><p>我们知道,SpringBoot 程序中最重要的类就是<code>SpringApplication</code>,<code>SpringApplication</code>是SpringBoot驱动Spring应用上下文的引导类. 接下来我们看看<code>SpringApplication</code>有什么玄妙之处. </p>
+<h2 id="1-自定义SpringApplication"><a href="#1-自定义SpringApplication" class="headerlink" title="1. 自定义SpringApplication"></a>1. 自定义SpringApplication</h2><p>我们要启动一个SpringBoot程序, 我们需要使用<code>@SpringBootApplication</code>注解标注一个启动类, 并且执行<code>SpringApplication.run()</code>来启动.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringbootDemo1Application</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(SpringbootDemo1Application.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/19.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/SpringApplication%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -360,7 +366,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/18.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/JVM%E4%B9%8B%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6(3)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -374,7 +380,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/18.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">18</a>
+            <a href="/JVM%E4%B9%8B%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6(3)/" class="post-title-link" itemprop="url">JVM之垃圾回收机制(3)</a>
         </h2>
 
         <div class="post-meta">
@@ -383,9 +389,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -393,7 +398,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
                 </span>
             </span>
 
@@ -408,12 +413,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="18-设计模式之迭代器模式-Iterator-Pattern"><a href="#18-设计模式之迭代器模式-Iterator-Pattern" class="headerlink" title="18.   设计模式之迭代器模式(Iterator Pattern)"></a>18.   设计模式之迭代器模式(Iterator Pattern)</h2><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Iterator模式是行为模式的一种,它把容器中包含的内部对象的访问委让给外部类,使用iterator(遍历)按顺序进行遍历访问的设计模式</p>
-<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
+          <h1 id="JVM之Garbage-Collect-垃圾回收"><a href="#JVM之Garbage-Collect-垃圾回收" class="headerlink" title="JVM之Garbage Collect(垃圾回收)"></a><code>JVM</code>之<code>Garbage Collect(垃圾回收)</code></h1><h2 id="1-如何确定一个对象是垃圾"><a href="#1-如何确定一个对象是垃圾" class="headerlink" title="1 如何确定一个对象是垃圾"></a>1 如何确定一个对象是垃圾</h2><p>要想进行垃圾回收,得先知道什么样的对象是垃圾. </p>
+<h3 id="1-1-引用计数法"><a href="#1-1-引用计数法" class="headerlink" title="1.1 引用计数法"></a>1.1 引用计数法</h3><p>对于某个对象而言,只要应用程序中持有该对象的引用,就说明该对象不是垃圾,如果一个对象没有任何指针对其引用, 就说明他是个垃圾. </p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/18.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/JVM%E4%B9%8B%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6(3)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -437,7 +441,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/17.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%A3%E9%87%8A%E5%99%A8%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/JVM%E4%B9%8B%E8%B0%83%E4%BC%98(5)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -451,7 +455,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/17.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%A3%E9%87%8A%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">17</a>
+            <a href="/JVM%E4%B9%8B%E8%B0%83%E4%BC%98(5)/" class="post-title-link" itemprop="url">JVM之调优(5)</a>
         </h2>
 
         <div class="post-meta">
@@ -460,9 +464,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -470,7 +473,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
                 </span>
             </span>
 
@@ -485,12 +488,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="17-设计模式之解释器模式-Interpreter-Pattern"><a href="#17-设计模式之解释器模式-Interpreter-Pattern" class="headerlink" title="17. 设计模式之解释器模式(Interpreter Pattern)"></a>17. 设计模式之解释器模式(Interpreter Pattern)</h2><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>解释器模式是行为模式的一种,通过建立一个解释器,对于特定的计算机程序设计语言,用来解释预先定义的文法.简单的说,Interpreter 模式是一种简单的语法解释器构架</p>
-<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
+          <h1 id="JVM之调优"><a href="#JVM之调优" class="headerlink" title="JVM之调优"></a>JVM之调优</h1><h2 id="1-重新认识JVM"><a href="#1-重新认识JVM" class="headerlink" title="1. 重新认识JVM"></a>1. 重新认识JVM</h2><p>我们画一张图来展示JVM的大体物理结构</p>
+<p><img src="http://files.luyanan.com//img/20200511085020.png" alt="image-20200511085019210"></p>
+<h2 id="2-GC优化"><a href="#2-GC优化" class="headerlink" title="2. GC优化"></a>2. GC优化</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/17.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%A3%E9%87%8A%E5%99%A8%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/JVM%E4%B9%8B%E8%B0%83%E4%BC%98(5)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -514,7 +517,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/16.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/JVM%E4%B9%8B%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA(2)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -528,7 +531,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/16.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">16</a>
+            <a href="/JVM%E4%B9%8B%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA(2)/" class="post-title-link" itemprop="url">JVM之运行时数据区(2)</a>
         </h2>
 
         <div class="post-meta">
@@ -537,9 +540,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -547,7 +549,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
                 </span>
             </span>
 
@@ -562,12 +564,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="16-设计模式之命令模式-Command-Pattren"><a href="#16-设计模式之命令模式-Command-Pattren" class="headerlink" title="16. 设计模式之命令模式(Command Pattren)"></a>16. 设计模式之命令模式(Command Pattren)</h2><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>命令模式是行为设计模式的一种,Command 模式通过被称为commonand的类封装了堆目标对象的调用行为以及调用参数</p>
-<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
+          <h1 id="JVM之运行时数据区"><a href="#JVM之运行时数据区" class="headerlink" title="JVM之运行时数据区"></a>JVM之运行时数据区</h1><h2 id="1-结合字节码指令理解java虚拟机栈和栈帧"><a href="#1-结合字节码指令理解java虚拟机栈和栈帧" class="headerlink" title="1. 结合字节码指令理解java虚拟机栈和栈帧"></a>1. 结合字节码指令理解java虚拟机栈和栈帧</h2><blockquote>
+<p>官网: <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6">https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6</a></p>
+</blockquote>
+<p><strong>栈帧</strong>: 每个栈帧对应一个被调用的方法, 可以理解为一个方法的运行空间. </p>
+<p>每个栈帧包括局部变量表(<code>Local Variables</code>)、操作数栈(<code>Operated Stack</code>)、指向运行时常量池的引用(<code>(A reference to the run-time constant pool</code>)、方法返回地址(<code>Return Address</code>) 和附加信息</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/16.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/JVM%E4%B9%8B%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA(2)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -591,7 +595,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/15.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/JVM%E5%85%A5%E9%97%A8%E4%B9%8B%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%92%8C%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -605,7 +609,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/15.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">15</a>
+            <a href="/JVM%E5%85%A5%E9%97%A8%E4%B9%8B%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%92%8C%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA(1)/" class="post-title-link" itemprop="url">JVM入门之类加载器和运行时数据区(1)</a>
         </h2>
 
         <div class="post-meta">
@@ -614,9 +618,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -624,7 +627,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
                 </span>
             </span>
 
@@ -639,12 +642,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="15-责任链模式-Chain-of-Responsibility-COR"><a href="#15-责任链模式-Chain-of-Responsibility-COR" class="headerlink" title="15. 责任链模式(Chain of Responsibility )(COR)"></a>15. 责任链模式(Chain of Responsibility )(COR)</h2><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Chain of Responsibility(COR) 模式也叫作职责链模式或者责任连锁模式,是行为模式之一.该模式构造一系列分别担当不同职责的类的对象来共同完成一个任务,这些类的对象之间像链条一样紧密相连,所以被称作职责链模式</p>
-<h3 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2. 应用场景"></a>2. 应用场景</h3>
+          <h1 id="JVM入门之类加载器和运行时数据区"><a href="#JVM入门之类加载器和运行时数据区" class="headerlink" title="JVM入门之类加载器和运行时数据区"></a>JVM入门之类加载器和运行时数据区</h1><h2 id="1-官网"><a href="#1-官网" class="headerlink" title="1.  官网"></a>1.  官网</h2><h3 id="1-1-JDK8"><a href="#1-1-JDK8" class="headerlink" title="1.1 JDK8"></a>1.1 <code>JDK8</code></h3><blockquote>
+<p><code>官网</code>: <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/">https://docs.oracle.com/javase/8/</a></p>
+</blockquote>
+<h3 id="1-2-The-relation-of-JDK-JRE-JVM"><a href="#1-2-The-relation-of-JDK-JRE-JVM" class="headerlink" title="1.2 The relation of JDK/JRE/JVM"></a>1.2 The relation of JDK/JRE/JVM</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/15.%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/JVM%E5%85%A5%E9%97%A8%E4%B9%8B%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%92%8C%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -668,7 +672,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/14.3%20%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%9C%A8Spring%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Kubernetes%E4%B9%8B%E5%85%A5%E9%97%A8%E7%AF%87(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -682,7 +686,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/14.3%20%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%9C%A8Spring%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/" class="post-title-link" itemprop="url">14</a>
+            <a href="/Kubernetes%E4%B9%8B%E5%85%A5%E9%97%A8%E7%AF%87(1)/" class="post-title-link" itemprop="url">Kubernetes之入门篇(1)</a>
         </h2>
 
         <div class="post-meta">
@@ -691,9 +695,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -701,7 +704,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
                 </span>
             </span>
 
@@ -716,13 +719,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="14-3-代理模式在Spring中的应用"><a href="#14-3-代理模式在Spring中的应用" class="headerlink" title="14.3 代理模式在Spring中的应用"></a>14.3 代理模式在Spring中的应用</h1><p>先看ProxyFactoryBean类,核心方法为getObject(),我们来看一下源码,</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Nullable</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getObject</span><span class="params">()</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.initializeAdvisorChain();</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.isSingleton()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.getSingletonInstance();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.targetName == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">this</span>.logger.warn(<span class="string">&quot;Using non-singleton proxies with singleton targets is often undesirable. Enable prototype proxies by setting the &#x27;targetName&#x27; property.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.newPrototypeInstance();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在getObject()方法中,主要调用getSingletonInstance()方法和newPrototypeInstance()方法,在Spring的配置当中,如果不做任何的设置,那么Spring代理生成的的Bean都是单例对象.如果修改scope则每次创建一个新的原型对象.<br><br>Spring利用动态代理实现AOP有两个非常重要的类,一个是JdkDynamicAopProxy类和CglibAopProxy类</p>
-<h5 id="Spring中大代理选择原则"><a href="#Spring中大代理选择原则" class="headerlink" title="Spring中大代理选择原则:"></a>Spring中大代理选择原则:</h5>
+          <h1 id="Kubernetes之入门篇"><a href="#Kubernetes之入门篇" class="headerlink" title="Kubernetes之入门篇"></a>Kubernetes之入门篇</h1><h2 id="1-K8S核心组件和架构图"><a href="#1-K8S核心组件和架构图" class="headerlink" title="1. K8S核心组件和架构图"></a>1. K8S核心组件和架构图</h2><p><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/">K8S Docs Concepts</a></p>
+<ol>
+<li><p>先从<code>contailer</code> 开始, K8S 既然是容器编排工具, 那么一定会有<code>contailer</code></p>
+<p> <img src="http://files.luyanan.com//img/20200420103423.png" alt="image-20200420103421591"></p>
+</li>
+<li><p>那k8s 如何操作这些<code>contailer</code>呢?  k8s 不想直接操作这些<code>contailer</code>, 因为操作<code>contailer</code> 是<code>docker</code> 做的事情,k8s 中有自己的操作单位,称之为<code>Prod</code></p>
+<p> 说白了, <code>Prod</code> 就是一个或者多个<code>contailer</code>的集合. </p>
+<p><img src="http://files.luyanan.com//img/20200420103706.png" alt="image-20200420103705134"></p>
+<p>看看官网是怎么描述的? <a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/workloads/pods/pod/">https://kubernetes.io/docs/concepts/workloads/pods/pod/</a></p>
+</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A Pod (as in a pod of whales or pea pod) is a group of one or more containers (such as Docker containers), with shared storage/network, and a specification for how to run the containers. A Pod’s contents are always co-located and co-scheduled, and run in a shared context. A Pod models an application-specific “logical host” - it contains one or more application containers which are relatively tightly coupled — in a pre-container world, being executed on the same physical or virtual machine would mean being executed on the same logical host</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/14.3%20%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E5%9C%A8Spring%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/#more" rel="contents">
+              <a class="btn" href="/Kubernetes%E4%B9%8B%E5%85%A5%E9%97%A8%E7%AF%87(1)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -746,7 +757,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/13.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/kubectl%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4(6)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -760,7 +771,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/13.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">13</a>
+            <a href="/kubectl%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4(6)/" class="post-title-link" itemprop="url">kubectl常用命令(6)</a>
         </h2>
 
         <div class="post-meta">
@@ -769,9 +780,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -779,7 +789,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
                 </span>
             </span>
 
@@ -794,12 +804,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="13-设计模式之享元模式-Flywight-Pattren"><a href="#13-设计模式之享元模式-Flywight-Pattren" class="headerlink" title="13. 设计模式之享元模式(Flywight Pattren)"></a>13. 设计模式之享元模式(Flywight Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>享元通过与其他类似对象共享数据来减少内存占用. 这种类型的设计模式属于结构性模式,它提供了减少对象数量从而改善应用数量从而改善应用所需的对象结构的方式</p>
-<p> 享元模式尝试重用现有的同类对象,如果未找到匹配的对象,则创建新的对象</p>
+          <h2 id="1、查看集群状态"><a href="#1、查看集群状态" class="headerlink" title="1、查看集群状态"></a>1、查看集群状态</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl version --short=<span class="literal">true</span> 查看客户端及服务端程序版本信息</span><br><span class="line">kubectl cluster-info 查看集群信息</span><br></pre></td></tr></table></figure>
+
+<h2 id="2、创建资源对象"><a href="#2、创建资源对象" class="headerlink" title="2、创建资源对象"></a><strong>2、创建资源对象</strong></h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl run name --image=(镜像名) --replicas=(备份数) --port=(容器要暴露的端口) --labels=(设定自定义标签)</span><br><span class="line">kubectl create -f **.yaml  陈述式对象配置管理方式</span><br><span class="line">kubectl apply -f **.yaml  声明式对象配置管理方式（也适用于更新等）</span><br></pre></td></tr></table></figure>
+
+<h2 id="3、查看资源对象"><a href="#3、查看资源对象" class="headerlink" title="3、查看资源对象"></a>3、查看资源对象</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/13.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/kubectl%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4(6)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -823,7 +835,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/12.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/kubernetes%E7%B3%BB%E7%BB%9F%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6(10)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -837,7 +849,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/12.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">12</a>
+            <a href="/kubernetes%E7%B3%BB%E7%BB%9F%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6(10)/" class="post-title-link" itemprop="url">kubernetes系统核心组件(10)</a>
         </h2>
 
         <div class="post-meta">
@@ -846,9 +858,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -856,7 +867,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
                 </span>
             </span>
 
@@ -871,12 +882,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="12-设计模式之外观模式-Facade-Pattern"><a href="#12-设计模式之外观模式-Facade-Pattern" class="headerlink" title="12. 设计模式之外观模式(Facade Pattern)"></a>12. 设计模式之外观模式(Facade Pattern)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>Facade 模式也叫外观模式,是为一组具有类似功能的类群,比如类,子系统等.提供一个一致的简单界面.这个一致的简单的界面被称为Facade</p>
-<h3 id="2-角色和职责"><a href="#2-角色和职责" class="headerlink" title="2. 角色和职责:"></a>2. 角色和职责:</h3>
+          <h1 id="kubernetes系统核心组件"><a href="#kubernetes系统核心组件" class="headerlink" title="kubernetes系统核心组件"></a>kubernetes系统核心组件</h1><h2 id="1-Master和Node"><a href="#1-Master和Node" class="headerlink" title="1. Master和Node"></a>1. <code>Master</code>和<code>Node</code></h2><blockquote>
+<p>官网:<a target="_blank" rel="noopener" href="https://kubernetes.io/zh/docs/concepts/architecture/master-node-communication/">https://kubernetes.io/zh/docs/concepts/architecture/master-node-communication/</a></p>
+</blockquote>
+<p>k8s 集群中的控制节点,负责整个集群的管理和控制,可以做成高可用,防止一台<code>master</code> 宕机或者不可用,其中有一些关键的组件, 比如<code>API Server</code>、<code>Controller Manage</code> 、<code>Scheduler</code>等. </p>
+<blockquote>
+<p>Node</p>
+</blockquote>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/12.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/kubernetes%E7%B3%BB%E7%BB%9F%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6(10)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -900,7 +915,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/11.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/kubernetes%E7%BB%84%E4%BB%B6%E4%B9%8BStorage(8)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -914,7 +929,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/11.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">11</a>
+            <a href="/kubernetes%E7%BB%84%E4%BB%B6%E4%B9%8BStorage(8)/" class="post-title-link" itemprop="url">kubernetes组件之Storage(8)</a>
         </h2>
 
         <div class="post-meta">
@@ -923,9 +938,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -933,7 +947,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                  <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
                 </span>
             </span>
 
@@ -948,12 +962,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="11-设计模式之装饰模式-Decorator-Pattren"><a href="#11-设计模式之装饰模式-Decorator-Pattren" class="headerlink" title="11. 设计模式之装饰模式(Decorator Pattren)"></a>11. 设计模式之装饰模式(Decorator Pattren)</h1><hr>
-<h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1. 概念"></a>1. 概念</h3><p>装饰模式又叫包装模式,通过一种对客户端透明的方式来扩展对象的功能,是继承关系的一个替换方案.</p>
-<h3 id="2-角色和职责"><a href="#2-角色和职责" class="headerlink" title="2. 角色和职责"></a>2. 角色和职责</h3>
+          <h1 id="kubernetes组件之Storage"><a href="#kubernetes组件之Storage" class="headerlink" title="kubernetes组件之Storage"></a>kubernetes组件之Storage</h1><h2 id="1-Volume"><a href="#1-Volume" class="headerlink" title="1 Volume"></a>1 <a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/storage/volumes/"><code>Volume</code></a></h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">On-disk files in a Container are ephemeral, which presents some problems for non-trivial applications when running in Containers. First, when a Container crashes, kubelet will restart it, but the files will be lost - the Container starts with a clean state. Second, when running Containers together in a Pod it is often necessary to share files between those Containers. The Kubernetes Volume abstraction solves both of these problems.</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-Host-类型volume-实战"><a href="#2-Host-类型volume-实战" class="headerlink" title="2 Host 类型volume 实战"></a>2 <code>Host</code> 类型<code>volume</code> 实战</h2><blockquote>
+<p>背景： 定义一个<code>Pod</code>, 其中包含两个<code>contailer</code>,都使用<code>pod</code>的<code>vloume</code></p>
+</blockquote>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/11.%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              <a class="btn" href="/kubernetes%E7%BB%84%E4%BB%B6%E4%B9%8BStorage(8)/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1044,7 +1062,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">227</span>
+          <span class="site-state-item-count">229</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

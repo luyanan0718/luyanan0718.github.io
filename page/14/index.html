@@ -206,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/9.%20Spring%20%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E5%B8%B8%E8%A7%81%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%9D%A2%E8%AF%95%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -220,7 +220,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/9.%20Spring%20%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88/" class="post-title-link" itemprop="url">9</a>
+            <a href="/%E5%B8%B8%E8%A7%81%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-title-link" itemprop="url">常见多线程面试题</a>
         </h2>
 
         <div class="post-meta">
@@ -231,7 +231,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,7 +239,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
                 </span>
             </span>
 
@@ -254,12 +254,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="9-Spring-事务详谈"><a href="#9-Spring-事务详谈" class="headerlink" title="9. Spring 事务详谈"></a>9. Spring 事务详谈</h1><hr>
-<hr>
-<h3 id="从Spring事务配置说起"><a href="#从Spring事务配置说起" class="headerlink" title="从Spring事务配置说起"></a>从Spring事务配置说起</h3><p>先看看Spring事务的基础配置</p>
+          <h2 id="1-启动一个线程是调用-run-方法还是-start-方法？"><a href="#1-启动一个线程是调用-run-方法还是-start-方法？" class="headerlink" title="1.启动一个线程是调用 run() 方法还是 start() 方法？"></a>1.启动一个线程是调用 run() 方法还是 start() 方法？</h2><p>启动一个线程调用的是start()方法，使线程进入到就绪状态，这就意味着它可以由JVM调度并执行，这并不意味着线程就会立马执行；run()方法是线程启动后线程要进行回调的方法。</p>
+<h2 id="2-请说出同步线程及线程调度相关的方法？"><a href="#2-请说出同步线程及线程调度相关的方法？" class="headerlink" title="2. 请说出同步线程及线程调度相关的方法？"></a>2. 请说出同步线程及线程调度相关的方法？</h2><ul>
+<li><p>wait():使一个线程处于阻塞状态，并且释放所持有的对象锁；</p>
+</li>
+<li><p>sleep():使一个线程休眠一段时间，当时间过后线程又会恢复到以前的状态，并且在休眠状态不会释放对象锁；</p>
+</li>
+<li><p>notify():唤醒一个处于等待状态的线程，当然在调用此方法的时候，并不能确切的唤醒某一个等待状态的线程，而是由 JVM 确定唤醒哪个线程，而且与优先级无关；</p>
+</li>
+<li><p>notifyAll():唤醒所有处于等待状态的线程，该方法并不是将对象的锁给所有线程，而是让它们竞争，只有获得锁的线程才能进入就绪状态；</p>
+</li>
+</ul>
+<h2 id="3-线程和进程的区别？"><a href="#3-线程和进程的区别？" class="headerlink" title="3.线程和进程的区别？"></a>3.线程和进程的区别？</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/9.%20Spring%20%E4%BA%8B%E5%8A%A1%E8%AF%A6%E8%B0%88/#more" rel="contents">
+              <a class="btn" href="/%E5%B8%B8%E8%A7%81%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%9D%A2%E8%AF%95%E9%A2%98/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -283,7 +292,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/8.%20Spring%20MVC%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E4%B9%90%E8%A7%82%E9%94%81%E5%92%8C%E6%82%B2%E8%A7%82%E9%94%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -297,7 +306,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/8.%20Spring%20MVC%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">8</a>
+            <a href="/%E4%B9%90%E8%A7%82%E9%94%81%E5%92%8C%E6%82%B2%E8%A7%82%E9%94%81/" class="post-title-link" itemprop="url">乐观锁和悲观锁</a>
         </h2>
 
         <div class="post-meta">
@@ -308,7 +317,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -316,7 +325,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
                 </span>
             </span>
 
@@ -331,12 +340,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="8-Spring-MVC-源码分析"><a href="#8-Spring-MVC-源码分析" class="headerlink" title="8. Spring MVC 源码分析"></a>8. Spring MVC 源码分析</h1><h2 id="Spring-MVC初体验"><a href="#Spring-MVC初体验" class="headerlink" title="Spring MVC初体验"></a>Spring MVC初体验</h2><hr>
-<hr>
-<h3 id="初探Spring-MVC请求处理流程"><a href="#初探Spring-MVC请求处理流程" class="headerlink" title="初探Spring MVC请求处理流程"></a>初探Spring MVC请求处理流程</h3>
+          <h1 id="锁机制"><a href="#锁机制" class="headerlink" title="锁机制"></a>锁机制</h1><p>在数据库操作过程中，为了避免两个或多个用户同时对一条数据操作，通常采用锁的机制来来解决数据冲突问题。<br>同样，在程序流程中为了避免对多线程共享的资源的修改冲突，也采用锁的机制来避免修改冲突</p>
+<h1 id="锁的分类"><a href="#锁的分类" class="headerlink" title="锁的分类"></a>锁的分类</h1><h2 id="乐观锁（Optimistic-Lock）"><a href="#乐观锁（Optimistic-Lock）" class="headerlink" title="乐观锁（Optimistic Lock）"></a>乐观锁（Optimistic Lock）</h2><p>所谓乐观锁，就是相信大部分场景下，不会产生数据修改冲突，所以在读取数据进行修改的时候，不对数据进行加锁，而是在最终提交修改的时候，通过version或CAS机制，检查对数据的修改是否发生了冲突。<br>乐观锁的适用于读多写少的场景，能提供系统的处理能力，如果在冲突比较概率高的场景使用乐观锁，反而会降低系统的处理能力。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/8.%20Spring%20MVC%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/%E4%B9%90%E8%A7%82%E9%94%81%E5%92%8C%E6%82%B2%E8%A7%82%E9%94%81/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -360,7 +368,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/7.%20Spring%20AOP%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/%E3%80%90Redis%E3%80%91%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%EF%BC%8C%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%EF%BC%8C%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -374,7 +382,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/7.%20Spring%20AOP%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="post-title-link" itemprop="url">7</a>
+            <a href="/%E3%80%90Redis%E3%80%91%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%EF%BC%8C%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%EF%BC%8C%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/" class="post-title-link" itemprop="url">【Redis】缓存穿透，缓存雪崩，缓存击穿</a>
         </h2>
 
         <div class="post-meta">
@@ -385,7 +393,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -393,7 +401,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
                 </span>
             </span>
 
@@ -408,12 +416,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="7-Spring-AOP-源码解析"><a href="#7-Spring-AOP-源码解析" class="headerlink" title="7. Spring AOP 源码解析"></a>7. Spring AOP 源码解析</h1><h2 id="Spring-AOP初体验"><a href="#Spring-AOP初体验" class="headerlink" title="Spring AOP初体验"></a>Spring AOP初体验</h2><hr>
-<hr>
-<h3 id="再述Spring-AOP应用场景"><a href="#再述Spring-AOP应用场景" class="headerlink" title="再述Spring AOP应用场景"></a>再述Spring AOP应用场景</h3>
+          <h1 id="Redis-缓存穿透，缓存雪崩，缓存击穿"><a href="#Redis-缓存穿透，缓存雪崩，缓存击穿" class="headerlink" title="[Redis]缓存穿透，缓存雪崩，缓存击穿"></a>[Redis]缓存穿透，缓存雪崩，缓存击穿</h1><h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a><strong>缓存穿透</strong></h3><p>第一次看到这个名字，会觉得是一个很高深的名词。但是和其他许多概念一样，它只是描述了一个很容易理解的现象：请求了不存在的数据。造成大量的请求没有命中缓存场景之一：数据库使用了id为正整数作为键，但是黑客使用负整数向服务器发起请求，这时所有的请求都没有在缓存中命中，从而导致大量请求数据库，如果超过了数据库的承载能力，会导致数据库服务器宏机。</p>
+<p>解决缓存穿透的方案主要有两种：<br>1，当查询不存在时，也将结果保存在缓存中。但是这可能会存在一种问题：大量没有查询结果的请求保存在缓存中，这时我们就可以将这些请求的key设置得更短一些。</p>
+<p>2，提前过滤掉不合法的请求，Redis实现了布隆过滤器，我们可以使用它来达到这个目的。布隆过滤器很好理解，可以参考<a target="_blank" rel="noopener" href="https://www.cnblogs.com/cpselvis/p/6265825.html">布隆过滤器(Bloom Filter)的原理和实现</a>。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/7.%20Spring%20AOP%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/%E3%80%90Redis%E3%80%91%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%EF%BC%8C%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%EF%BC%8C%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -437,7 +445,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/6.%20Spring%20DI%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/String%E3%80%81StringBuffer%E5%92%8CStringBuilder%E7%9A%84%E5%8C%BA%E5%88%AB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -451,7 +459,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/6.%20Spring%20DI%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="post-title-link" itemprop="url">6</a>
+            <a href="/String%E3%80%81StringBuffer%E5%92%8CStringBuilder%E7%9A%84%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">String、StringBuffer和StringBuilder的区别</a>
         </h2>
 
         <div class="post-meta">
@@ -462,7 +470,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -470,7 +478,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
                 </span>
             </span>
 
@@ -485,11 +493,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="6-Spring-DI-源码解析"><a href="#6-Spring-DI-源码解析" class="headerlink" title="6. Spring DI 源码解析"></a>6. Spring DI 源码解析</h1><h2 id="Spring自动装配之依赖注入"><a href="#Spring自动装配之依赖注入" class="headerlink" title="Spring自动装配之依赖注入"></a>Spring自动装配之依赖注入</h2><h3 id="依赖注入发生的时间"><a href="#依赖注入发生的时间" class="headerlink" title="依赖注入发生的时间"></a>依赖注入发生的时间</h3><p>当SpringIOC 容器完成了Bean定义资源的定位、载入和解析注册以后，IOC 容器中已经管理类Bean<br>定义的相关数据，但是此时 IOC容器还没有对所管理的 Bean进行依赖注入，依赖注入在以下两种情况<br>发生：</p>
-<h5 id="1-、用户第一次调用getBean-方法时，IOC-容器触发依赖注入。"><a href="#1-、用户第一次调用getBean-方法时，IOC-容器触发依赖注入。" class="headerlink" title="1)、用户第一次调用getBean()方法时，IOC 容器触发依赖注入。"></a>1)、用户第一次调用getBean()方法时，IOC 容器触发依赖注入。</h5>
+          <h1 id="String、StringBuffer和StringBuilder的区别"><a href="#String、StringBuffer和StringBuilder的区别" class="headerlink" title="String、StringBuffer和StringBuilder的区别"></a>String、StringBuffer和StringBuilder的区别</h1><h6 id="可变性"><a href="#可变性" class="headerlink" title="可变性"></a><strong>可变性</strong></h6><ul>
+<li>String是不可变的，它使用final关键词修饰–</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br><span class="line">...................</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>StringBuffer和StringBuilder两者都是继承自AbstractStringBuilder,AbstractStringBuilder也是用字符数组保存char value[]当时没有用final修饰，所以这两种对象是可变的</li>
+</ul>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/6.%20Spring%20DI%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/String%E3%80%81StringBuffer%E5%92%8CStringBuilder%E7%9A%84%E5%8C%BA%E5%88%AB/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -513,7 +527,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/5.%20Spring%20IOC%E7%9A%84%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/spring%E7%9A%84%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%92%8C%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -527,7 +541,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/5.%20Spring%20IOC%E7%9A%84%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="post-title-link" itemprop="url">5</a>
+            <a href="/spring%E7%9A%84%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%92%8C%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA/" class="post-title-link" itemprop="url">spring的事务隔离级别和事务传播行为</a>
         </h2>
 
         <div class="post-meta">
@@ -538,7 +552,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -546,7 +560,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
                 </span>
             </span>
 
@@ -561,14 +575,42 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="5-Spring核心之IOC源码解析"><a href="#5-Spring核心之IOC源码解析" class="headerlink" title="5. Spring核心之IOC源码解析"></a>5. Spring核心之IOC源码解析</h1><h3 id="再谈IOC与DI"><a href="#再谈IOC与DI" class="headerlink" title="再谈IOC与DI"></a>再谈IOC与DI</h3><p>&emsp;&emsp;  IOC(Inversion of Control)控制反转：所谓控制反转，就是把原先我们代码里面需要实现的对象创<br>建、依赖的代码，反转给容器来帮忙实现。那么必然的我们需要创建一个容器，同时需要一种描述来让<br>容器知道需要创建的对象与对象的关系。这个描述最具体表现就是我们所看到的配置文件。<br>DI(DependencyInjection)依赖注入：就是指对象是被动接受依赖类而不是自己主动去找，换句话说就<br>是指对象不是从容器中查找它依赖的类，而是在容器实例化对象的时候主动将它依赖的类注入给它。<br>先从我们自己设计这样一个视角来考虑：</p>
+          <h2 id="spring的事务隔离级别和事务传播行为"><a href="#spring的事务隔离级别和事务传播行为" class="headerlink" title="spring的事务隔离级别和事务传播行为"></a>spring的事务隔离级别和事务传播行为</h2><h3 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h3><ul>
+<li><p>DEFAULT </p>
+<blockquote>
+<p>使用底层数据库默认的隔离级别,大部分数据库默认的隔离级别都是<code>READ_COMMITED</code></p>
+</blockquote>
+</li>
+<li><p>READ_UNCOMMITED </p>
+<blockquote>
+<p>允许事务读取未被其他事务提交的修改、可能会出现脏读、幻读、不可重复读</p>
+</blockquote>
+</li>
+<li><p>READ_COMMITED </p>
+<blockquote>
+<p>只允许事务读取已经被事务提交的更改,可以避免脏读.但不可重复读和幻读问题仍然可能出现. </p>
+</blockquote>
+</li>
+<li><p>REPEATABLE_READ</p>
+<blockquote>
+<p>确保事务可以多次从一个字段中读取相同的值,在这个事务持续期间, 禁止其他事务对这个字段进行更新,可以避免脏读和不可重复读, 但是幻读问题仍然存在. </p>
+</blockquote>
+</li>
+<li><p>SERIALIZABLE </p>
+<blockquote>
+<p>确保事务可以从一个表中读取相同的行, 在这个事务持续期间, 禁止其他事务对该表执行插入、更新、删除. 所有的并发问题都能避免, 但是性能较低. </p>
+</blockquote>
+<p>事务的隔离级别需要底层数据库引擎的支持,而不是应用程序或者框架的支持. </p>
+</li>
+</ul>
 <ol>
-<li>对象和对象的关系怎么表示？</li>
+<li>Oracle 支持2种事务隔离级别: <code>READ_COMMITED</code>，<code>SERIALIZABLE</code>. 默认是 <code>READ_COMMITED</code></li>
+<li>Mysql 支持4种事务隔离级别, 默认是<code>REPEATABLE_READ</code> . </li>
 </ol>
-<p>可以用xml，properties文件等语义化配置文件表示。<br>2. 描述对象关系的文件存放在哪里？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">msyql 查看隔离级别：</span><br><span class="line">select @@tx_isolation;</span><br><span class="line">设置隔离级别：</span><br><span class="line">set session transaction isolation level serializable;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/5.%20Spring%20IOC%E7%9A%84%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/#more" rel="contents">
+              <a class="btn" href="/spring%E7%9A%84%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%92%8C%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -592,7 +634,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/4.%20Spring%E7%89%88%E6%9C%AC%20%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/MySQL%E7%B4%A2%E5%BC%95%E5%8E%9F%E7%90%86%E5%92%8C%E5%AE%9E%E7%8E%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -606,7 +648,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/4.%20Spring%E7%89%88%E6%9C%AC%20%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/" class="post-title-link" itemprop="url">4</a>
+            <a href="/MySQL%E7%B4%A2%E5%BC%95%E5%8E%9F%E7%90%86%E5%92%8C%E5%AE%9E%E7%8E%B0/" class="post-title-link" itemprop="url">MySQL索引原理和实现</a>
         </h2>
 
         <div class="post-meta">
@@ -617,7 +659,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -625,7 +667,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
                 </span>
             </span>
 
@@ -640,40 +682,78 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="4-Spring-版本命名规范"><a href="#4-Spring-版本命名规范" class="headerlink" title="4. Spring 版本命名规范"></a>4. Spring 版本命名规范</h1><h3 id="常见软件的版本号命名"><a href="#常见软件的版本号命名" class="headerlink" title="常见软件的版本号命名"></a>常见软件的版本号命名</h3><table>
-<thead>
-<tr>
-<th>软件</th>
-<th>升级过程</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>linux Kernel</td>
-<td>0.0.1 ,1.0.0,2.6.32</td>
-<td>若用X.Y.Z表示,则偶数Y 表示稳定版本,奇书Y 表示开发版本</td>
-</tr>
-<tr>
-<td>Window</td>
-<td>Windows 98,windows 2000,windows XP</td>
-<td>最大的特点就是杂乱无章,毫无规律</td>
-</tr>
-<tr>
-<td>SSH  Cleint</td>
-<td>0.9.8</td>
-<td></td>
-</tr>
-<tr>
-<td>OpenStack</td>
-<td>2014.1.3 2015.1.1.dev8</td>
-<td>日期命令</td>
-</tr>
-</tbody></table>
-<p>从上可以看出,不同的软件版本号风格各异,随着系统的规模越大,依赖的软件越多,如果这些软件没有遵循一套规范的命名风格,容易造成 Dependency Hell.所以 当我们发布版本的时候,版本号的命名需要遵循某种规则,其中Semantic Versionong2.0.0 定义了一套简单的规则以及条件来约束版本号的配置和增长.本文根据Semantic Versioning2.0.0 和Semantic Versioning3.0.0 选择性的整理出版本号命名规则指南.</p>
-<h3 id="语义化版本命名通行规则"><a href="#语义化版本命名通行规则" class="headerlink" title="语义化版本命名通行规则"></a>语义化版本命名通行规则</h3>
+          <h2 id="MySQL索引原理和实现"><a href="#MySQL索引原理和实现" class="headerlink" title="MySQL索引原理和实现"></a>MySQL索引原理和实现</h2>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/MySql%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/MySql%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="post-title-link" itemprop="url">MySql查询性能优化</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="MySql查询性能优化"><a href="#MySql查询性能优化" class="headerlink" title="MySql查询性能优化"></a>MySql查询性能优化</h1><h2 id="避免向数据库请求不需要的数据"><a href="#避免向数据库请求不需要的数据" class="headerlink" title="避免向数据库请求不需要的数据"></a>避免向数据库请求不需要的数据</h2><p>在访问数据库时，应该只请求需要的行和列。请求多余的行和列会消耗MySql服务器的CPU和内存资源，并增加网络开销。<br>例如在处理分页时，应该使用LIMIT限制MySql只返回一页的数据，而不是向应用程序返回全部数据后，再由应用程序过滤不需要的行。<br>当一行数据被多次使用时可以考虑将数据行缓存起来，避免每次使用都要到MySql查询。<br>避免使用SELECT *这种方式进行查询，应该只返回需要的列。</p>
+<h2 id="查询数据的方式"><a href="#查询数据的方式" class="headerlink" title="查询数据的方式"></a>查询数据的方式</h2><p>查询数据的方式有全表扫描、索引扫描、范围扫描、唯一索引查询、常数引用等。这些查询方式，速度从慢到快，扫描的行数也是从多到少。可以通过EXPLAIN语句中的type列反应查询采用的是哪种方式。<br>通常可以通过添加合适的索引改善查询数据的方式，使其尽可能减少扫描的数据行，加快查询速度。<br>例如，当发现查询需要扫描大量的数据行但只返回少数的行，那么可以考虑使用覆盖索引，即把所有需要用到的列都放到索引中。这样存储引擎无须回表获取对应行就可以返回结果了。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/4.%20Spring%E7%89%88%E6%9C%AC%20%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/#more" rel="contents">
+              <a class="btn" href="/MySql%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -697,7 +777,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/3.%20Spring5%20%E6%96%B0%E7%89%B9%E6%80%A7%E7%AE%80%E8%BF%B0/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/mysql%E4%B8%BB%E4%BB%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -711,7 +791,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/3.%20Spring5%20%E6%96%B0%E7%89%B9%E6%80%A7%E7%AE%80%E8%BF%B0/" class="post-title-link" itemprop="url">3</a>
+            <a href="/mysql%E4%B8%BB%E4%BB%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">mysql主从实现原理</a>
         </h2>
 
         <div class="post-meta">
@@ -722,7 +802,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -730,7 +810,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
                 </span>
             </span>
 
@@ -745,13 +825,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="3-Spring5-新特性简述"><a href="#3-Spring5-新特性简述" class="headerlink" title="3. Spring5 新特性简述"></a>3. Spring5 新特性简述</h1><hr>
-<p>Spring 5 于 2017 年 9 月发布了通用版本 (GA)，它标志着自 2013 年 12 月以来第一个主要<br>Spring Framework 版本。它提供了一些人们期待已久的改进，还采用了一种全新的编程范例，以反应<br>式描述中陈述的反应式原则为基础。</p>
-<p>这个版本是很长时间以来最令人激动的 Spring Framework 版本。Spring 5 兼容 Java™8 和 JDK 9，<br>它集成了反应式流，以方便后续提供一种颠覆性方法来实现端点和 Web 应用程序开发。<br>当然，反应式编程不仅是此版本的主题，还是令许多程序员激动不已的重大特性。人们对能够针对负载<br>波动进行无缝扩展的容灾和响应式服务的需求在不断增加，Spring 5 很好地满足了这一需求。<br>我们将介绍 Java SE 8 和 Java EE 7 API 升级的基本内容、Spring 5 的新反应式编程模型、对 HTTP/2<br>支持，以及 Spring 通过 Kotlin 对函数式编程的全面支持。我还会简要介绍测试和性能增强，最后介<br>绍对 Spring 核心和容器的一般性修订。</p>
-<h4 id="升级到-Java-SE-8-和-Java-EE-7"><a href="#升级到-Java-SE-8-和-Java-EE-7" class="headerlink" title="升级到 Java SE 8 和 Java EE 7"></a>升级到 Java SE 8 和 Java EE 7</h4>
+          <h1 id="mysql主从实现原理"><a href="#mysql主从实现原理" class="headerlink" title="mysql主从实现原理"></a>mysql主从实现原理</h1><h2 id="1、什么是mysql主从同步？"><a href="#1、什么是mysql主从同步？" class="headerlink" title="1、什么是mysql主从同步？"></a>1、什么是mysql主从同步？</h2><p>当master(主)库的数据发生变化的时候，变化会实时的同步到slave(从)库。</p>
+<hr>
+<h2 id="2、主从同步有什么好处？"><a href="#2、主从同步有什么好处？" class="headerlink" title="2、主从同步有什么好处？"></a>2、主从同步有什么好处？</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/3.%20Spring5%20%E6%96%B0%E7%89%B9%E6%80%A7%E7%AE%80%E8%BF%B0/#more" rel="contents">
+              <a class="btn" href="/mysql%E4%B8%BB%E4%BB%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -775,7 +854,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/2.%20Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Java%E4%B9%8Bsynchronized%E5%92%8CLock%E7%9A%84%E5%8C%BA%E5%88%AB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -789,7 +868,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2.%20Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96/" class="post-title-link" itemprop="url">2</a>
+            <a href="/Java%E4%B9%8Bsynchronized%E5%92%8CLock%E7%9A%84%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">Java之synchronized和Lock的区别</a>
         </h2>
 
         <div class="post-meta">
@@ -800,7 +879,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -808,7 +887,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
                 </span>
             </span>
 
@@ -823,13 +902,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="2-Spring的前世今生"><a href="#2-Spring的前世今生" class="headerlink" title="2 . Spring的前世今生"></a>2 . Spring的前世今生</h1><p>&emsp;&emsp;相信经历过不使用框架开发Web项目的70后、80后都会有如此感触，如今的程序员开发项目太轻松<br>了，基本只需要关心业务如何实现，通用技术问题只需要集成框架便可。早在2007年，一个基于Java<br>语言的开源框架正式发布，取了一个非常有活力且美好的名字，叫做 Spring。它是一个开源的轻量级<br>Java SE（Java标准版本）/Java EE（Java企业版本）开发应用框架，其目的是用于简化企业级应用程<br>序开发。应用程序是由一组相互协作的对象组成。而在传统应用程序开发中，一个完整的应用是由一组<br>相互协作的对象组成。所以开发一个应用除了要开发业务逻辑之外，最多的是关注如何使这些对象协作<br>来完成所需功能，而且要低耦合、高聚合。业务逻辑开发是不可避免的，那如果有个框架出来帮我们来<br>创建对象及管理这些对象之间的依赖关系。可能有人说了，比如“抽象工厂、工厂方法模式”不也可以</p>
-<p>帮我们创建对象，“生成器模式”帮我们处理对象间的依赖关系，不也能完成这些功能吗？可是这些又<br>需要我们创建另一些工厂类、生成器类，我们又要而外管理这些类，增加了我们的负担，如果能有种通<br>过配置方式来创建对象，管理对象之间依赖关系，我们不需要通过工厂和生成器来创建及管理对象之间<br>的依赖关系，这样我们是不是减少了许多工作，加速了开发，能节省出很多时间来干其他事。Spring<br>框架刚出来时主要就是来完成这个功能。</p>
-<p>&emsp;&emsp;Spring框架除了帮我们管理对象及其依赖关系，还提供像通用日志记录、性能统计、安全控制、异常处<br>理等面向切面的能力，还能帮我管理最头疼的数据库事务，本身提供了一套简单的JDBC访问实现，提<br>供与第三方数据访问框架集成（如Hibernate、JPA），与各种 JavaEE技术整合（如JavaMail、任务<br>调度等等），提供一套自己的Web层框架SpringMVC、而且还能非常简单的与第三方Web框架集成。<br>从这里我们可以认为 Spring 是一个超级粘合大平台，除了自己提供功能外，还提供粘合其他技术和框<br>架的能力，从而使我们可以更自由的选择到底使用什么技术进行开发。而且不管是JAVASE（C/S架构）<br>应用程序还是 JAVA EE（B/S架构）应用程序都可以使用这个平台进行开发。如今的 Spring 已经不再<br>是一个框架，早已成为了一种生态。SpringBoot的便捷式开发实现了零配置，SpringCloud全家桶，<br>提供了非常方便的解决方案。接下来，让我们来深入探讨Spring到底能给我们带来什么？</p>
-<h2 id="一切从Bean开始"><a href="#一切从Bean开始" class="headerlink" title="一切从Bean开始"></a>一切从Bean开始</h2>
+          <h1 id="Java之synchronized和Lock的区别"><a href="#Java之synchronized和Lock的区别" class="headerlink" title="Java之synchronized和Lock的区别"></a>Java之synchronized和Lock的区别</h1><ol>
+<li>Lock是java的一个interface接口，而synchronized是Java中的关键字，synchronized是由JDK实现的，不需要程序员编写代码去控制加锁和释放；Lock的接口如下：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Lock</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">lockInterruptibly</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">(<span class="keyword">long</span> time, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">unlock</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">Condition <span class="title">newCondition</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>synchronized修饰的代码在执行异常时，jdk会自动释放线程占有的锁，不需要程序员去控制释放锁，因此不会导致死锁现象发生；但是，当Lock发生异常时，如果程序没有通过unLock()去释放锁，则很可能造成死锁现象，因此Lock一般都是在finally块中释放锁；格式如下：</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Lock <span class="keyword">lock</span> = <span class="keyword">new</span> LockImpl; <span class="comment">// new 一个Lock的实现类</span></span><br><span class="line"><span class="keyword">lock</span>.<span class="keyword">lock</span>();  <span class="comment">// 加锁</span></span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    <span class="comment">//todo</span></span><br><span class="line">&#125;catch(Exception ex)&#123;</span><br><span class="line">     <span class="comment">// todo</span></span><br><span class="line">&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">    <span class="keyword">lock</span>.unlock();   <span class="comment">//释放锁</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2.%20Spring%E6%A1%86%E6%9E%B6%E7%9A%84%E5%89%8D%E7%94%9F%E4%BB%8A%E4%B8%96/#more" rel="contents">
+              <a class="btn" href="/Java%E4%B9%8Bsynchronized%E5%92%8CLock%E7%9A%84%E5%8C%BA%E5%88%AB/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -853,7 +937,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/13%20.%20%E6%B5%85%E8%B0%88%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/HashMap%E8%B7%9FHashtable%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.jpg">
@@ -867,7 +951,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/13%20.%20%E6%B5%85%E8%B0%88%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/" class="post-title-link" itemprop="url">13 </a>
+            <a href="/HashMap%E8%B7%9FHashtable%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">HashMap跟Hashtable有什么区别</a>
         </h2>
 
         <div class="post-meta">
@@ -878,7 +962,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
+              <time title="创建时间：2021-03-02 13:51:39 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:39+08:00">2021-03-02</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -886,7 +970,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
                 </span>
             </span>
 
@@ -901,183 +985,32 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="浅谈分布式事务"><a href="#浅谈分布式事务" class="headerlink" title="浅谈分布式事务"></a>浅谈分布式事务</h2><hr>
-<p>现今互联网界，分布式系统和微服务架构盛行。一个简单操作，在服务端非常可能是由<br>多个服务和数据库实例协同完成的。在一致性要求较高的场景下，多个独立操作之间的<br>一致性问题显得格外棘手。</p>
-<p>基于水平扩容能力和成本考虑，传统的强一致的解决方案（e.g.单机事务）纷纷被抛弃。<br>其理论依据就是响当当的 CAP 原理。往往为了可用性和分区容错性，忍痛放弃强一致支<br>持，转而追求最终一致性。</p>
-<h4 id="分布式系统的特性"><a href="#分布式系统的特性" class="headerlink" title="分布式系统的特性"></a>分布式系统的特性</h4>
+          <h1 id="HashMap跟Hashtable有什么区别"><a href="#HashMap跟Hashtable有什么区别" class="headerlink" title="HashMap跟Hashtable有什么区别?"></a>HashMap跟Hashtable有什么区别?</h1><p>HashMap和HashTable都是基于哈希表来实现键值映射的工具类,从公开的方法上来看，这两个类提供的，是一样的功能。都提供键值映射的服务，可以增、删、查、改键值对，可以对键、值、键值对提供遍历视图。支持浅拷贝，支持序列化。</p>
+<ul>
+<li>从数据结构上看 :<br> HashMap和HashTable都使用哈希表来存储键值对。在数据结构上是基本相同的，都创建了一个继承自Map.Entry的私有的内部类Entry，每一个Entry对象表示存储在哈希表中的一个键值对。可以说，有多少个键值对，就有多少个Entry对象.<br> 得出结论，HashMap/HashTable内部用Entry数组实现哈希表，而对于映射到同一个哈希桶（数组的同一个位置）的键值对，使用Entry链表来存储(解决hash冲突)。</li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Entry对象唯一表示一个键值对，有四个属性：</span><br><span class="line">-K key 键对象</span><br><span class="line">-V <span class="keyword">value</span> 值对象</span><br><span class="line">-<span class="built_in">int</span> hash 键对象的hash值</span><br><span class="line">-Entry entry 指向链表中下一个Entry对象，可为<span class="literal">null</span>，表示当前Entry对象在链表尾部</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>从继承体系上看 :<br> 虽然都实现了Map、Cloneable、Serializable三个接口。但是HashMap继承自抽象类AbstractMap，而HashTable继承自抽象类Dictionary。其中Dictionary类是一个已经被废弃的类.</p>
+</li>
+<li><p>从公共方法上看 :<br> HashMap是支持null键和null值的，而HashTable在遇到null时，会抛出NullPointerException异常。这并不是因为HashTable有什么特殊的实现层面的原因导致不能支持null键和null值，这仅仅是因为HashMap在实现时对null做了特殊处理，将null的hashCode值定为了0，从而将其存放在哈希表的第0个bucket中。在HashMap中不能由get()方法来判断HashMap中是否存在某个键， 而应该用containsKey()方法来判断。</p>
+</li>
+<li><p>从算法上看 :<br> HashTable默认的初始大小为11，之后每次扩充为原来的2n+1。HashMap默认的初始化大小为16，之后每次扩充为原来的2倍。如果在创建时给定了初始化大小，那么HashTable会直接使用你给定的大小，而HashMap会将其扩充为2的幂次方大小。<br> 因为哈希表的大小为素数时，简单的取模哈希的结果会更加均匀.这样设计可以减少哈希值冲突.<br> 但是在取模计算时，如果模数是2的幂，那么我们可以直接使用位运算来得到结果，效率要大大高于做除法。hash计算的效率HashMap更胜一筹.HashMap由于使用了2的幂次方，所以在取模运算时不需要做除法，只需要位的与运算就可以了。但是由于引入的hash冲突加剧问题，HashMap在调用了对象的hashCode方法之后，又做了一些位运算在打散数据。</p>
+</li>
+<li><p>从线程安全上看 :<br> Hashtable是线程安全的，它的每个方法中都加入了Synchronize方法。在多线程并发的环境下，可以直接使用Hashtable，不需要自己为它的方法实现同步.<br> HashMap不是线程安全的，在多线程并发的环境下，可能会产生死锁等问题。使用HashMap时就必须要自己增加同步处理.HashMap进行同步： <code>Map m = Collections.synchronizeMap(hashMap);</code><br> 虽然HashMap不是线程安全的，但是它的效率会比Hashtable要好很多。这样设计是合理的。在我们的日常使用当中，大部分时间是单线程操作的。HashMap把这部分操作解放出来了。当需要多线程操作的时候可以使用线程安全的ConcurrentHashMap。ConcurrentHashMap虽然也是线程安全的，但是它的效率比Hashtable要高好多倍。因为ConcurrentHashMap使用了分段锁，并不对整个数据进行锁定。</p>
+</li>
+<li><p>从遍历方式上看 :<br> Hashtable、HashMap都使用了 Iterator。而由于历史原因，Hashtable还使用了Enumeration的方式 .</p>
+<p>HashMap和jdk1.8以后的HashTable迭代器使用fast-fail机制 , 当有其它线程改变了HashMap的结构（增加，删除，修改元素），将会抛出ConcurrentModificationException。不过，通过Iterator的remove()方法移除元素则不会抛出ConcurrentModificationException异常。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8884551-9c116a6102a410b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/688/format/webp" alt="img"></p>
+<p>每次在发生增删改的时候都会出现modCount++的动作。而modcount可以理解为是当前hashtable的状态。每发生一次操作，状态就向前走一步。设置这个状态，主要是由于hashtable等容器类在迭代时，判断数据是否过时时使用的。尽管hashtable采用了原生的同步锁来保护数据安全。但是在出现迭代数据的时候，则无法保证边迭代，边正确操作。于是使用这个值来标记状态。一旦在迭代的过程中状态发生了改变，则会快速抛出一个异常，终止迭代行为。</p>
+</li>
+<li><p>从使用角度上看 :<br> 如果不需要线程安全，那么使用HashMap，如果需要线程安全，那么使用ConcurrentHashMap。HashTable已经被淘汰了，不要在新的代码中再使用它。<br> 每一版本的JDK，都会对HashMap和HashTable的内部实现做优化，比如JDK 1.8的红黑树优化。所以尽可能的使用新版本的JDK，会有性能上有提升。<br> 为什么HashTable已经淘汰了，还要优化它？因为有老的代码还在使用它，所以优化了它之后，这些老的代码也能获得性能提升。</p>
+</li>
+</ul>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/13%20.%20%E6%B5%85%E8%B0%88%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://luyanan.com/12.%20spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="luyanan">
-      <meta itemprop="description" content="程序员报社">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="程序员报社">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/12.%20spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/" class="post-title-link" itemprop="url">12</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-02 13:51:38 / 修改时间：13:42:51" itemprop="dateCreated datePublished" datetime="2021-03-02T13:51:38+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Spring-注解大全"><a href="#Spring-注解大全" class="headerlink" title="Spring 注解大全"></a>Spring 注解大全</h1><h3 id="核心注解"><a href="#核心注解" class="headerlink" title="核心注解"></a>核心注解</h3><table>
-<thead>
-<tr>
-<th>注解</th>
-<th>介绍</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>@Documented</td>
-<td>将会在被此注解注解的元素的javadoc文档中列出注解，一般都打上这个注解没坏处</td>
-</tr>
-<tr>
-<td>@Target</td>
-<td>注解能被应用的目标元素，比如类、方法、属性、参数等等</td>
-</tr>
-<tr>
-<td></td>
-<td>@Retention</td>
-</tr>
-<tr>
-<td>@Inherited</td>
-<td>如果子类没有定义注解的话，能自动从父类获取定义了继承属性的注解，比如Spring的@Service是没有继承特性的，但是@Transactional是有继承特性的，在OO继承体系中使用Spring注解的时候请特别注意这点，理所当然认为注解是能被子类继承的话可能会引起不必要的Bug，需要仔细斟酌是否开启继承</td>
-</tr>
-<tr>
-<td>@Repeatable</td>
-<td>Java 8 引入的特性，通过关联注解容器定义可重复注解，小小语法糖提高了代码可读性，对于元素有多个重复注解其实是很常见的事情，比如某方法可以是A角色可以访问也可以是B角色可以访问，某方法需要定时任务执行，要在A条件执行也需要在B条件执行</td>
-</tr>
-<tr>
-<td>@Native</td>
-<td>是否在.h头文件中生成被标记的字段，除非原生程序需要和Java程序交互，否则很少会用到这个元注解</td>
-</tr>
-</tbody></table>
-<h3 id="spring-核心注解"><a href="#spring-核心注解" class="headerlink" title="spring 核心注解"></a>spring 核心注解</h3><table>
-<thead>
-<tr>
-<th>注解</th>
-<th>介绍</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>@Controller</td>
-<td>定义表现层组件</td>
-</tr>
-<tr>
-<td>@Service</td>
-<td>定义业务逻辑层组件</td>
-</tr>
-<tr>
-<td>@Repository</td>
-<td>定义数据访问层组件</td>
-</tr>
-<tr>
-<td>@Component</td>
-<td>定义其他组件</td>
-</tr>
-<tr>
-<td>@Autowired</td>
-<td>自动装配</td>
-</tr>
-<tr>
-<td>@Required</td>
-<td>用于在setter方法标记属性值需要由Spring 进行装配,目前这个方法已经被spring 废弃,推荐使用构造方法注入</td>
-</tr>
-<tr>
-<td>@Qualifier</td>
-<td>用于给Bean定义修饰语来注入相应的bean</td>
-</tr>
-<tr>
-<td>@Value</td>
-<td>用于注入属性配置或者Spel表达式</td>
-</tr>
-<tr>
-<td>@Lookup</td>
-<td>可以实现方法的注入,如果我们的类是单例的,但是又希望Spring注入的依赖的对象是Prototype生命周期（每次new一个出来）的，这个时候可以通过此注解进行方法注入</td>
-</tr>
-<tr>
-<td>@EnableTransactionManagement</td>
-<td>用于开启事务管理，使用Spring Boot如果引入Spring Data的话不需要手动开启（不过建议大家在使用事务的时候还是通过日志来验证事务管理是否生效）</td>
-</tr>
-<tr>
-<td>@Transactional</td>
-<td>用于开启事务以及设置传播性、隔离性、回滚条件等；</td>
-</tr>
-<tr>
-<td>@TransactionalEventListener</td>
-<td>用于配置事务的回调方法，可以在事务提交前、提交后、完成后以及回滚后几个阶段接受回调事件。</td>
-</tr>
-<tr>
-<td>@Order</td>
-<td>可以设置Spring管理对象的加载顺序，在之前介绍AOP的文章中我们看到有的时候我们必须通过设置合理的@Order来合理安排切面的切入顺序避免一些问题，还有在一些业务场景中，我们往往会去定义一组类似于Filter的@Component，然后会从容器获得一组Bean，这个时候业务组件的运行顺序往往会比较重要，也可以通过这个方式进行排序</td>
-</tr>
-<tr>
-<td>@AliasFor</td>
-<td>注解可以设置一组注解属性相互作为别名，对于有歧义的时候会使代码更清晰，此外还有一个用途是创建复合注解，Spring MVC的@GetMapping注解就是基于@RequestMapping这个注解创建的复合注解，我们可以很方便得通过这种方式来实现注解的继承</td>
-</tr>
-</tbody></table>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/12.%20spring%20%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/#more" rel="contents">
+              <a class="btn" href="/HashMap%E8%B7%9FHashtable%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1168,7 +1101,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">227</span>
+          <span class="site-state-item-count">229</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

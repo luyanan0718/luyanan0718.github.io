@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"luyanan.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Netty高性能之道1. 背景介绍1. Netty惊人的性能数据通过使用Netty(NIO框架) 相比于传统基于Java 序列化+ BIO(同步阻塞IO)的通信框架， 性能提升了8倍多. 2. 传统RPC 调用性能差的三宗罪">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Netty高性能之道(6)">
+<meta property="og:url" content="http://luyanan.com/Netty%E9%AB%98%E6%80%A7%E8%83%BD%E4%B9%8B%E9%81%93(6)/index.html">
+<meta property="og:site_name" content="程序员报社">
+<meta property="og:description" content="Netty高性能之道1. 背景介绍1. Netty惊人的性能数据通过使用Netty(NIO框架) 相比于传统基于Java 序列化+ BIO(同步阻塞IO)的通信框架， 性能提升了8倍多. 2. 传统RPC 调用性能差的三宗罪">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://files.luyanan.com//img/20190921143042.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923100808.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923101835.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923101901.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923110501.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923112727.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923114708.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923115636.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923133948.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923135226.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923140323.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923141322.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923142442.png">
+<meta property="og:image" content="http://files.luyanan.com//img/20190923143722.png">
+<meta property="article:published_time" content="2021-03-12T02:15:06.386Z">
+<meta property="article:modified_time" content="2021-03-12T02:15:06.386Z">
+<meta property="article:author" content="luyanan">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://files.luyanan.com//img/20190921143042.png">
+
+<link rel="canonical" href="http://luyanan.com/Netty%E9%AB%98%E6%80%A7%E8%83%BD%E4%B9%8B%E9%81%93(6)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Netty高性能之道(6) | 程序员报社</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="程序员报社" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">程序员报社</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">程序员报社</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://luyanan.com/Netty%E9%AB%98%E6%80%A7%E8%83%BD%E4%B9%8B%E9%81%93(6)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="luyanan">
+      <meta itemprop="description" content="程序员报社">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="程序员报社">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Netty高性能之道(6)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 10:15:06" itemprop="dateCreated datePublished" datetime="2021-03-12T10:15:06+08:00">2021-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Netty高性能之道"><a href="#Netty高性能之道" class="headerlink" title="Netty高性能之道"></a>Netty高性能之道</h1><h2 id="1-背景介绍"><a href="#1-背景介绍" class="headerlink" title="1. 背景介绍"></a>1. 背景介绍</h2><h3 id="1-Netty惊人的性能数据"><a href="#1-Netty惊人的性能数据" class="headerlink" title="1. Netty惊人的性能数据"></a>1. Netty惊人的性能数据</h3><p>通过使用Netty(NIO框架) 相比于传统基于Java 序列化+ BIO(同步阻塞IO)的通信框架， 性能提升了8倍多.</p>
+<h3 id="2-传统RPC-调用性能差的三宗罪"><a href="#2-传统RPC-调用性能差的三宗罪" class="headerlink" title="2. 传统RPC 调用性能差的三宗罪"></a>2. 传统RPC 调用性能差的三宗罪</h3><p>网络传输方式问题: 传统的RPC框架或者基于RMI等方式的远程服务(过程) 调用采用了同步阻塞IO,当客户端的并发压力或者网络时延增大后, 同步阻塞IO 会由于频繁的wait 导致IO线程经常性的阻塞, 由于线程无法高效的工作，io处理能力自然下降. 下面, 我们通过BIO 通信模型看下BIO通信的弊端.</p>
+<p><img src="http://files.luyanan.com//img/20190921143042.png"></p>
+<p>采用BIO通信模型的服务端，通常由一个独立的Acceptor 线程负责客户端的连接, 接收到客户端连接后, 为客户端连接创建一个新的线程处理请求消息. 处理完成后, 返回应答消息给客户端, 线程销毁。 这就是典型的一线程一应答模型. 该架构最大的问题就是不具备弹性伸缩能力, 当并发访问量增加后, 服务端的线程个数和并发访问数呈线性正比, 由于线程是JAVA 虚拟机非常宝贵的资源, 当线程数膨胀后，系统的性能急剧下降, 随着并发量的继续增加，可能会发生句柄溢出、线程堆栈溢出等问题, 并最终导致服务端宕机.</p>
+<p>序列化方式问题: Java 序列化存在如下几个典型的问题:</p>
+<ol>
+<li>Java 序列化机制是Java内部的一种对象编解码技术, 无法跨语言使用, 例如对于异构系统之间的对接,Java序列化后的码流需要能过够通过其他语言反序列化成原始对象(副本),目前很难支持.</li>
+<li>相比于其他开源的序列化框架，Java序列化后的码流太大, 无论是网络传输还是持久化到磁盘, 都会导致额外的资源占用.</li>
+<li>序列化性能差(CPU资源占用高)</li>
+<li>线程模型问题: 由于采用同步阻塞IO，这会导致每个TCP 连接都占用一个线程, 由于线程资源是JVM 虚拟机最宝贵的资源, 当IO读写阻塞导致线程无法及时释放时, 会导致系统性能急剧下降, 严重的甚至会导致虚拟机无法创建新的线程.</li>
+</ol>
+<h3 id="3-高性能的三个主题"><a href="#3-高性能的三个主题" class="headerlink" title="3. 高性能的三个主题"></a>3. 高性能的三个主题</h3><ol>
+<li>传输: 用什么样的通道将数据发送给对方, BIO、NIO 或者AIO,IO模型在很大程度上决定了框架的性能.</li>
+<li>协议: 采用什么样的通信协议, HTTP或者内部私有协议. 协议的选择不同,性能模型也不同, 相比于公有协议, 内部私有协议的性能通常可以被设计的更优.</li>
+<li>线程: 数据包如何读取, 读取之后的百年编解码在哪个线程进行, 编解码后的消息如何派发, Peactor 线程模型的不同, 对性能的影响也非常大.</li>
+</ol>
+<h2 id="2-Netty-高性能之道"><a href="#2-Netty-高性能之道" class="headerlink" title="2. Netty 高性能之道"></a>2. Netty 高性能之道</h2><h3 id="1-异步非阻塞通信"><a href="#1-异步非阻塞通信" class="headerlink" title="1 异步非阻塞通信"></a>1 异步非阻塞通信</h3><p>在IO编写过程中, 当需要同时处理多个客户端接入请求时， 可以利用多线程或者IO多路复用技术进行处理。 IO多路复用通过把多个IO阻塞复用到同一个select 的阻塞上, 从而使得系统在单线程的情况下可以同时处理多个客户端请求. 与传统的多线程/多进程模型相比, io 多路复用的最大优势是系统开销小. 系统不需要创建新的额外的进程或者线程, 也不需要维护这些进程和线程的运行, 降低了系统的维护工作量, 节省了系统资源。</p>
+<p>JDK1.4 提供了对非阻塞IO(NIO)的支持, JDK1.5_update10 版本使用epoll 替代了传统的 select/poll , 极大的提升了NIO通信的性能. JDK NIO 通信模型如下所示：</p>
+<p><img src="http://files.luyanan.com//img/20190923100808.png"></p>
+<p>于Socket类和ServerSocket类相比, NIO 也提供了SocketChannel 和ServerSocketChannel 两种不同的套接字通道实现, 这两种新增的通道都支持阻塞和非阻塞两种模式, 阻塞模式使用非常简单, 但是性能和可靠性都不好, 非阻塞模型正好相反. 开发人员一般可以根据自己的需要来选择合适的开发模型, 一般来说, 低负载、低并发的应用程序可以选择同步阻塞IO 以降低编程复杂度. 但是对于高负载、高并发的网络应用, 需要使用NIO的非阻塞模型进行开发, Netty 架构按照Reactor模式设计和实现, 他的服务端通信序列图如下:</p>
+<p><img src="http://files.luyanan.com//img/20190923101835.png"></p>
+<p>客户端通信序列图如下:</p>
+<p><img src="http://files.luyanan.com//img/20190923101901.png"></p>
+<p>Netty的IO线程 NioEventLoop 聚合了多路复用器 Selector, 可以同时并发处理成百上千个客户端 Channel, 由于读写操作都是非阻塞的, 这就可以充分提升IO线程的运行效率, 避免由于频繁IO阻塞导致的线程挂起. 另外， 由于Netty 采用了异步通信模型, 一个IO线程可以并发处理N个客户端连接和读写操作， 这就从根据上解决了传统同步IO阻塞 <code>一连接一线程</code> 模型, 架构的性能, 弹性伸缩能力和可靠性都得到了极大的提升.</p>
+<h3 id="2-零拷贝"><a href="#2-零拷贝" class="headerlink" title="2. 零拷贝"></a>2. 零拷贝</h3><p>Netty的<code>零拷贝</code> 主要体现在如下三个方面:</p>
+<ol>
+<li>Netty的接收和发送ByteBuffer 采用 <code>DIRECT BUFFERS</code>, 使用堆外直接内存进行Socket 读写， 不需要进行字节缓存区的二次拷贝, 如果使用传统的堆内存(HEAP BUFFERS) 使用Socket读写,  JVM 会将堆内存Buffer 拷贝一份到直接内存中, 然后才写入到Socket, 相比于堆外直接内存, 消息在发送过程中多了一次缓冲区的内存拷贝。 </li>
+<li>Netty 提供了组合Buffer对象, 可以聚合多个ByteBuffer 对象, 用户可以像操作一个Buffer 那样方便的对组合Buffer 进行操作, 避免了传统使用内存拷贝的方式将几个小Buffer 合并成一个大的Buffer .</li>
+<li>Netty 的文件传输采用了 transferTo() 方法, 它可以直接将文件缓冲区的数据发送到目标Channel, 避免了传统通过 循环 write() 方式导致的内存拷贝问题.</li>
+</ol>
+<p>下面, 我们对上述的三种<code>零拷贝</code> 进行说明, 先看Netty 接受Buffer的创建</p>
+<p>打开 AbstractNioByteChannel的 NioByteUnsafe</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">final</span> ChannelConfig config = config();</span><br><span class="line">       <span class="keyword">final</span> ChannelPipeline pipeline = pipeline();</span><br><span class="line">       <span class="keyword">final</span> ByteBufAllocator allocator = config.getAllocator();</span><br><span class="line">       <span class="keyword">final</span> RecvByteBufAllocator.Handle allocHandle = recvBufAllocHandle();</span><br><span class="line">       allocHandle.reset(config);</span><br><span class="line"></span><br><span class="line">       ByteBuf byteBuf = <span class="keyword">null</span>;</span><br><span class="line">       <span class="keyword">boolean</span> close = <span class="keyword">false</span>;</span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           <span class="keyword">do</span> &#123;</span><br><span class="line">               byteBuf = allocHandle.allocate(allocator);</span><br><span class="line">               allocHandle.lastBytesRead(doReadBytes(byteBuf));</span><br><span class="line">               <span class="keyword">if</span> (allocHandle.lastBytesRead() &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                   <span class="comment">// nothing was read. release the buffer.</span></span><br><span class="line">                   byteBuf.release();</span><br><span class="line">                   byteBuf = <span class="keyword">null</span>;</span><br><span class="line">                   close = allocHandle.lastBytesRead() &lt; <span class="number">0</span>;</span><br><span class="line">                   <span class="keyword">break</span>;</span><br><span class="line">               &#125;</span><br><span class="line"></span><br><span class="line">               allocHandle.incMessagesRead(<span class="number">1</span>);</span><br><span class="line">               readPending = <span class="keyword">false</span>;</span><br><span class="line">               pipeline.fireChannelRead(byteBuf);</span><br><span class="line">               byteBuf = <span class="keyword">null</span>;</span><br><span class="line">           &#125; <span class="keyword">while</span> (allocHandle.continueReading());</span><br><span class="line"></span><br><span class="line">           allocHandle.readComplete();</span><br><span class="line">           pipeline.fireChannelReadComplete();</span><br><span class="line"></span><br><span class="line">           <span class="keyword">if</span> (close) &#123;</span><br><span class="line">               closeOnRead(pipeline);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">           handleReadException(pipeline, byteBuf, t, close, allocHandle);</span><br><span class="line">       &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">           <span class="comment">// Check if there is a readPending which was not processed yet.</span></span><br><span class="line">           <span class="comment">// This could be for two reasons:</span></span><br><span class="line">           <span class="comment">// * The user called Channel.read() or ChannelHandlerContext.read() in channelRead(...) method</span></span><br><span class="line">           <span class="comment">// * The user called Channel.read() or ChannelHandlerContext.read() in channelReadComplete(...) method</span></span><br><span class="line">           <span class="comment">//</span></span><br><span class="line">           <span class="comment">// See https://github.com/netty/netty/issues/2254</span></span><br><span class="line">           <span class="keyword">if</span> (!readPending &amp;&amp; !config.isAutoRead()) &#123;</span><br><span class="line">               removeReadOp();</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>再找到  do while 中的 <code>allocHandle.allocate(allocator)</code> 方法, 实际上调用的是</p>
+<p>DefaultMaxMessagesRecvByteBufAllocator中的MaxMessageHandle的 allocate 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">     <span class="function"><span class="keyword">public</span> ByteBuf <span class="title">allocate</span><span class="params">(ByteBufAllocator alloc)</span> </span>&#123;</span><br><span class="line">         <span class="keyword">return</span> alloc.ioBuffer(guess());</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+
+<p>相当于每次循环读取一次消息, 就通过 AbstractByteBufAllocator的 ioBuffer 方法获取 ByteBuf 对象， 下面继续看他的接口定义</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ByteBuf</span> <span class="keyword">implements</span> <span class="title">ReferenceCounted</span>, <span class="title">Comparable</span>&lt;<span class="title">ByteBuf</span>&gt; </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当进行 Socket IO 读写的时候, 为了避免从堆内存拷贝一份副本到直接内存, Netty的ByteBuf 分配器直接创建非堆内存避免缓冲区的二次拷贝, 通过<code>零拷贝</code> 来提升读写性能.</p>
+<p>下面我们继续看第二种 <code>零拷贝</code> 的 实现 CompositeByteBuf, 他对外将多个 ByteBuf 封装成一个ByteBuf, 对外提供统一封装后的 ByteBuf接口, 他的类定义如下:</p>
+<p><img src="http://files.luyanan.com//img/20190923110501.png"></p>
+<p>通过继承关系我们可以看出CompositeByteBuf  实际上就是个 ByteBuf的包装器, 它将多个 ByteBuf 的包装器, 他将多个ByteBuf 组合成一个集合, 然后对外提供统一的ByteBuf 接口, 相关定义如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ByteBuffer EMPTY_NIO_BUFFER = Unpooled.EMPTY_BUFFER.nioBuffer();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Iterator&lt;ByteBuf&gt; EMPTY_ITERATOR = Collections.&lt;ByteBuf&gt;emptyList().iterator();</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ByteBufAllocator alloc;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> direct;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> List&lt;Component&gt; components;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> maxNumComponents;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">boolean</span> freed;</span><br></pre></td></tr></table></figure>
+
+<p>添加ByteBuf ,  不需要做内存拷贝, 相关代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">addComponent0</span><span class="params">(<span class="keyword">boolean</span> increaseWriterIndex, <span class="keyword">int</span> cIndex, ByteBuf buffer)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">assert</span> buffer != <span class="keyword">null</span>;</span><br><span class="line">      <span class="keyword">boolean</span> wasAdded = <span class="keyword">false</span>;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">          checkComponentIndex(cIndex);</span><br><span class="line"></span><br><span class="line">          <span class="keyword">int</span> readableBytes = buffer.readableBytes();</span><br><span class="line"></span><br><span class="line">          <span class="comment">// No need to consolidate - just add a component to the list.</span></span><br><span class="line">          <span class="meta">@SuppressWarnings(&quot;deprecation&quot;)</span></span><br><span class="line">          Component c = <span class="keyword">new</span> Component(buffer.order(ByteOrder.BIG_ENDIAN).slice());</span><br><span class="line">          <span class="keyword">if</span> (cIndex == components.size()) &#123;</span><br><span class="line">              wasAdded = components.add(c);</span><br><span class="line">              <span class="keyword">if</span> (cIndex == <span class="number">0</span>) &#123;</span><br><span class="line">                  c.endOffset = readableBytes;</span><br><span class="line">              &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                  Component prev = components.get(cIndex - <span class="number">1</span>);</span><br><span class="line">                  c.offset = prev.endOffset;</span><br><span class="line">                  c.endOffset = c.offset + readableBytes;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">              components.add(cIndex, c);</span><br><span class="line">              wasAdded = <span class="keyword">true</span>;</span><br><span class="line">              <span class="keyword">if</span> (readableBytes != <span class="number">0</span>) &#123;</span><br><span class="line">                  updateComponentOffsets(cIndex);</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">if</span> (increaseWriterIndex) &#123;</span><br><span class="line">              writerIndex(writerIndex() + buffer.readableBytes());</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">return</span> cIndex;</span><br><span class="line">      &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">          <span class="keyword">if</span> (!wasAdded) &#123;</span><br><span class="line">              buffer.release();</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后, 我们看一下文件传输的 <code>零拷贝</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">transferTo</span><span class="params">(WritableByteChannel target, <span class="keyword">long</span> position)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> count = <span class="keyword">this</span>.count - position;</span><br><span class="line">    <span class="keyword">if</span> (count &lt; <span class="number">0</span> || position &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(</span><br><span class="line">                <span class="string">&quot;position out of range: &quot;</span> + position +</span><br><span class="line">                <span class="string">&quot; (expected: 0 - &quot;</span> + (<span class="keyword">this</span>.count - <span class="number">1</span>) + <span class="string">&#x27;)&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (count == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0L</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (refCnt() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalReferenceCountException(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Call open to make sure fc is initialized. This is a no-oop if we called it before.</span></span><br><span class="line">    open();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">long</span> written = file.transferTo(<span class="keyword">this</span>.position + position, count, target);</span><br><span class="line">    <span class="keyword">if</span> (written &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        transferred += written;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> written;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Netty文件传输  <code>DefaultFileRegion</code> 通过 transferTo 方法将文件 发送到目标Channel, 下面重点看 FileChannel 的 transferTo  方法， 它的API DOC 说明如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Transfers bytes from this channel&#x27;s file to the given writable byte</span></span><br><span class="line"><span class="comment"> * channel.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt; An attempt is made to read up to &lt;tt&gt;count&lt;/tt&gt; bytes starting at</span></span><br><span class="line"><span class="comment"> * the given &lt;tt&gt;position&lt;/tt&gt; in this channel&#x27;s file and write them to the</span></span><br><span class="line"><span class="comment"> * target channel.  An invocation of this method may or may not transfer</span></span><br><span class="line"><span class="comment"> * all of the requested bytes; whether or not it does so depends upon the</span></span><br><span class="line"><span class="comment"> * natures and states of the channels.  Fewer than the requested number of</span></span><br><span class="line"><span class="comment"> * bytes are transferred if this channel&#x27;s file contains fewer than</span></span><br><span class="line"><span class="comment"> * &lt;tt&gt;count&lt;/tt&gt; bytes starting at the given &lt;tt&gt;position&lt;/tt&gt;, or if the</span></span><br><span class="line"><span class="comment"> * target channel is non-blocking and it has fewer than &lt;tt&gt;count&lt;/tt&gt;</span></span><br><span class="line"><span class="comment"> * bytes free in its output buffer.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt; This method does not modify this channel&#x27;s position.  If the given</span></span><br><span class="line"><span class="comment"> * position is greater than the file&#x27;s current size then no bytes are</span></span><br><span class="line"><span class="comment"> * transferred.  If the target channel has a position then bytes are</span></span><br><span class="line"><span class="comment"> * written starting at that position and then the position is incremented</span></span><br><span class="line"><span class="comment"> * by the number of bytes written.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt; This method is potentially much more efficient than a simple loop</span></span><br><span class="line"><span class="comment"> * that reads from this channel and writes to the target channel.  Many</span></span><br><span class="line"><span class="comment"> * operating systems can transfer bytes directly from the filesystem cache</span></span><br><span class="line"><span class="comment"> * to the target channel without actually copying them.  &lt;/p&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span>  position</span></span><br><span class="line"><span class="comment"> *         The position within the file at which the transfer is to begin;</span></span><br><span class="line"><span class="comment"> *         must be non-negative</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span>  count</span></span><br><span class="line"><span class="comment"> *         The maximum number of bytes to be transferred; must be</span></span><br><span class="line"><span class="comment"> *         non-negative</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span>  target</span></span><br><span class="line"><span class="comment"> *         The target channel</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span>  The number of bytes, possibly zero,</span></span><br><span class="line"><span class="comment"> *          that were actually transferred</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IllegalArgumentException</span></span><br><span class="line"><span class="comment"> *         If the preconditions on the parameters do not hold</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span>  NonReadableChannelException</span></span><br><span class="line"><span class="comment"> *          If this channel was not opened for reading</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span>  NonWritableChannelException</span></span><br><span class="line"><span class="comment"> *          If the target channel was not opened for writing</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span>  ClosedChannelException</span></span><br><span class="line"><span class="comment"> *          If either this channel or the target channel is closed</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span>  AsynchronousCloseException</span></span><br><span class="line"><span class="comment"> *          If another thread closes either channel</span></span><br><span class="line"><span class="comment"> *          while the transfer is in progress</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span>  ClosedByInterruptException</span></span><br><span class="line"><span class="comment"> *          If another thread interrupts the current thread while the</span></span><br><span class="line"><span class="comment"> *          transfer is in progress, thereby closing both channels and</span></span><br><span class="line"><span class="comment"> *          setting the current thread&#x27;s interrupt status</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span>  IOException</span></span><br><span class="line"><span class="comment"> *          If some other I/O error occurs</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">long</span> <span class="title">transferTo</span><span class="params">(<span class="keyword">long</span> position, <span class="keyword">long</span> count,</span></span></span><br><span class="line"><span class="function"><span class="params">                                WritableByteChannel target)</span></span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
+
+<p>对于很多操作系统它直接将文件缓冲区的内容发送到目标Channel, 而不需要通过拷贝的方式, 这是一种更加高效的传输方式, 它实现了文件传输的<code>零拷贝</code></p>
+<h3 id="3-内存池"><a href="#3-内存池" class="headerlink" title="3. 内存池"></a>3. 内存池</h3><p>随着JVM 虚拟机和JIT 及时编译技术的发展, 对象的分配和回收是个非常轻量级的工作. 但是对于缓存区Buffer,情况却稍有不同, 特别是对于堆外内存的分配和回收， 是一件耗时的操作. 为了尽量重用缓冲区, Netty 提供了基于内存池的缓冲区重用机制, 下面我们一起看下Netty ByteBuf 的实现</p>
+<p><img src="http://files.luyanan.com//img/20190923112727.png"></p>
+<p>Netty 提供了多种内存管理策略, 通过在启动辅助类中配置相关参数, 可以实现差异化的定制， </p>
+<p>下面通过性能测试, 我们看下基于内存池循环利用的ByteBuf 和普通的 ByteBuf 的性能差异</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.formula.netty.base.buffer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.netty.buffer.ByteBuf;</span><br><span class="line"><span class="keyword">import</span> io.netty.buffer.PooledByteBufAllocator;</span><br><span class="line"><span class="keyword">import</span> io.netty.buffer.Unpooled;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> luyanan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2019/9/23</span></span><br><span class="line"><span class="comment"> * &lt;p&gt; 基于内存池循环利用的 ByteBuf 和普通 ByteBuf 的性能差异&lt;/p&gt;</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ByteBufDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">byte</span>[] CONTENT = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        <span class="keyword">int</span> loop = <span class="number">1800000</span>;</span><br><span class="line">        <span class="keyword">long</span> startTime = System.currentTimeMillis();</span><br><span class="line">        ByteBuf poolBuffer = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; loop; i++) &#123;</span><br><span class="line">            poolBuffer = PooledByteBufAllocator.DEFAULT.directBuffer(<span class="number">1024</span>);</span><br><span class="line">            poolBuffer.writeBytes(CONTENT);</span><br><span class="line">            poolBuffer.release();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">long</span> endTime = System.currentTimeMillis();</span><br><span class="line">        System.out.println(<span class="string">&quot;内存池分配缓冲区耗时：&quot;</span> + (endTime - startTime) + <span class="string">&quot;ms&quot;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> startTime2 = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">        ByteBuf buf = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; loop; i++) &#123;</span><br><span class="line">            buf = Unpooled.directBuffer(<span class="number">1024</span>);</span><br><span class="line">            buf.writeBytes(CONTENT);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">long</span> endTime2 = System.currentTimeMillis();</span><br><span class="line">        System.out.println(<span class="string">&quot;非内存池分配缓冲区耗时: &quot;</span> + (endTime2 - startTime2) + <span class="string">&quot;ms&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>各执行 180万次, 性能对比结果如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">内存池分配缓冲区耗时：773ms</span><br><span class="line">非内存池分配缓冲区耗时: 1705ms</span><br></pre></td></tr></table></figure>
+
+<p>性能测试表明, 采用内存池的ByteBuf 相比于 于朝生夕灭的ByteBuf,性能高了23倍左右(性能数据与使用场景强相关), 下面我们一起简单分析下 Netty 内存池的内存分配</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ByteBuf <span class="title">directBuffer</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">int</span> maxCapacity)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (initialCapacity == <span class="number">0</span> &amp;&amp; maxCapacity == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> emptyBuf;</span><br><span class="line">    &#125;</span><br><span class="line">    validate(initialCapacity, maxCapacity);</span><br><span class="line">    <span class="keyword">return</span> newDirectBuffer(initialCapacity, maxCapacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>继续看 newDirectBuffer 方法, 我们发现他是一个抽象方法, 由  AbstractByteBufAllocator的子类 负责具体实现. 代码如下:</p>
+<p><img src="http://files.luyanan.com//img/20190923114708.png"></p>
+<p>代码跳转到 PooledByteBufAllocator的 newDirectBuffer 方法. 从Cache 中获取内存区域 PoolArena, 调用它的 allocate 方法进行内存分配</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">protected</span> ByteBuf <span class="title">newDirectBuffer</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">int</span> maxCapacity)</span> </span>&#123;</span><br><span class="line">       PoolThreadCache cache = threadCache.get();</span><br><span class="line">       PoolArena&lt;ByteBuffer&gt; directArena = cache.directArena;</span><br><span class="line"></span><br><span class="line">       ByteBuf buf;</span><br><span class="line">       <span class="keyword">if</span> (directArena != <span class="keyword">null</span>) &#123;</span><br><span class="line">           buf = directArena.allocate(cache, initialCapacity, maxCapacity);</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           <span class="keyword">if</span> (PlatformDependent.hasUnsafe()) &#123;</span><br><span class="line">               buf = UnsafeByteBufUtil.newUnsafeDirectByteBuf(<span class="keyword">this</span>, initialCapacity, maxCapacity);</span><br><span class="line">           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">               buf = <span class="keyword">new</span> UnpooledDirectByteBuf(<span class="keyword">this</span>, initialCapacity, maxCapacity);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> toLeakAwareBuffer(buf);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>PoolArena的 allocate 方法如下： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">PooledByteBuf&lt;T&gt; <span class="title">allocate</span><span class="params">(PoolThreadCache cache, <span class="keyword">int</span> reqCapacity, <span class="keyword">int</span> maxCapacity)</span> </span>&#123;</span><br><span class="line">    PooledByteBuf&lt;T&gt; buf = newByteBuf(maxCapacity);</span><br><span class="line">    allocate(cache, buf, reqCapacity);</span><br><span class="line">    <span class="keyword">return</span> buf;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们重点分析newByteBuf 的实现, 他同样是个抽象方法, 由子类 DirectArena 和 HeapArena 来实现不同类型的缓冲区分配, 由于测试用例使用的是 堆外内存</p>
+<p><img src="http://files.luyanan.com//img/20190923115636.png"></p>
+<p>因此重点分析 DirectArena 的实现, 如果没有开启使用 sun的 unsafe ,则</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">       <span class="function"><span class="keyword">protected</span> PooledByteBuf&lt;ByteBuffer&gt; <span class="title">newByteBuf</span><span class="params">(<span class="keyword">int</span> maxCapacity)</span> </span>&#123;</span><br><span class="line">           <span class="keyword">if</span> (HAS_UNSAFE) &#123;</span><br><span class="line">               <span class="keyword">return</span> PooledUnsafeDirectByteBuf.newInstance(maxCapacity);</span><br><span class="line">           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">               <span class="keyword">return</span> PooledDirectByteBuf.newInstance(maxCapacity);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行 PooledDirectByteBuf.newInstance 的方法，代码如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> PooledDirectByteBuf <span class="title">newInstance</span><span class="params">(<span class="keyword">int</span> maxCapacity)</span> </span>&#123;</span><br><span class="line">    PooledDirectByteBuf buf = RECYCLER.get();</span><br><span class="line">    buf.reuse(maxCapacity);</span><br><span class="line">    <span class="keyword">return</span> buf;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过 RECYCLER的get 方法循环使用ByteBuf 对象， 如果是非内存池实现, 则直接创建一个新的ByteBuf 对象, 从缓冲池中获取ByteBuf 之后, 调用 AbstractReferenceCountedByteBuf的 setRefCnt 方法设置引用计数器, 用于对象的引用计数和内存回收(类似于JVM垃圾回收机制)</p>
+<h3 id="4-高效的Reactor-线程模型"><a href="#4-高效的Reactor-线程模型" class="headerlink" title="4. 高效的Reactor 线程模型"></a>4. 高效的Reactor 线程模型</h3><p>常见的Reactor模型有三种, 分别如下:</p>
+<ol>
+<li><p>Reactor 单线程模型</p>
+<p>  Reactor 单线程模型,指的是所有的IO操作都在同一个NIO 线程上面完成, NIO线程的职责如下:</p>
+<ol>
+<li>作为NIO服务端， 接受客户端的TCP连接</li>
+<li>作为NIO客户端, 想服务端发起TCP连接</li>
+<li>读取通信对端的请求或者应答消息</li>
+<li>想通信对端发送消息请求或者应答请求.</li>
+</ol>
+<p>Reactor 单线程模型示意图如下所示</p>
+<p><img src="http://files.luyanan.com//img/20190923133948.png"></p>
+<p>由于Reactor 模式使用的是异步非阻塞IO， 所有的IO操作都不会导致阻塞, 理论上一个线程可以独立处理所有的IO相关的操作. 从架构层面上, 一个NIO线程确实可以完成其承担的职责, 例如, 通过Accepter 接受客户端的TCP 连接请求消息, 链路 建立成功后,通过Dispatch 将对用的ByteBuf 派发到指定的 Handler 上进行消息解码. 用户的Handler 可以通过NIO线程 将消息发送至客户端.</p>
+<p>对于一个小容量应用场景, 可以使用单线程模型. 但是对于高负载、大并发的应用却不合适, 主要原因如下：</p>
+<ol>
+<li>一个NIO线程同时处理成百上千的链路, 性能上无法支持, 及时NIO的线程的CPU负荷达到100%, 也无法满足海量消息的解码、编码、读取和发送,</li>
+<li>当NIO 线程负载过重后， 处理速度将变慢,这会导致大量客户端连接超时, 超时之后往往会进行重发， 这更加重了NIO线程的负载, 最终会导致大量消息积压和处理超时, NIO线程会成为系统的性能瓶颈,</li>
+<li>可靠性问题: 一旦NIO线程 意外跑飞, 或者进入死循环, 会导致整个系统通信模块不可用, 不能接受和处理外部消息， 造成节点故障.</li>
+</ol>
+<p>为了解决这些问题, 演进出了 Reactor 多线程模型, 接下来我们一起来学习一下Reactor 多线程模型</p>
+</li>
+<li><p>Reactor 多线程模型</p>
+<p> Reactor 多线程模型与单线程模型最大的区别就是有一组NIO线程处理IO操作, 它的原理图如下：</p>
+<p><img src="http://files.luyanan.com//img/20190923135226.png"></p>
+<p>Reactor 多线程模型的特点如下：</p>
+<ol>
+<li>专门有一个NIO线程 Acceptor 线程用于监听服务端, 接受客户端TCP连接请求.</li>
+<li>网络IO操作-读、写等由一个NIO线程池负责, 线程池可以采用标准的JDK 线程池实现, 它包含了一个任务队列和N个可用的线程, 由这些线程负责消息的读取、解码、编码和发送.</li>
+<li>1个NIO线程可以同时处理N个链路, 但是1个链路只对用1个线程, 防止发生并发操作问题.</li>
+</ol>
+<p>​       在绝大数场景下, Reactor 多线程模型都可以满足性能需求, 但是, 在极特殊应用场景中, 一个NIO 线程负责监听和处理所有的客户端连接可能会存在性能问题, 例如百万客户端并发链接，或者服务端需要对客户端的握手消息进行安全认证, 认证本身非常耗损性能, 这这些场景下， 单独一个Accepter 线程可能会存在性能不足问题, 为了解决性能问题, 产生了第三种Reactor线程模型 - 主从Reactor 多线程模型.</p>
+</li>
+<li><p>主从Reactor  多线程模型</p>
+<p> 主从Reactor 线程模型的特点是: 服务端用于接收客户端连接的不再是一个单独的NIO线程, 而是一个独立的NIO线程池, Acceptor 接收到客户端TCP 连接请求处理完成后(可能包含接入认证), 将新创建的 SocketChannel 注册到IO线程池(sub reactor 线程池) 的某个IO 线程上, 由他负责 SocketChannel 的读写和编解码工作. Acceptor 线程池仅仅只用于客户端的登录、握手和安全认证, 一旦链路建立成功, 就将链路注册到后端 subReactor 线程池的IO线程上, 由IO线程负责后续的IO操作.</p>
+<p>它的线程模型如下图所示:</p>
+<p><img src="http://files.luyanan.com//img/20190923140323.png"></p>
+<p>利用主从IO线程模型, 可以解决1 个服务端监听线程无法有效处理所有客户端连接的性能不足问题, 因此, 在Netty 的官方demo中, 推荐使用该线程模型.</p>
+<p>事实上, Netty的线程模型并非固定不变, 通过在启动辅助类中创建不同的EventLoopGroup 实例并通过适当的参数配置， 就可以支持上述三种Reactor 线程模型, 正是因为Netty 对Reactor 线程模型的支持提供了灵活的定制能力, 所以可以满足不同业务场景的性能诉求.</p>
+</li>
+</ol>
+<h3 id="5-无锁化的串行设计理念"><a href="#5-无锁化的串行设计理念" class="headerlink" title="5. 无锁化的串行设计理念."></a>5. 无锁化的串行设计理念.</h3><p>   在大多数场景下, 并行多线程处理可以提升系统的并发性能. 但是, 如果对于共享资源的并发访问处理不当, 会带来严重的锁竞争, 这最终会导致性能的下降. 为了尽可能的避免锁竞争带来的性能损耗，可以通过串行化设计, 即消息的处理尽可能在同一个线程内完成, 期间不进行线程切换, 这样就避免了多线程竞争和同步锁。</p>
+<p>为了尽可能的提升性能, Netty采用了串行无锁化设计, 在IO线程内部进行串行操作, 避免多线程竞争导致的性能下降, 表面上看, 串行化设计似乎CPU利用率不高， 并发程度不够, 但是, 通过调整NIO线程池的线程参数, 可以同时启动多个串行化的线程并行运行, 这种局部无锁化的串行线程设计相比一个队列-多个工作线程模型性能更优.</p>
+<p>Netty 的串行化设计工作原理如下:</p>
+<p><img src="http://files.luyanan.com//img/20190923141322.png"></p>
+<p>Netty的 NioEventLoop  读取到消息后, 直接调用 ChannelPipeline 的 fireChannelRead(Object msg)，只要用户不主动切换线程, 一直会由 NioEventLoop 调用到用户的handler, 期间不进行线程切换, 这种串行化处理方式避免了多线程操作导致的锁的竞争, 从性能角度看是最优的. </p>
+<h3 id="6-高效的并发编程"><a href="#6-高效的并发编程" class="headerlink" title="6. 高效的并发编程."></a>6. 高效的并发编程.</h3><p>Netty的高效并发编程主要体现在如下几点:</p>
+<ol>
+<li>volatile 的大量、正确使用</li>
+<li>CAS 和原子类的广泛使用</li>
+<li>线程安全容器的使用</li>
+<li>通过读写锁提升并发性能.</li>
+</ol>
+<h3 id="7-高性能的序列化框架"><a href="#7-高性能的序列化框架" class="headerlink" title="7. 高性能的序列化框架"></a>7. 高性能的序列化框架</h3><p>影响序列化性能的关键因素总结如下:</p>
+<ol>
+<li>序列化后的码流大小(网络带宽的占用)</li>
+<li>序列化&amp;反序列化的性能(CPU资源占用)</li>
+<li>是否支持跨语言(异构系统的对接和开发语言切换)</li>
+<li>Netty 默认提供了对Google Protobuf的支持， 通过扩展 Netty的编解码接口, 用户可以实现其他的高性能序列化框架, 例如 Thrift 的压缩二进制编解码框架, 下面我们一起来看一下 不同序列化&amp;反序列化框架序列化后的字节数组大小.</li>
+</ol>
+<p><img src="http://files.luyanan.com//img/20190923142442.png"></p>
+<p>从上图可以看出, Protobuf 序列化后的码流只有Java 序列化后的1/4左右, 正是由于Java原生序列化性能表现太差, 才催生了各种高性能的开源序列化技术和框架(性能差只是其中的一个原因, 还有跨语言、IDL定义等其他因素)</p>
+<h3 id="8-灵活的TCP参数配置能力"><a href="#8-灵活的TCP参数配置能力" class="headerlink" title="8. 灵活的TCP参数配置能力"></a>8. 灵活的TCP参数配置能力</h3><p>合理设置TCP参数在某些场景下对于性能的提升可以起到显著的效果, 例如SO_RCVBUF 和 SO_SNDBUF。如果设置不当, 对性能的影响是非常大的, 下面我们总结一下对性能影响比较大的几个配置项.</p>
+<ol>
+<li>SO_RCVBUF 和 SO_SNDBUF : 通常建议值设置为128K 或者256K</li>
+<li>SO_TCPNODELAY：NAGLE算法通过将缓冲区内的小封包自动相连. 组成较大的封包, 阻止大量小封包的发送阻塞网络, 从而提高网络应用效率. 但是对于时延敏感的应用场景来说需要关闭该优化算法.</li>
+<li>软中断: 如果linux 内核版本支持 RPS(2.6.35 以上版本),开启 RPS 后可以实现软中断, 提升网络吞吐量, RPS 根据数据包的源地址, 目的地址,以及目的源地址和端口,计算出一个hash值, 然后根据这个hash值来选择软中断 运行的CPU， 从上层来看, 也就是将每个链接和cpu绑定, 并通过这个hash值, 来均衡软中断在多个cpu上, 提升网络并行处理性能.</li>
+</ol>
+<p>Netty在启动辅助类中可以灵活的配置TCP参数, 满足不同的用户场景, 相关配置接口定义如下：</p>
+<p><img src="http://files.luyanan.com//img/20190923143722.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Promise%20%E4%B8%8E%20Future%20%E5%8F%8C%E5%AD%90%E6%98%9F%E7%9A%84%E7%A7%98%E5%AF%86(11)/" rel="prev" title="Promise 与 Future 双子星的秘密(11)">
+      <i class="fa fa-chevron-left"></i> Promise 与 Future 双子星的秘密(11)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/Netty%E7%BC%96%E8%A7%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF(13)/" rel="next" title="Netty编解码的艺术(13)">
+      Netty编解码的艺术(13) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Netty%E9%AB%98%E6%80%A7%E8%83%BD%E4%B9%8B%E9%81%93"><span class="nav-number">1.</span> <span class="nav-text">Netty高性能之道</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.1.</span> <span class="nav-text">1. 背景介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Netty%E6%83%8A%E4%BA%BA%E7%9A%84%E6%80%A7%E8%83%BD%E6%95%B0%E6%8D%AE"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. Netty惊人的性能数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BC%A0%E7%BB%9FRPC-%E8%B0%83%E7%94%A8%E6%80%A7%E8%83%BD%E5%B7%AE%E7%9A%84%E4%B8%89%E5%AE%97%E7%BD%AA"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. 传统RPC 调用性能差的三宗罪</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E4%B8%89%E4%B8%AA%E4%B8%BB%E9%A2%98"><span class="nav-number">1.1.3.</span> <span class="nav-text">3. 高性能的三个主题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Netty-%E9%AB%98%E6%80%A7%E8%83%BD%E4%B9%8B%E9%81%93"><span class="nav-number">1.2.</span> <span class="nav-text">2. Netty 高性能之道</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%82%E6%AD%A5%E9%9D%9E%E9%98%BB%E5%A1%9E%E9%80%9A%E4%BF%A1"><span class="nav-number">1.2.1.</span> <span class="nav-text">1 异步非阻塞通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%9B%B6%E6%8B%B7%E8%B4%9D"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 零拷贝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%86%85%E5%AD%98%E6%B1%A0"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. 内存池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%AB%98%E6%95%88%E7%9A%84Reactor-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.2.4.</span> <span class="nav-text">4. 高效的Reactor 线程模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%97%A0%E9%94%81%E5%8C%96%E7%9A%84%E4%B8%B2%E8%A1%8C%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5"><span class="nav-number">1.2.5.</span> <span class="nav-text">5. 无锁化的串行设计理念.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E9%AB%98%E6%95%88%E7%9A%84%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B"><span class="nav-number">1.2.6.</span> <span class="nav-text">6. 高效的并发编程.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E5%BA%8F%E5%88%97%E5%8C%96%E6%A1%86%E6%9E%B6"><span class="nav-number">1.2.7.</span> <span class="nav-text">7. 高性能的序列化框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E7%81%B5%E6%B4%BB%E7%9A%84TCP%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E8%83%BD%E5%8A%9B"><span class="nav-number">1.2.8.</span> <span class="nav-text">8. 灵活的TCP参数配置能力</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="luyanan"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">luyanan</p>
+  <div class="site-description" itemprop="description">程序员报社</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">229</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/luyanan0718" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;luyanan0718" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/luyanan0718@163.com" title="E-Mail → luyanan0718@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://luyanan.com/" title="https:&#x2F;&#x2F;luyanan.com">Site</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luyanan</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"live2d-widget-model-haru"},"display":{"position":"right","width":150,"height":300},"mobile":null});</script></body>
+</html>
