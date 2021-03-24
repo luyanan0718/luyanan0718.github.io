@@ -8,8 +8,7 @@ service vsftpd start
  // 查看系统是否监听了21端口
  netstat -nltp | grep 21
 ```
-### 3. 修改配置 `/etc/vsftpd/vsftpd.conf`
-
+### 3. 修改配置
 ```
 anonymous_enable=NO
 chroot_local_user=YES
